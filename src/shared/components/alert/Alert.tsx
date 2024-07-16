@@ -1,11 +1,9 @@
 import React from 'react';
-import styles from './Alert.module.css';
-
-
+import styles from './Alert.module.scss';
 
 interface IProps {
   message: string;
-  type: 'info' | 'alert'
+  type: 'info' | 'alert';
 }
 
 const Alert: React.FC<IProps> = ({ message, type = 'info' }) => {

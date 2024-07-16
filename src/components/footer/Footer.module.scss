@@ -1,0 +1,32 @@
+@import '../../styles/variables.scss';
+
+.footer {
+  background-color: $primary-color;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    h3 {
+      margin-bottom: 10px;
+    }
+
+    li {
+      margin-bottom: 8px;
+
+      a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s;
+
+        &:hover {
+          color: $accent-color;
+        }
+      }
+    }
+  }
+}
