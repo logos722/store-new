@@ -10,3 +10,4 @@ export { default as Alert } from './alert/Alert';
 // export { default as Navbar } from './Navbar';
 // export { default as Breadcrumbs } from './Breadcrumbs';
 export { default as IconLink } from './IconLink/IconLink';
+export { default as SliderBase } from './slider/Slider';
