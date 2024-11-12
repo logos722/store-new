@@ -5,3 +5,10 @@ export interface Catalog {
   description?: string;
   products: Product[];
 }
+
+export interface CatalogFilters {
+  searchQuery?: string;
+  category?: string;
+  priceRange?: [number, number];
+  sortBy?: 'price' | 'name';
+}

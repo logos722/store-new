@@ -1,9 +1,10 @@
-import { Header, Footer, SliderMain } from '../components';
+import { SliderMain } from '../components';
 import cat1 from '../../public/cat1.jpeg';
 import cat2 from '../../public/cat2.jpeg';
 import cat3 from '../../public/cat3.jpeg';
 import { Catalog as CatalogType } from '@/types/catalog';
 import Catalog from '@/shared/components/catalog/Catalog';
+import Container from '@/shared/components/container/Container';
 const images = [
   { src: cat1, alt: 'Image 1', url: '/test' },
   { src: cat2, alt: 'Image 2', url: '/test' },
@@ -38,13 +39,9 @@ const sampleCatalog: CatalogType = {
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <main className="content">
-        <SliderMain images={images} />
-        <Catalog catalog={sampleCatalog} />
-      </main>
-      <Footer />
-    </>
+    <Container>
+      <SliderMain images={images} />
+      <Catalog catalog={sampleCatalog} />
+    </Container>
   );
 }

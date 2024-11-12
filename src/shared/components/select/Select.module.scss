@@ -1,0 +1,33 @@
+.selectContainer {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #fff;
+  appearance: none;
+  outline: none;
+  transition: border-color 0.3s;
+
+  &:hover {
+    border-color: #0070f3;
+  }
+
+  &:focus {
+    border-color: #005bb5;
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.2);
+  }
+
+  &:disabled {
+    background-color: #f9f9f9;
+    border-color: #ddd;
+    color: #aaa;
+    cursor: not-allowed;
+  }
+}

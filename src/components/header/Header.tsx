@@ -3,6 +3,7 @@ import HeaderSearchField from './HeaderSearchField';
 import { IconLink } from '../../shared/components';
 import icon from '../../../public/images.png';
 import styles from './Header.module.scss';
+import Link from 'next/link';
 
 // interface IProps {}
 
@@ -11,7 +12,7 @@ const Header = () => {
     <nav className={styles.header}>
       <h2>Гелион</h2>
       <ul className={styles.menu}>
-        <li>Главная</li>
+        <Link href="/">Главная</Link>
         <li>Каталог</li>
         <li>Статьи</li>
         <li></li>

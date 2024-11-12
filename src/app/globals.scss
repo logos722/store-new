@@ -16,8 +16,16 @@ html, body, #__next, .app-container {
   flex-direction: column;
 }
 
+main {
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: calc(110vh - 140px); // Учесть высоту Header и Footer
+}
+
 .content {
-  flex: 1;
+  padding-top: 70px; /* Отступ для фиксации Header */
+  padding-bottom: 50px; /* Отступ для Footer */
+  background-color: #f9f9f9;
 }
 
 footer {
