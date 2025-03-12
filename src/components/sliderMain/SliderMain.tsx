@@ -1,5 +1,5 @@
 import React from 'react';
-// import styles from './SliderMain.module.scss';
+import styles from './SliderMain.module.scss';
 import { StaticImageData } from 'next/image';
 import { SliderBase } from '../../shared/components';
 
@@ -9,7 +9,7 @@ interface IProps {
 
 const SliderMain: React.FC<IProps> = ({ images }) => {
   return (
-    <div>
+    <div className={styles.sliderContainer}>
       <SliderBase images={images} />
     </div>
   );

@@ -5,6 +5,9 @@ import cat3 from '../../public/cat3.jpeg';
 import { Catalog as CatalogType } from '@/types/catalog';
 import Catalog from '@/shared/components/catalog/Catalog';
 import Container from '@/shared/components/container/Container';
+import { Sidebar } from '@/shared/components';
+import styles from './page.module.scss';
+
 const images = [
   { src: cat1, alt: 'Image 1', url: '/test' },
   { src: cat2, alt: 'Image 2', url: '/test' },
@@ -40,8 +43,13 @@ const sampleCatalog: CatalogType = {
 export default function Home() {
   return (
     <Container>
-      <SliderMain images={images} />
-      <Catalog catalog={sampleCatalog} />
+      <div className={styles.mainLayout}>
+        <Sidebar />
+        <div className={styles.mainContent}>
+          <SliderMain images={images} />
+          <Catalog catalog={sampleCatalog} />
+        </div>
+      </div>
     </Container>
   );
 }

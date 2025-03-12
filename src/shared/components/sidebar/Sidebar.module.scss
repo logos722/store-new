@@ -1,0 +1,46 @@
+@import '@/styles/variables.scss';
+
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  padding: 20px;
+  background-color: white;
+  border-right: 1px solid #eee;
+
+  h2 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid $primary-color;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+}
+
+.categoryLink {
+  display: block;
+  padding: 10px;
+  color: #666;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+
+  &.active {
+    background-color: $primary-color;
+    color: white;
+  }
+} 

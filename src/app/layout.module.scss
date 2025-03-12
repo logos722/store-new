@@ -1,0 +1,11 @@
+.mainLayout {
+  display: flex;
+  min-height: calc(100vh - 160px); // Вычитаем высоту header и footer
+  position: relative;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  overflow-x: hidden;
+} 

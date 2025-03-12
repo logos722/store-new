@@ -1,49 +1,61 @@
 import React from 'react';
-import Catalog from '../../components/catalog/Catalog';
-import { Catalog as CatalogType } from '@/types/catalog';
-import cat1 from '../../../public/cat1.jpeg';
-import cat2 from '../../../public/cat2.jpeg';
-import cat3 from '../../../public/cat3.jpeg';
+import Link from 'next/link';
+import Container from '@/shared/components/container/Container';
+import styles from './CatalogPage.module.scss';
 
-const sampleCatalog: CatalogType = {
-  title: 'Full Catalog',
-  description: 'Explore all our amazing products.',
-  products: [
-    {
-      id: '1',
-      name: 'Product 1',
-      description: 'This is the first product.',
-      price: 29.99,
-      image: cat1,
-      category: 'Category 1',
-      stock: 100,
-    },
-    {
-      id: '2',
-      name: 'Product 2',
-      description: 'This is the second product.',
-      price: 49.99,
-      image: cat2,
-      category: 'Category 2',
-      stock: 50,
-    },
-    {
-      id: '3',
-      name: 'Product 3',
-      description: 'This is the third product.',
-      price: 10.11,
-      image: cat3,
-      category: 'Category 3',
-      stock: 50,
-    },
-  ],
-};
+const categories = [
+  {
+    id: 'electronics',
+    name: 'Электроника',
+    slug: 'electronics',
+    description: 'Компьютеры, смартфоны и другая электроника',
+    image: '/electronics.jpg'
+  },
+  {
+    id: 'clothing',
+    name: 'Одежда',
+    slug: 'clothing',
+    description: 'Мужская и женская одежда',
+    image: '/clothing.jpg'
+  },
+  {
+    id: 'books',
+    name: 'Книги',
+    slug: 'books',
+    description: 'Художественная и научная литература',
+    image: '/books.jpg'
+  },
+  {
+    id: 'home',
+    name: 'Товары для дома',
+    slug: 'home',
+    description: 'Всё для уюта в вашем доме',
+    image: '/home.jpg'
+  }
+];
 
 const CatalogPage = () => {
   return (
-    <div>
-      <Catalog catalog={sampleCatalog} />
-    </div>
+    <Container>
+      <div className={styles.catalogPage}>
+        <h1>Каталог товаров</h1>
+        <div className={styles.categories}>
+          {categories.map((category) => (
+            <Link
+              href={`/catalog/${category.slug}`}
+              key={category.id}
+              className={styles.categoryCard}
+            >
+              <div className={styles.categoryImage}>
+                {/* Здесь будет изображение категории */}
+              </div>
+              <h2>{category.name}</h2>
+              <p>{category.description}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </Container>
   );
 };
 
