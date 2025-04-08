@@ -3,16 +3,29 @@
 .categoryPage {
   display: flex;
   gap: 30px;
-  min-height: calc(100vh - 80px);
+  padding: 20px 0;
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
 }
 
 .content {
   flex: 1;
-  padding: 20px;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 
   h1 {
-    margin-bottom: 30px;
-    color: $primary-color;
+    color: #333;
+    font-size: 2rem;
+    margin: 0;
   }
 }
 
@@ -30,4 +43,20 @@
   border-radius: 8px;
   color: #666;
   font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .categoryPage {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
 } 

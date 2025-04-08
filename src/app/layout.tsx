@@ -5,6 +5,11 @@ import { Footer, Header } from '../components';
 import { CartProvider } from '@/context/cart';
 import { Sidebar } from '@/shared/components';
 import styles from './layout.module.scss';
+import { QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClientProvider } from '@tanstack/react-query';
+const queryClient = new QueryClient();
+
 
 const montserrat = Montserrat({
   subsets: ['cyrillic'],
@@ -24,13 +29,17 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={montserrat.className}>
-        <CartProvider>
-          <Header />
-          <div className={styles.mainLayout}>
-            <main className={styles.mainContent}>{children}</main>
-          </div>
-          <Footer />
-        </CartProvider>
+        <QueryClientProvider client={queryClient}>
+          <CartProvider>
+            <div className={styles.layout}>
+              <Header />
+              <Sidebar />
+              <main className={styles.main}>{children}</main>
+              <Footer />
+            </div>
+          </CartProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
       </body>
     </html>
   );

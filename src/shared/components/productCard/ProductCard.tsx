@@ -5,6 +5,7 @@ import { Product } from '@/types/product';
 import styles from './ProductCard.module.scss';
 import Image from 'next/image';
 import { useCart } from '@/context/cart';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product;
@@ -12,13 +13,19 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
+  const router = useRouter();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Предотвращаем всплытие события
     addToCart(product);
   };
 
+  const handleCardClick = () => {
+    router.push(`/product/${product.id}`);
+  };
+
   return (
-    <div className={styles.productCard}>
+    <div className={styles.productCard} onClick={handleCardClick}>
       <Image
         src={product.image}
         alt={product.name}
