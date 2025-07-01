@@ -6,24 +6,24 @@ import Image from 'next/image';
 import Container from '@/shared/components/container/Container';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/cart';
-import { mockProduct } from '../../../mocks/products'; 
 import styles from './ProductPage.module.scss';
 import { useQuery } from '@tanstack/react-query';
+import cat1 from '../../../../public/cat1.jpeg';
+
+
 // Функция-загрузчик для продукта.
-// Используем queryKey, чтобы получить id.
 const fetchProduct = async ({ queryKey }: any): Promise<Product> => {
-  const [, id] = queryKey;
-  // Имитируем задержку API (например, 1 секунда)
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  // Здесь можно добавить логику запроса к реальному API, используя id
-  return mockProduct; // Для примера возвращаем mock-данные, которые соответствуют типу Product
-};
+  const [, id] = queryKey
+  const res = await fetch(`/api/product/${encodeURIComponent(id)}`)
+  if (!res.ok) {
+    throw new Error(`Ошибка при загрузке продукта: ${res.status}`)
+  }
+  const data: Product = await res.json()
+  return data
+}
 
 const ProductPage = () => {
   const { id } = useParams();
-  // const [product, setProduct] = useState<Product | null>(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
   const { data: product, isLoading, error } = useQuery<Product, Error>({
@@ -31,6 +31,8 @@ const ProductPage = () => {
     queryFn: fetchProduct,
     enabled: Boolean(id) // Загружаем данные только если id существует
   });
+
+  console.log('product', product)
 
 
   const handleAddToCart = () => {
@@ -62,7 +64,7 @@ const ProductPage = () => {
       <div className={styles.productPage}>
         <div className={styles.productImage}>
           <Image
-            src={product.image}
+            src={product.image ?? cat1}
             alt={product.name}
             fill
             className={styles.image}

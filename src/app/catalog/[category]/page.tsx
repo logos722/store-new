@@ -7,59 +7,20 @@ import ProductCard from '@/shared/components/productCard/ProductCard';
 import ProductFilters from '@/shared/components/filters/ProductFilters';
 import ProductSorting from '@/shared/components/sorting/ProductSorting';
 import styles from './CategoryPage.module.scss';
-import cat1 from '../../../../public/cat1.jpeg';
+import { Product } from '@/types/product';
+import { useQuery } from '@tanstack/react-query';
 
-// Временные данные для примера
-const products = {
-  electronics: [
-    {
-      id: 'e1',
-      name: 'Смартфон XYZ',
-      description: 'Мощный смартфон с отличной камерой',
-      price: 29999,
-      image: cat1,
-      category: 'electronics',
-      stock: 10
-    },
-    {
-      id: 'e2',
-      name: 'Планшет ABC',
-      description: 'Легкий планшет для работы и развлечений',
-      price: 19999,
-      image: cat1,
-      category: 'electronics',
-      stock: 5
-    },
-    {
-      id: 'e3',
-      name: 'Ноутбук DEF',
-      description: 'Производительный ноутбук для работы',
-      price: 49999,
-      image: cat1,
-      category: 'electronics',
-      stock: 0
-    }
-  ],
-  clothing: [
-    {
-      id: 'c1',
-      name: 'Футболка Classic',
-      description: 'Классическая футболка из 100% хлопка',
-      price: 999,
-      image: cat1,
-      category: 'clothing',
-      stock: 50
-    },
-    {
-      id: 'c2',
-      name: 'Джинсы Modern',
-      description: 'Стильные джинсы прямого кроя',
-      price: 2999,
-      image: cat1,
-      category: 'clothing',
-      stock: 30
-    }
-  ]
+const fetchCategoryProducts = async ({ queryKey }: { 
+  queryKey: readonly unknown[] 
+}): Promise<Product[]> => {
+  const [, category] = queryKey as readonly [string, string];
+  const res = await fetch(`/api/catalog/${category}`);
+  if (!res.ok) {
+    throw new Error("Ошибка получения товаров категории");
+  }
+  const data = await res.json();
+  // Directly return the products array without additional parsing
+  return data.products;
 };
 
 type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
@@ -70,10 +31,16 @@ const CategoryPage = () => {
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState<SortOption>('price-asc');
 
-  const categoryProducts = products[category as keyof typeof products] || [];
+  const { data: categoryProducts, isLoading, error } = useQuery<Product[], Error>({
+    queryKey: ['catalog', category as string],
+    queryFn: fetchCategoryProducts,
+    enabled: Boolean(category)
+  });
+
+  const productsList = categoryProducts || [];
 
   const filteredAndSortedProducts = useMemo(() => {
-    let result = [...categoryProducts];
+    let result = [...productsList];
 
     // Фильтрация по цене
     result = result.filter(product => 
@@ -102,7 +69,31 @@ const CategoryPage = () => {
     });
 
     return result;
-  }, [categoryProducts, priceRange, inStock, sort]);
+  }, [productsList, priceRange, inStock, sort]);
+
+  if (isLoading) {
+    return (
+      <Container>
+        <div className={styles.loading}>Загрузка...</div>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <div className={styles.error}>Ошибка: {error.message}</div>
+      </Container>
+    );
+  }
+
+  if (!categoryProducts) {
+    return (
+      <Container>
+        <div className={styles.error}>Товары не найдены</div>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -146,4 +137,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage; 
+export default CategoryPage;

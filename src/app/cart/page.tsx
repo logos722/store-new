@@ -7,48 +7,52 @@ import styles from './CartPage.module.scss';
 import { useCart } from '@/context/cart';
 import Link from 'next/link';
 import { OrderFormData } from '@/types/order';
+import { CartItem as CartItemType } from '@/types/cart';
+
+interface OrderPayload {
+  items: Array<CartItemType>
+  total: number
+  customerInfo: {
+    email: string
+    name: string
+    phone: string
+    city: string
+    comment?: string
+  }
+}
 
 const CartPage = () => {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
+  const [formData, setFormData] = useState({
+    email: '',
+    name: '',
+    phone: '',
+    city: '',
+    comment: ''
+  })
+
   const handleOrderSubmit = async (formData: OrderFormData) => {
+    const payload: OrderPayload = {
+      items: cart.items,                // из контекста корзины
+      total: cart.total,                // из контекста корзины
+      customerInfo: formData
+    }
+
     try {
-      // Здесь будет логика отправки заказа на сервер
-      console.log('Order submitted:', {
-        items: cart.items,
-        total: cart.total,
-        customerInfo: formData
-      });
-      
-      // В реальном приложении здесь будет API-запрос
-      // const response = await fetch('/api/orders', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     items: cart.items,
-      //     total: cart.total,
-      //     customerInfo: formData
-      //   }),
-      // });
-      
-      // if (!response.ok) {
-      //   throw new Error('Failed to submit order');
-      // }
-      
-      // Очищаем корзину после успешного оформления заказа
-      clearCart();
-      
-      // Закрываем модальное окно
-      setIsOrderModalOpen(false);
-      
-      // Показываем сообщение об успехе
-      alert('Заказ успешно оформлен!');
-    } catch (error) {
-      console.error('Error submitting order:', error);
-      alert('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.');
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!response.ok) throw new Error('Failed to submit order')
+
+      clearCart()
+      alert('Заказ успешно оформлен!')
+    } catch (err) {
+      console.error('Error submitting order:', err)
+      alert('Ошибка при оформлении заказа, попробуйте ещё раз.')
     }
   };
 

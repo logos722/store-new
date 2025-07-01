@@ -1,0 +1,38 @@
+import { NextResponse } from 'next/server'
+import type { CatalogResponse } from '../../types'
+
+
+export async function GET(
+  request: Request,
+  { params }: { params: { category: string } }
+) {
+  const { category } = params;
+  const url = new URL(request.url);
+  const page  = url.searchParams.get('page')  || '1';
+  const limit = url.searchParams.get('limit') || '10';
+
+  try {
+    // Проксируем запрос, передавая page и limit в query
+    const res = await fetch(
+      `${process.env.API_BASE_URL}/api/catalog/${encodeURIComponent(category)}?page=${page}&limit=${limit}`,
+      { cache: 'no-store' }
+    );
+
+    if (!res.ok) {
+      return NextResponse.json(
+        { error: `Category ${category} not found` },
+        { status: res.status }
+      );
+    }
+
+    const data: CatalogResponse = await res.json();
+    // Просто отдаём дальше, включая в data поля page, totalPages и т. д.
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error('Catalog proxy error:', err);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}

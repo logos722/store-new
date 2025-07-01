@@ -24,7 +24,8 @@
       "@/shared/*": ["./src/shared/*"],
       "@/types/*": ["./src/types/*"],
       "@/styles/*": ["./src/styles/*"],
-      "@/context/*": ["./src/context/*"]
+      "@/context/*": ["./src/context/*"],
+      "@/constants/*": ["./src/constants/*"]
     }
   },
   "include": [

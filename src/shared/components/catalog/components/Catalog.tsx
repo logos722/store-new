@@ -1,6 +1,6 @@
 import React from 'react';
 import { Catalog as CatalogType } from '@/types/catalog';
-import ProductCard from '../productCard/ProductCard';
+import ProductCard from '../../productCard/ProductCard';
 import styles from './Catalog.module.scss';
 
 interface CatalogProps {

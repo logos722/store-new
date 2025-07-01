@@ -2,57 +2,41 @@ import React from 'react';
 import Link from 'next/link';
 import Container from '@/shared/components/container/Container';
 import styles from './CatalogPage.module.scss';
-
-const categories = [
-  {
-    id: 'electronics',
-    name: 'Электроника',
-    slug: 'electronics',
-    description: 'Компьютеры, смартфоны и другая электроника',
-    image: '/electronics.jpg'
-  },
-  {
-    id: 'clothing',
-    name: 'Одежда',
-    slug: 'clothing',
-    description: 'Мужская и женская одежда',
-    image: '/clothing.jpg'
-  },
-  {
-    id: 'books',
-    name: 'Книги',
-    slug: 'books',
-    description: 'Художественная и научная литература',
-    image: '/books.jpg'
-  },
-  {
-    id: 'home',
-    name: 'Товары для дома',
-    slug: 'home',
-    description: 'Всё для уюта в вашем доме',
-    image: '/home.jpg'
-  }
-];
+import { CatalogId, CatalogInfo } from '@/constants/catalogs';
+import Image from 'next/image';
 
 const CatalogPage = () => {
+    const ids = Object.values(CatalogId);
+
+
   return (
     <Container>
       <div className={styles.catalogPage}>
         <h1>Каталог товаров</h1>
         <div className={styles.categories}>
-          {categories.map((category) => (
+          {ids.map((id) => {
+            const category = CatalogInfo[id];
+
+            return (
             <Link
-              href={`/catalog/${category.slug}`}
-              key={category.id}
+              href={`/catalog/${id}`}
+              key={id}
               className={styles.categoryCard}
             >
               <div className={styles.categoryImage}>
-                {/* Здесь будет изображение категории */}
-              </div>
-              <h2>{category.name}</h2>
-              <p>{category.description}</p>
+                  <Image
+                    src={category.imageUrl}
+                    alt={category.title}
+                    className={styles.image}
+                    fill={true}
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
+                <h2>{category.title}</h2>
+                <p>{category.description}</p>
             </Link>
-          ))}
+          )
+          })}
         </div>
       </div>
     </Container>

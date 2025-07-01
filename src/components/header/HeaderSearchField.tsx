@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { SearchResult, SearchCategory } from '@/types/search';
 import styles from './HeaderSearchField.module.scss';
+import { useDebounce } from './hooks/useDebounce';
 
 const categories: SearchCategory[] = [
   { id: 'electronics', name: 'Электроника', slug: 'electronics' },
@@ -14,6 +15,7 @@ const categories: SearchCategory[] = [
 
 const HeaderSearchField = () => {
   const [query, setQuery] = useState('');
+    const debouncedQuery = useDebounce(query, 500); 
   const [results, setResults] = useState<SearchResult>({ products: [], categories: [] });
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,13 +43,16 @@ const HeaderSearchField = () => {
   };
 
   // Поиск по продуктам через API
-  const searchProducts = async (searchQuery: string) => {
+  const searchProducts = async (searchQuery: string): Promise<SearchResult[]> => {
     try {
       setIsLoading(true);
-      // Здесь будет ваш API-запрос
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
-      const data = await response.json();
-      return data.products;
+      const res = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+      if (!res.ok) {
+        console.error('Search API error', res.status);
+        return [];
+      }
+      const data: { query: string; results: SearchResult[] } = await res.json();
+      return data.results;
     } catch (error) {
       console.error('Ошибка при поиске продуктов:', error);
       return [];
@@ -56,23 +61,25 @@ const HeaderSearchField = () => {
     }
   };
 
-  // Обработчик изменения поискового запроса
-  const handleSearch = async (searchQuery: string) => {
-    setQuery(searchQuery);
-    if (!searchQuery) {
+
+   // Поиск при изменении debouncedQuery
+  useEffect(() => {
+    const q = debouncedQuery.trim();
+    if (!q) {
       setResults({ products: [], categories: [] });
       setIsOpen(false);
       return;
     }
 
     setIsOpen(true);
-    const [products, categories] = await Promise.all([
-      searchProducts(searchQuery),
-      Promise.resolve(searchCategories(searchQuery))
-    ]);
-
-    setResults({ products, categories });
-  };
+    (async () => {
+      const [products, cats] = await Promise.all([
+        searchProducts(q),
+        Promise.resolve(searchCategories(q)),
+      ]);
+      setResults({ products, categories: cats });
+    })();
+  }, [debouncedQuery]);
 
   // Обработчик выбора результата
   const handleSelect = (type: 'product' | 'category', item: any) => {
@@ -92,8 +99,10 @@ const HeaderSearchField = () => {
           type="text"
           placeholder="Поиск товаров и категорий..."
           value={query}
-          onChange={(e) => handleSearch(e.target.value)}
-          onFocus={() => setIsOpen(true)}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => {
+            if (debouncedQuery) setIsOpen(true);
+          }}
         />
       </div>
 
@@ -103,7 +112,7 @@ const HeaderSearchField = () => {
             <div className={styles.loading}>Поиск...</div>
           ) : (
             <>
-              {results.categories.length > 0 && (
+              {results.categories?.length > 0 && (
                 <div className={styles.resultsSection}>
                   <h3>Категории</h3>
                   {results.categories.map((category) => (
@@ -118,7 +127,7 @@ const HeaderSearchField = () => {
                 </div>
               )}
 
-              {results.products.length > 0 && (
+              {results.products?.length > 0 && (
                 <div className={styles.resultsSection}>
                   <h3>Товары</h3>
                   {results.products.map((product) => (

@@ -13,3 +13,4 @@ export { default as IconLink } from './IconLink/IconLink';
 export { default as SliderBase } from './slider/Slider';
 export { default as Select } from './select/Select';
 export { default as Sidebar } from './sidebar/Sidebar';
+export {default as CatalogPage} from './catalog/CatalogPage'
