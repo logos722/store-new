@@ -8,5 +8,5 @@ export interface Product {
   image: string | StaticImageData;
   category: string;
   stock: number;
-  [key: string]: string | number | StaticImageData; // Для дополнительных свойств, если необходимо
+  [key: string]: string | number | StaticImageData | boolean; // Для дополнительных свойств, если необходимо
 }

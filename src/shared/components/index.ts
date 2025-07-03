@@ -14,3 +14,6 @@ export { default as SliderBase } from './slider/Slider';
 export { default as Select } from './select/Select';
 export { default as Sidebar } from './sidebar/Sidebar';
 export {default as CatalogPage} from './catalog/CatalogPage'
+export {default as Loading} from './loading/Loading'
+export {default as BackButton} from './backButton/BackButton'
+export {default as QuantityToggleButton} from './quantityToggleButton/QuantityToggleButton'

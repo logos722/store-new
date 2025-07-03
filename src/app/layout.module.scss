@@ -1,11 +1,13 @@
-.mainLayout {
+.layout {
   display: flex;
-  min-height: calc(100vh - 160px); // Вычитаем высоту header и footer
-  position: relative;
+  flex-direction: column;
+  min-height: 100vh;               /* чтобы “растянуться” на весь экран */
 }
 
-.mainContent {
-  flex: 1;
+.main {
+  flex: 1;                         /* вытягивает себя, занимая всё свободное место */
+  display: flex;            /* ⬅️ делаем flex-контейнером */
+  flex-direction: column;  
   padding: 20px;
   overflow-x: hidden;
-} 
+}

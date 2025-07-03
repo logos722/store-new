@@ -9,6 +9,7 @@ import ProductSorting from '@/shared/components/sorting/ProductSorting';
 import styles from './CategoryPage.module.scss';
 import { Product } from '@/types/product';
 import { useQuery } from '@tanstack/react-query';
+import {Loading, Alert} from '@/shared/components';
 
 const fetchCategoryProducts = async ({ queryKey }: { 
   queryKey: readonly unknown[] 
@@ -31,7 +32,7 @@ const CategoryPage = () => {
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState<SortOption>('price-asc');
 
-  const { data: categoryProducts, isLoading, error } = useQuery<Product[], Error>({
+  const { data: categoryProducts, isLoading, error, refetch } = useQuery<Product[], Error>({
     queryKey: ['catalog', category as string],
     queryFn: fetchCategoryProducts,
     enabled: Boolean(category)
@@ -49,7 +50,7 @@ const CategoryPage = () => {
 
     // Фильтрация по наличию
     if (inStock) {
-      result = result.filter(product => product.stock > 0);
+      result = result.filter(product => product.inStock);
     }
 
     // Сортировка
@@ -73,25 +74,32 @@ const CategoryPage = () => {
 
   if (isLoading) {
     return (
-      <Container>
-        <div className={styles.loading}>Загрузка...</div>
-      </Container>
+      <div className={styles.wrapper}>
+        <Container className='centered'>
+          <Loading isLoading={isLoading} />
+        </Container>
+      </div>
     );
   }
 
   if (error) {
     return (
+      <div className={styles.wrapper}>
       <Container>
-        <div className={styles.error}>Ошибка: {error.message}</div>
+        <Alert message={error.message} onRetry={refetch} type='error'/>
       </Container>
+      </div>
     );
   }
 
   if (!categoryProducts) {
     return (
+      <div className={styles.wrapper}>
       <Container>
-        <div className={styles.error}>Товары не найдены</div>
+        <Alert message='Товары не найдены' type='error' />
       </Container>
+      </div>
+      
     );
   }
 

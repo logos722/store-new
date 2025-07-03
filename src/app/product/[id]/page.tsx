@@ -5,10 +5,10 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Container from '@/shared/components/container/Container';
 import { Product } from '@/types/product';
-import { useCart } from '@/context/cart';
 import styles from './ProductPage.module.scss';
 import { useQuery } from '@tanstack/react-query';
 import cat1 from '../../../../public/cat1.jpeg';
+import { BackButton, QuantityToggleButton } from '@/shared/components';
 
 
 // Функция-загрузчик для продукта.
@@ -24,22 +24,34 @@ const fetchProduct = async ({ queryKey }: any): Promise<Product> => {
 
 const ProductPage = () => {
   const { id } = useParams();
-  const { addToCart } = useCart();
 
   const { data: product, isLoading, error } = useQuery<Product, Error>({
     queryKey: ['product', id as string],
     queryFn: fetchProduct,
-    enabled: Boolean(id) // Загружаем данные только если id существует
+    enabled: Boolean(id)
   });
 
-  console.log('product', product)
-
-
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart(product);
+  const getStock = () => {
+    if (product.stock >= 5) {
+        return (
+          <span className={styles.inStock}>
+          В наличии больше 5 шт.
+        </span>
+        )
+      } else if (product.stock < 5) {
+        return (
+          <span className={styles.inStock}>
+          В наличии ({product.stock} шт.)
+        </span>
+        )
+      } else {
+        return (
+          <span className={styles.outOfStock}>
+           Нет в наличии
+        </span>
+        )
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -61,6 +73,9 @@ const ProductPage = () => {
 
   return (
     <Container>
+      <div className={styles.backWrapper}>
+        <BackButton />
+      </div>
       <div className={styles.productPage}>
         <div className={styles.productImage}>
           <Image
@@ -77,23 +92,11 @@ const ProductPage = () => {
           <p className={styles.description}>{product.description}</p>
 
           <div className={styles.stock}>
-            {product.stock > 0 ? (
-              <span className={styles.inStock}>
-                В наличии ({product.stock} шт.)
-              </span>
-            ) : (
-              <span className={styles.outOfStock}>Нет в наличии</span>
-            )}
+            {getStock()}
           </div>
 
           <div className={styles.actions}>
-            <button
-              onClick={handleAddToCart}
-              className={styles.addToCartButton}
-              disabled={product.stock === 0}
-            >
-              Добавить в корзину
-            </button>
+            <QuantityToggleButton product={product} />
           </div>
         </div>
       </div>

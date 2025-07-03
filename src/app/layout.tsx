@@ -2,11 +2,8 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.scss';
 import { Footer, Header } from '../components';
-import { CartProvider } from '@/context/cart';
-import { Sidebar } from '@/shared/components';
 import styles from './layout.module.scss';
 import ClientProviders from '@/components/сlientProviders/ClientProviders';
-
 
 
 const montserrat = Montserrat({

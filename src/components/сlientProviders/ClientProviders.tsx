@@ -4,6 +4,8 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { CartProvider } from '@/context/cart';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +25,16 @@ const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <CartProvider>{children}</CartProvider>
       <ReactQueryDevtools initialIsOpen={false} />
+      <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="light"
+          />
     </QueryClientProvider>
   );
 };

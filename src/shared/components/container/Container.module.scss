@@ -5,3 +5,9 @@
   padding: 0 15px; // Отступы по бокам
   height: 100%;
 }
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
