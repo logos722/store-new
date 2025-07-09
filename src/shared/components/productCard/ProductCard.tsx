@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewType = 'grid' })
       </div>
       <div className={styles.detailsWrapper}>
         <h3>{product.name}</h3>
-        <p className={styles.description}>{product.description}</p>
+        <p className={`${styles.description} ${styles.truncate}`}>{product.description}</p>
         <p className={styles.price}>{product.price.toFixed(2)} ₽</p>
         <QuantityToggleButton product={product} />
       </div>

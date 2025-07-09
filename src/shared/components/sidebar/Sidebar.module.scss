@@ -6,6 +6,14 @@
   padding: 20px;
   background-color: white;
   border-right: 1px solid #eee;
+  position: absolute;
+  top: 64px;
+  left: -19px;
+  // position: sticky;       /* остаётся в видимой зоне при скролле */
+  // top: 64px;              /* под шапкой */
+  // align-self: start;      /* чтобы sticky сработал */
+  // padding: 1rem;
+  // background: white;
 
   h2 {
     font-size: 1.2rem;
@@ -43,4 +51,10 @@
     background-color: $primary-color;
     color: white;
   }
-} 
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;                 /* прячем фильтры на мобильном */
+  }
+}

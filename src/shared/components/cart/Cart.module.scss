@@ -77,3 +77,37 @@
     background-color: darken($primary-color, 10%);
   }
 } 
+
+.cartLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: black;
+  font-size: 1.5rem;
+  padding: 0.25rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $primary-color;
+  }
+}
+
+.icon {
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ff3d00;
+  color: white;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  line-height: 18px;
+  border-radius: 9px;
+  text-align: center;
+  font-weight: bold;
+}

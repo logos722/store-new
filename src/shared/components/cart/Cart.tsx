@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { CartItem as CartItemType } from '@/types/cart';
+import { FaShoppingCart } from 'react-icons/fa';
 import CartItem from './CartItem';
 import styles from './Cart.module.scss';
 import { useCart } from '@/context/cart';
@@ -27,10 +27,15 @@ const Cart: React.FC = () => {
   return (
     <div className={styles.cartContainer} ref={cartRef}>
       <button
-        className={styles.cartButton}
+        className={styles.cartLink}
         onClick={() => setIsOpen(!isOpen)}
       >
-        Корзина ({totalItems})
+        <FaShoppingCart className={styles.icon} />
+          {totalItems > 0 && (
+            <span className={styles.badge}>
+              {totalItems > 99 ? '99+' : totalItems}
+            </span>
+          )}
       </button>
       
       {isOpen && (
@@ -53,7 +58,7 @@ const Cart: React.FC = () => {
                 <div className={styles.total}>
                   Итого: <span>{cart.total} ₽</span>
                 </div>
-                <Link href="/cart" className={styles.checkoutButton}>
+                <Link href="/cart" onClick={() => setIsOpen(false)} className={styles.checkoutButton}>
                   Оформить заказ
                 </Link>
               </div>
