@@ -11,9 +11,24 @@
     margin-bottom: 20px;
   }
 
-  .products {
+  .viewToggle {
+    text-align: right;
+    margin-bottom: 1rem;
+    button {
+      margin-left: .5rem;
+      cursor: pointer;
+    }
+  }
+
+  .productsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
     gap: 20px;
+  }
+  
+  .productsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 }

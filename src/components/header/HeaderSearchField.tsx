@@ -77,6 +77,7 @@ const HeaderSearchField = () => {
         searchProducts(q),
         Promise.resolve(searchCategories(q)),
       ]);
+      //@ts-ignore
       setResults({ products, categories: cats });
     })();
   }, [debouncedQuery]);

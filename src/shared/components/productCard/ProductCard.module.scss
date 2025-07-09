@@ -1,26 +1,39 @@
+/* src/components/productCard/ProductCard.module.scss */
 @import '@/styles/variables.scss';
 
 .productCard {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 15px;
+  background: white;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background: white;
-  transition: all 0.3s ease;
+  overflow: hidden;
   cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* общий стиль для картинки */
+  .imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 100px; 
+    overflow: hidden;
+    background: #f5f5f5;
   }
 
   .productImage {
-    width: 100%;
-    height: 200px;
     object-fit: cover;
-    border-radius: 4px;
+    position: relative;
+  }
+  
+  /* общий блок деталей */
+  .detailsWrapper {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   h3 {
@@ -29,28 +42,58 @@
     color: #333;
   }
 
-  p {
+  .description {
     margin: 0;
     color: #666;
     font-size: 0.9rem;
+    flex: 1;
   }
 
-  .addToCartButton {
-    margin-top: auto;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  .price {
+    margin: 0;
+    font-weight: 600;
+    color: $primary-color;
+  }
+}
 
-    &:hover {
-      background-color: #0056b3;
-    }
+/* ---- режим GRID (карточки) ---- */
+.grid {
+  display: flex;
+  flex-direction: column;
 
-    &:active {
-      transform: scale(0.98);
-    }
+  .imageWrapper {
+    width: 100%;
+    height: 180px;
+  }
+
+  .detailsWrapper {
+    /* вся высота под контент */
+  }
+}
+
+/* ---- режим LIST (список) ---- */
+.list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .imageWrapper {
+    flex: 0 0 120px;  /* фиксированная ширина картинки */
+    height: 80px;
+  }
+
+  .detailsWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* В списке делаем текст и кнопки горизонтально */
+  .detailsWrapper > h3,
+  .detailsWrapper > .price,
+  .detailsWrapper > .description {
+    margin: 0 12px 0 0;
+    
   }
 }

@@ -12,6 +12,8 @@ interface CatalogProps {
 
 const Catalog: React.FC<CatalogProps> = ({ catalog }) => {
   const [filters, setFilters] = useState<CatalogFilters>({});
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+
 
   const handleFilterChange = (newFilters: CatalogFilters) => {
     setFilters(newFilters);
@@ -41,8 +43,12 @@ const Catalog: React.FC<CatalogProps> = ({ catalog }) => {
       {catalog.description && <p>{catalog.description}</p>}
       <CatalogFiltersComponent onFilterChange={handleFilterChange} />
       <div className={styles.products}>
+      <div className={styles.viewToggle}>
+        <button onClick={() => setView('grid')}>🔲</button>
+        <button onClick={() => setView('list')}>📃</button>
+      </div>
         {filteredProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard viewType={view} key={product.id} product={product} />
         ))}
       </div>
     </div>

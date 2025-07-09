@@ -12,9 +12,10 @@ import {QuantityToggleButton} from '@/shared/components';
 
 interface ProductCardProps {
   product: Product;
+  viewType?: 'grid' | 'list';
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, viewType = 'grid' }) => {
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -22,16 +23,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className={styles.productCard} onClick={handleCardClick}>
-      <Image
-        src={product.image ?? cat1}
-        alt={product.name}
-        className={styles.productImage}
-      />
-      <h3>{product.name}</h3>
-      <p>{product.description}</p>
-      <p>{product.price?.toFixed(2)} ₽</p>
-      <QuantityToggleButton product={product} />
+    <div className={[
+      styles.productCard,
+      viewType === 'list' ? styles.list : styles.grid,
+    ].join(' ')} onClick={handleCardClick}>
+      <div className={styles.imageWrapper}>
+          <Image
+            src={product.image ?? cat1}
+            fill
+            alt={product.name}
+            className={styles.productImage}
+          />
+      </div>
+      <div className={styles.detailsWrapper}>
+        <h3>{product.name}</h3>
+        <p className={styles.description}>{product.description}</p>
+        <p className={styles.price}>{product.price.toFixed(2)} ₽</p>
+        <QuantityToggleButton product={product} />
+      </div>
     </div>
   );
 };

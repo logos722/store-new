@@ -28,7 +28,7 @@ const CatalogPage = () => {
                     src={category.imageUrl}
                     alt={category.title}
                     className={styles.image}
-                    fill={true}
+                    fill
                     style={{ objectFit: 'cover' }}
                   />
                 </div>
