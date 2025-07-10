@@ -8,40 +8,78 @@ import ProductFilters from '@/shared/components/filters/ProductFilters';
 import ProductSorting from '@/shared/components/sorting/ProductSorting';
 import styles from './CategoryPage.module.scss';
 import { Product } from '@/types/product';
-import { useQuery } from '@tanstack/react-query';
-import {Loading, Alert} from '@/shared/components';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import {Loading, Alert, BackToTopButton} from '@/shared/components';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { QueryFunctionContext } from '@tanstack/react-query';
+import { CatalogInfo } from '@/constants/catalogs';
 
-const fetchCategoryProducts = async ({ queryKey }: { 
-  queryKey: readonly unknown[] 
-}): Promise<Product[]> => {
-  const [, category] = queryKey as readonly [string, string];
-  const res = await fetch(`/api/catalog/${category}`);
-  if (!res.ok) {
-    throw new Error("Ошибка получения товаров категории");
-  }
-  const data = await res.json();
-  // Directly return the products array without additional parsing
-  return data.products;
+const PAGE_SIZE = 20;
+interface CategoryPageResponse {
+  products: Product[];
+  page:     number;
+  totalPages: number;
+}
+
+// Правильно типизируем context
+const fetchCategoryPage = async (
+  context: QueryFunctionContext<['catalog', string], number>
+): Promise<CategoryPageResponse> => {
+  const page = context.pageParam ?? 1;
+  const category = context.queryKey[1];
+  const res = await fetch(
+    `/api/catalog/${encodeURIComponent(category)}?page=${page}&limit=${PAGE_SIZE}`
+  );
+  if (!res.ok) throw new Error('Ошибка получения товаров');
+  return res.json();
 };
+
+
 
 type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
 const CategoryPage = () => {
   const { category } = useParams();
+
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
   const [inStock, setInStock] = useState(false);
-  const [sort, setSort] = useState<SortOption>('price-asc');
+  const [sort, setSort] = useState<SortOption>('name-asc');
 
-  const { data: categoryProducts, isLoading, error, refetch } = useQuery<Product[], Error>({
+  const {
+    data: categoryProducts,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isFetchingNextPage,
+  } = useInfiniteQuery<CategoryPageResponse, Error>({
     queryKey: ['catalog', category as string],
-    queryFn: fetchCategoryProducts,
-    enabled: Boolean(category)
+    queryFn:  fetchCategoryPage,
+    enabled:  Boolean(category),
+    // ← здесь обязательно прокидываем initialPageParam
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages
+        ? lastPage.page + 1
+        : undefined,
   });
 
-  const productsList = categoryProducts || [];
+  const getCatalogName = (categorys: string) => {
+    const category = CatalogInfo[categorys];
+
+    return category.title
+  }
+
+  // все загруженные продукты
+  const allProducts: Product[] = useMemo(
+    () => categoryProducts?.pages.flatMap(page => page.products) ?? [],
+    [categoryProducts]
+  );
 
   const filteredAndSortedProducts = useMemo(() => {
-    let result = [...productsList];
+    let result = [...allProducts];
 
     // Фильтрация по цене
     result = result.filter(product => 
@@ -50,27 +88,27 @@ const CategoryPage = () => {
 
     // Фильтрация по наличию
     if (inStock) {
-      result = result.filter(product => product.inStock);
+      result = result.filter(product => product.stock > 1);
     }
 
     // Сортировка
     result.sort((a, b) => {
       switch (sort) {
-        case 'price-asc':
-          return a.price - b.price;
-        case 'price-desc':
-          return b.price - a.price;
         case 'name-asc':
           return a.name.localeCompare(b.name);
         case 'name-desc':
           return b.name.localeCompare(a.name);
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
         default:
           return 0;
       }
     });
 
     return result;
-  }, [productsList, priceRange, inStock, sort]);
+  }, [allProducts, priceRange, inStock, sort]);
 
   if (isLoading) {
     return (
@@ -117,30 +155,28 @@ const CategoryPage = () => {
 
         <main className={styles.content}>
           <div className={styles.header}>
-            <h1>
-              {category === 'electronics' && 'Электроника'}
-              {category === 'clothing' && 'Одежда'}
-              {category === 'books' && 'Книги'}
-              {category === 'home' && 'Товары для дома'}
-            </h1>
-            <ProductSorting
-              currentSort={sort}
-              onSortChange={setSort}
-            />
+            <h1>{getCatalogName(category ?? '')}</h1>
+            <ProductSorting currentSort={sort} onSortChange={setSort} />
           </div>
 
-          <div className={styles.products}>
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-            {filteredAndSortedProducts.length === 0 && (
-              <p className={styles.noProducts}>
-                В данной категории пока нет товаров
-              </p>
-            )}
-          </div>
+          <InfiniteScroll
+            dataLength={allProducts.length}
+            next={() => fetchNextPage()}
+            hasMore={!!hasNextPage}
+            loader={<Loading isLoading={isFetchingNextPage} />}
+            endMessage={<p style={{ textAlign: 'center' }}>Больше нет товаров</p>}
+          >
+            <div className={styles.products}>
+              {filteredAndSortedProducts.map(p => (
+                <ProductCard key={p.id} product={p} viewType="grid" />
+              ))}
+            </div>
+          </InfiniteScroll>
         </main>
       </div>
+
+      {/* Кнопка «вверх» */}
+      <BackToTopButton />
     </Container>
   );
 };
