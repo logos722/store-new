@@ -38,6 +38,12 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/logos722/store-new:latest
+      - name: Debug private key
+        run: |
+          echo "$SSH_PRIVATE_KEY" | head -n 3
+          echo "…"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
   deploy:
     needs: build-and-push
@@ -49,6 +55,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             cd ~/project
             docker compose pull
