@@ -15,10 +15,10 @@ const nextConfig = {
     return [
       {
         source: '/images/:path*',
-        destination: 'http://localhost:5000/images/:path*'
-      }
-    ]
-  }
+        destination: 'http://localhost:5000/images/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
