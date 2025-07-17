@@ -12,7 +12,10 @@ interface LoadingProps {
   message?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({ isLoading, message = 'Загрузка...' }) => {
+const Loading: React.FC<LoadingProps> = ({
+  isLoading,
+  message = 'Загрузка...',
+}) => {
   if (!isLoading) return null;
 
   return (

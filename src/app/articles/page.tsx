@@ -36,8 +36,8 @@ const ArticlesPage = () => {
   return (
     <Container>
       <div className={styles.articleDiv}>
-      <h1>Статьи</h1>
-      <ArticleList articles={sampleArticles} />
+        <h1>Статьи</h1>
+        <ArticleList articles={sampleArticles} />
       </div>
     </Container>
   );

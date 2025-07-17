@@ -10,7 +10,9 @@ interface BackButtonProps {
   fallbackHref?: string;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ fallbackHref = '/catalog' }) => {
+const BackButton: React.FC<BackButtonProps> = ({
+  fallbackHref = '/catalog',
+}) => {
   const router = useRouter();
 
   const handleClick = () => {

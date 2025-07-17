@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { SearchResult, SearchCategory } from '@/types/search';
+import { SearchCategory, SearchResult } from '@/types/search';
 import styles from './HeaderSearchField.module.scss';
 import { useDebounce } from './hooks/useDebounce';
+import { Product } from '@/types/product';
 
 const categories: SearchCategory[] = [
   { id: 'electronics', name: 'Электроника', slug: 'electronics' },
@@ -13,10 +14,15 @@ const categories: SearchCategory[] = [
   { id: 'home', name: 'Товары для дома', slug: 'home' },
 ];
 
+type SearchItem = Product | SearchCategory;
+
 const HeaderSearchField = () => {
   const [query, setQuery] = useState('');
-    const debouncedQuery = useDebounce(query, 500); 
-  const [results, setResults] = useState<SearchResult>({ products: [], categories: [] });
+  const debouncedQuery = useDebounce(query, 500);
+  const [results, setResults] = useState<SearchResult>({
+    products: [],
+    categories: [],
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -25,7 +31,10 @@ const HeaderSearchField = () => {
   // Закрываем выпадающий список при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -38,21 +47,23 @@ const HeaderSearchField = () => {
   const searchCategories = (searchQuery: string): SearchCategory[] => {
     if (!searchQuery) return [];
     return categories.filter(category =>
-      category.name.toLowerCase().includes(searchQuery.toLowerCase())
+      category.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   };
 
   // Поиск по продуктам через API
-  const searchProducts = async (searchQuery: string): Promise<SearchResult[]> => {
+  const searchProducts = async (searchQuery: string): Promise<Product[]> => {
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+      const res = await fetch(
+        `/api/search?query=${encodeURIComponent(searchQuery)}`,
+      );
       if (!res.ok) {
         console.error('Search API error', res.status);
         return [];
       }
       const data: { query: string; results: SearchResult[] } = await res.json();
-      return data.results;
+      return data.results[0]?.products || [];
     } catch (error) {
       console.error('Ошибка при поиске продуктов:', error);
       return [];
@@ -61,8 +72,7 @@ const HeaderSearchField = () => {
     }
   };
 
-
-   // Поиск при изменении debouncedQuery
+  // Поиск при изменении debouncedQuery
   useEffect(() => {
     const q = debouncedQuery.trim();
     if (!q) {
@@ -73,17 +83,14 @@ const HeaderSearchField = () => {
 
     setIsOpen(true);
     (async () => {
-      const [products, cats] = await Promise.all([
-        searchProducts(q),
-        Promise.resolve(searchCategories(q)),
-      ]);
-      //@ts-ignore
+      const products = await searchProducts(q);
+      const cats = searchCategories(q);
       setResults({ products, categories: cats });
     })();
   }, [debouncedQuery]);
 
   // Обработчик выбора результата
-  const handleSelect = (type: 'product' | 'category', item: any) => {
+  const handleSelect = (type: 'product' | 'category', item: SearchItem) => {
     if (type === 'product') {
       router.push(`/product/${item.id}`);
     } else {
@@ -100,7 +107,7 @@ const HeaderSearchField = () => {
           type="text"
           placeholder="Поиск товаров и категорий..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           onFocus={() => {
             if (debouncedQuery) setIsOpen(true);
           }}
@@ -116,7 +123,7 @@ const HeaderSearchField = () => {
               {results.categories?.length > 0 && (
                 <div className={styles.resultsSection}>
                   <h3>Категории</h3>
-                  {results.categories.map((category) => (
+                  {results.categories.map(category => (
                     <div
                       key={category.id}
                       className={styles.resultItem}
@@ -131,7 +138,7 @@ const HeaderSearchField = () => {
               {results.products?.length > 0 && (
                 <div className={styles.resultsSection}>
                   <h3>Товары</h3>
-                  {results.products.map((product) => (
+                  {results.products.map(product => (
                     <div
                       key={product.id}
                       className={styles.resultItem}
@@ -143,11 +150,11 @@ const HeaderSearchField = () => {
                 </div>
               )}
 
-              {!isLoading && results.products.length === 0 && results.categories.length === 0 && (
-                <div className={styles.noResults}>
-                  Ничего не найдено
-                </div>
-              )}
+              {!isLoading &&
+                results.products.length === 0 &&
+                results.categories.length === 0 && (
+                  <div className={styles.noResults}>Ничего не найдено</div>
+                )}
             </>
           )}
         </div>

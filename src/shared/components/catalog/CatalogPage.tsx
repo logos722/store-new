@@ -32,12 +32,12 @@ const CatalogPage: React.FC<CatalogPageProps> = ({
     setError(null);
     try {
       const res = await fetch(
-        `/api/catalog/${encodeURIComponent(categoryId)}?page=${page}&limit=${pageSize}`
+        `/api/catalog/${encodeURIComponent(categoryId)}?page=${page}&limit=${pageSize}`,
       );
       if (!res.ok) throw new Error(`Status ${res.status}`);
       const json: PagedCatalog = await res.json();
       setData(json);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError('Не удалось загрузить каталог');
     } finally {

@@ -7,11 +7,11 @@ import { FaTh, FaThList } from 'react-icons/fa';
 import { SortOption } from '@/types/catalog';
 
 interface CategoryPageHeaderProps {
-  title:        string;
-  total:        number;
-  viewType:     'grid' | 'list';
+  title: string;
+  total: number;
+  viewType: 'grid' | 'list';
   onViewChange: (view: 'grid' | 'list') => void;
-  sort:         SortOption;
+  sort: SortOption;
   onSortChange: (sort: SortOption) => void;
 }
 

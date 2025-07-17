@@ -20,20 +20,12 @@
     "sourceType": "module",
     "project": "./tsconfig.json" // Добавьте это для поддержки проектных файлов
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": [
-      "error"
-    ],
+    "prettier/prettier": ["error"],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error"
-    ]
+    "@typescript-eslint/no-unused-vars": ["error"]
   },
   "settings": {
     "react": {

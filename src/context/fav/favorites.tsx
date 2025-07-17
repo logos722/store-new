@@ -18,7 +18,7 @@ interface FavoritesContextType {
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(
-  undefined
+  undefined,
 );
 
 const STORAGE_KEY = 'myshop_favorites';
@@ -35,33 +35,31 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({
       if (raw) {
         setFavorites(JSON.parse(raw));
       }
-    } catch {}
+    } catch (e) {
+      console.error('favorites montage error', e.message);
+    }
   }, []);
 
   // Сохраняем в localStorage при изменении
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-    } catch {}
+    } catch (e) {
+      console.error('favorites setItem error', e.message);
+    }
   }, [favorites]);
 
   const addFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev : [...prev, id]
-    );
+    setFavorites(prev => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   const removeFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.filter((fav) => fav !== id)
-    );
+    setFavorites(prev => prev.filter(fav => fav !== id));
   };
 
   const toggleFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.includes(id)
-        ? prev.filter((fav) => fav !== id)
-        : [...prev, id]
+    setFavorites(prev =>
+      prev.includes(id) ? prev.filter(fav => fav !== id) : [...prev, id],
     );
   };
 
@@ -75,7 +73,14 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, toggleFavorite, isFavorite, getFavoritesCount }}
+      value={{
+        favorites,
+        addFavorite,
+        removeFavorite,
+        toggleFavorite,
+        isFavorite,
+        getFavoritesCount,
+      }}
     >
       {children}
     </FavoritesContext.Provider>

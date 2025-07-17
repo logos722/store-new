@@ -17,9 +17,7 @@ const BackToTopButton: React.FC = () => {
   return (
     <button
       className={styles.backToTop}
-      onClick={() =>
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Back to top"
     >
       <FaArrowUp />

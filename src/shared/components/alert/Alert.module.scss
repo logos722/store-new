@@ -39,8 +39,8 @@
 
   /* Типы алертов через модификаторы */
   &.error {
-    background-color: #fdecea;     /* светло-розовый фон */
-    border-left: 4px solid #f44336;/* красный акцент */
+    background-color: #fdecea; /* светло-розовый фон */
+    border-left: 4px solid #f44336; /* красный акцент */
     color: #611a15;
 
     .icon {
@@ -49,8 +49,8 @@
   }
 
   &.warning {
-    background-color: #fff4e5;     /* светло-жёлтый фон */
-    border-left: 4px solid #ff9800;/* оранжевый акцент */
+    background-color: #fff4e5; /* светло-жёлтый фон */
+    border-left: 4px solid #ff9800; /* оранжевый акцент */
     color: #663c00;
 
     .icon {
@@ -59,8 +59,8 @@
   }
 
   &.info {
-    background-color: #e8f4fd;     /* светло-голубой фон */
-    border-left: 4px solid #2196f3;/* синий акцент */
+    background-color: #e8f4fd; /* светло-голубой фон */
+    border-left: 4px solid #2196f3; /* синий акцент */
     color: #0d47a1;
 
     .icon {

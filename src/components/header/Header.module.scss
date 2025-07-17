@@ -4,7 +4,7 @@
   background: #ffffff;
   color: #323435;
   padding: 1rem 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .row {
     display: flex;
@@ -47,14 +47,14 @@
   }
 
   .navLocationWrapper {
-   display: grid;
-  /* две колонки: первая по содержимому, вторая — на всё оставшееся место */
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  /* центрируем второй столбец */
-  justify-items: center;
-  gap: 2rem;
-  margin-top: 0.5rem;
+    display: grid;
+    /* две колонки: первая по содержимому, вторая — на всё оставшееся место */
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    /* центрируем второй столбец */
+    justify-items: center;
+    gap: 2rem;
+    margin-top: 0.5rem;
   }
 
   .location {
@@ -176,7 +176,11 @@
 
 @media (max-width: 768px) {
   .header {
-    .left .location { display: none; }
-    .right .signIn { display: none; }
+    .left .location {
+      display: none;
+    }
+    .right .signIn {
+      display: none;
+    }
   }
 }

@@ -1,19 +1,17 @@
 .sliderContainer {
   max-height: 450px;
   min-width: 100%;
-  
+
   margin: 0 auto;
   .slick-slide {
     text-align: center;
     color: blue;
-
   }
 
   .slick-prev,
   .slick-next {
     z-index: 1;
     color: blue;
-
   }
 
   .slick-prev:before,

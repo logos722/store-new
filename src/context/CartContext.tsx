@@ -14,7 +14,9 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [cart, setCart] = useState<CartState>({ items: [], total: 0 });
 
   // Загрузка корзины из localStorage при инициализации
@@ -35,13 +37,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [cart]);
 
   const calculateTotal = (items: CartItem[]): number => {
-    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    return items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0,
+    );
   };
 
   const addToCart = (product: Product) => {
-    setCart((prevCart) => {
+    setCart(prevCart => {
       const existingItemIndex = prevCart.items.findIndex(
-        (item) => item.product.id === product.id
+        item => item.product.id === product.id,
       );
 
       let newItems;
@@ -66,8 +71,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const removeFromCart = (productId: string) => {
-    setCart((prevCart) => {
-      const newItems = prevCart.items.filter((item) => item.product.id !== productId);
+    setCart(prevCart => {
+      const newItems = prevCart.items.filter(
+        item => item.product.id !== productId,
+      );
       return {
         items: newItems,
         total: calculateTotal(newItems),
@@ -81,9 +88,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    setCart((prevCart) => {
-      const newItems = prevCart.items.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+    setCart(prevCart => {
+      const newItems = prevCart.items.map(item =>
+        item.product.id === productId ? { ...item, quantity } : item,
       );
       return {
         items: newItems,
@@ -117,4 +124,4 @@ export const useCart = (): CartContextType => {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
-}; 
+};

@@ -20,4 +20,4 @@ export interface Order {
   customerInfo: OrderFormData;
   status: 'pending' | 'processing' | 'completed' | 'cancelled';
   createdAt: string;
-} 
+}

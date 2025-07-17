@@ -3,7 +3,11 @@ import { User } from '@/types/user';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
-export async function register(data: { email: string; password: string; name: string }) {
+export async function register(data: {
+  email: string;
+  password: string;
+  name: string;
+}) {
   const res = await fetch('/api/auth/register', {
     method: 'POST',
     headers: JSON_HEADERS,

@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await register({ email, name, password: pass });
       // после регистрации можно сразу логинить
       await doLogin(email, pass);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.error || 'Registration failed');
     } finally {
       setLoading(false);
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setToken(token);
       const { user } = await fetchMe(token);
       setUser(user);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.error || 'Login failed');
     } finally {
       setLoading(false);

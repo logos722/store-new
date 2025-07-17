@@ -10,27 +10,23 @@ export async function POST(request: Request) {
     const orderPayload = await request.json();
 
     // Forward to backend
-    const res = await fetch(
-      `${process.env.API_BASE_URL}/api/orders`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderPayload),
-        cache: 'no-store'
-      }
-    );
+    const res = await fetch(`${process.env.API_BASE_URL}/api/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderPayload),
+      cache: 'no-store',
+    });
 
     const data = await res.json();
     // Propagate status and body
     return NextResponse.json(data, { status: res.status });
-
   } catch (err) {
     console.error('Order proxy error:', err);
     return NextResponse.json(
       { error: 'Failed to create order' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

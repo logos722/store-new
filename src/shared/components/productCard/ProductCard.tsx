@@ -2,21 +2,13 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {
-  FaHeart,
-  FaShoppingCart,
-  FaStar,
-  FaStarHalfAlt,
-  FaRegStar,
-} from 'react-icons/fa';
-import { useCart } from '@/context/cart';
+import { FaHeart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { Product } from '@/types/product';
 import styles from './ProductCard.module.scss';
 import placeholder from '../../../../public/cat1.jpeg';
 import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
 import { useFavorites } from '@/context/fav/favorites';
-import { CiHeart } from 'react-icons/ci';
 
 interface ProductCardProps {
   product: Product & {

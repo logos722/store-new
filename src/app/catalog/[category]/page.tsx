@@ -4,8 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Container from '@/shared/components/container/Container';
 import ProductCard from '@/shared/components/productCard/ProductCard';
-import ProductFilters from '@/shared/components/filters/ProductFilters';
-import ProductSorting from '@/shared/components/sorting/ProductSorting';
 import styles from './CategoryPage.module.scss';
 import { Product } from '@/types/product';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -47,7 +45,6 @@ const CategoryPage = () => {
   const {
     data: categoryProducts,
     isLoading,
-    isError,
     error,
     fetchNextPage,
     hasNextPage,
@@ -174,12 +171,12 @@ const CategoryPage = () => {
             endMessage={<p className={styles.endMsg}>Больше нет товаров</p>}
           >
             <div
-              className={
-                viewType === 'grid' ? styles.productsGrid : styles.productsList
-              }
+            // className={
+            //   viewType === 'grid' ? styles.productsGrid : styles.productsList
+            // }
             >
               {filteredAndSortedProducts.map(p => (
-                <ProductCard key={p.id} product={p} viewType={viewType} />
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </InfiniteScroll>

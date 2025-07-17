@@ -4,19 +4,24 @@ export enum CatalogId {
 }
 
 // Мэппинг с названиями, описанием и урлами на изображения
-export const CatalogInfo: Record<CatalogId, {
-  title:       string;
-  description: string;
-  imageUrl:    string;
-}> = {
+export const CatalogInfo: Record<
+  CatalogId,
+  {
+    title: string;
+    description: string;
+    imageUrl: string;
+  }
+> = {
   [CatalogId.PVC]: {
-    title:       'ПВХ',
-    description: 'Термопластичный полимер, который широко используется в различных областях благодаря своей прочности, универсальности и доступности',
-    imageUrl:    '/catalogs/pvc.jpeg',
+    title: 'ПВХ',
+    description:
+      'Термопластичный полимер, который широко используется в различных областях благодаря своей прочности, универсальности и доступности',
+    imageUrl: '/catalogs/pvc.jpeg',
   },
   [CatalogId.FITTINGS]: {
-    title:       'Фитинги',
-    description: 'Соединительные элементы, используемые для создания, разветвления, поворотов и переходов на другой диаметр трубопроводов',
-    imageUrl:    '/catalogs/fittings.jpeg',
+    title: 'Фитинги',
+    description:
+      'Соединительные элементы, используемые для создания, разветвления, поворотов и переходов на другой диаметр трубопроводов',
+    imageUrl: '/catalogs/fittings.jpeg',
   },
 };

@@ -22,7 +22,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   return (
     <div className={styles.filters}>
       <h3>Фильтры</h3>
-      
+
       <div className={styles.filterSection}>
         <h4>Цена</h4>
         <div className={styles.priceInputs}>
@@ -32,7 +32,9 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
               type="number"
               id="minPrice"
               value={priceRange.min}
-              onChange={(e) => onPriceChange(Number(e.target.value), priceRange.max)}
+              onChange={e =>
+                onPriceChange(Number(e.target.value), priceRange.max)
+              }
               min="0"
             />
           </div>
@@ -42,7 +44,9 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
               type="number"
               id="maxPrice"
               value={priceRange.max}
-              onChange={(e) => onPriceChange(priceRange.min, Number(e.target.value))}
+              onChange={e =>
+                onPriceChange(priceRange.min, Number(e.target.value))
+              }
               min="0"
             />
           </div>
@@ -55,7 +59,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           <input
             type="checkbox"
             checked={inStock}
-            onChange={(e) => onStockChange(e.target.checked)}
+            onChange={e => onStockChange(e.target.checked)}
           />
           Только в наличии
         </label>
@@ -64,4 +68,4 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   );
 };
 
-export default ProductFilters; 
+export default ProductFilters;

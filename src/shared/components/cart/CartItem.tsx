@@ -32,10 +32,10 @@ const CartItem: React.FC<CartItemProps> = ({
         <h3 className={styles.title}>{product.name}</h3>
         <p className={styles.price}>{product.price.toFixed(2)} ₽</p>
 
-          <p className={styles.total}>
+        <p className={styles.total}>
           {quantity} × {product.price.toFixed(2)} ₽ ={' '}
           {(quantity * product.price).toFixed(2)} ₽
-           </p>
+        </p>
         <div className={styles.quantity}>
           <button
             onClick={() => onUpdateQuantity(product.id, quantity - 1)}

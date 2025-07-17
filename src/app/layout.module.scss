@@ -1,13 +1,13 @@
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;               /* чтобы “растянуться” на весь экран */
+  min-height: 100vh; /* чтобы “растянуться” на весь экран */
 }
 
 .main {
-  flex: 1;                         /* вытягивает себя, занимая всё свободное место */
-  display: flex;            /* ⬅️ делаем flex-контейнером */
-  flex-direction: column;  
+  flex: 1; /* вытягивает себя, занимая всё свободное место */
+  display: flex; /* ⬅️ делаем flex-контейнером */
+  flex-direction: column;
   padding: 20px;
   overflow-x: hidden;
 }

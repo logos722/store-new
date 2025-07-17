@@ -78,7 +78,8 @@
   }
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 40px;
   font-size: 1.2rem;
@@ -87,7 +88,7 @@
 
 .error {
   color: #e74c3c;
-} 
+}
 
 .backWrapper {
   margin-bottom: 12px; /* разделяет кнопку и карточку */

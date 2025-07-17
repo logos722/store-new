@@ -6,13 +6,6 @@ import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.scss';
 import { CatalogId, CatalogInfo } from '@/constants/catalogs';
 
-const categories = [
-  { id: 'electronics', name: 'Электроника', slug: 'electronics' },
-  { id: 'clothing', name: 'Одежда', slug: 'clothing' },
-  { id: 'books', name: 'Книги', slug: 'books' },
-  { id: 'home', name: 'Товары для дома', slug: 'home' },
-];
-
 const Sidebar = () => {
   const pathname = usePathname();
   const ids = Object.values(CatalogId) as CatalogId[];
@@ -22,7 +15,7 @@ const Sidebar = () => {
       <h2>Категории</h2>
       <nav>
         <ul>
-          {ids.map((id) => {
+          {ids.map(id => {
             const { title } = CatalogInfo[id];
             const href = `/catalog/${id}`;
             const isActive = pathname === href;
@@ -44,4 +37,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

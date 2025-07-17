@@ -1,13 +1,13 @@
 .loadingContainer {
-   /* Растягиваем на весь родительский блок */
+  /* Растягиваем на весь родительский блок */
   width: 100%;
   height: 100%;
 
   /* Включаем флекс и центрируем содержимое */
   display: flex;
-  flex-direction: column;    /* спиннер над текстом */
-  align-items: center;       /* по горизонтали */
-  justify-content: center;   /* по вертикали */
+  flex-direction: column; /* спиннер над текстом */
+  align-items: center; /* по горизонтали */
+  justify-content: center; /* по вертикали */
 }
 
 .loadingText {

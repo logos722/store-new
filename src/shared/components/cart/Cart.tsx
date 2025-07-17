@@ -26,18 +26,15 @@ const Cart: React.FC = () => {
 
   return (
     <div className={styles.cartContainer} ref={cartRef}>
-      <button
-        className={styles.cartLink}
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <button className={styles.cartLink} onClick={() => setIsOpen(!isOpen)}>
         <FaShoppingCart className={styles.icon} />
-          {totalItems > 0 && (
-            <span className={styles.badge}>
-              {totalItems > 99 ? '99+' : totalItems}
-            </span>
-          )}
+        {totalItems > 0 && (
+          <span className={styles.badge}>
+            {totalItems > 99 ? '99+' : totalItems}
+          </span>
+        )}
       </button>
-      
+
       {isOpen && (
         <div className={styles.cartDropdown}>
           {cart.items.length === 0 ? (
@@ -45,7 +42,7 @@ const Cart: React.FC = () => {
           ) : (
             <>
               <div className={styles.cartItems}>
-                {cart.items.map((item) => (
+                {cart.items.map(item => (
                   <CartItem
                     key={item.product.id}
                     item={item}
@@ -58,7 +55,11 @@ const Cart: React.FC = () => {
                 <div className={styles.total}>
                   Итого: <span>{cart.total} ₽</span>
                 </div>
-                <Link href="/cart" onClick={() => setIsOpen(false)} className={styles.checkoutButton}>
+                <Link
+                  href="/cart"
+                  onClick={() => setIsOpen(false)}
+                  className={styles.checkoutButton}
+                >
                   Оформить заказ
                 </Link>
               </div>

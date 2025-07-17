@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { ImageResponse } from './types';
 
@@ -7,7 +6,10 @@ export async function GET(request: Request) {
   const imagePath = url.searchParams.get('path');
 
   if (!imagePath) {
-    return NextResponse.json({ error: 'Параметр path отсутствует' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Параметр path отсутствует' },
+      { status: 400 },
+    );
   }
 
   // Если файлы изображений находятся, например, в каталоге public/images

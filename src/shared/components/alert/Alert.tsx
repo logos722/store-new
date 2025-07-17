@@ -8,7 +8,7 @@ interface IProps {
   type?: 'error' | 'warning' | 'info';
 }
 
-const Alert: React.FC<IProps> = ({ message, onRetry, type = 'error', }) => {
+const Alert: React.FC<IProps> = ({ message, onRetry, type = 'error' }) => {
   const icons = {
     error: <FaExclamationCircle />,
     warning: <FaExclamationCircle />,
@@ -17,14 +17,14 @@ const Alert: React.FC<IProps> = ({ message, onRetry, type = 'error', }) => {
 
   return (
     <div className={`${styles.alert} ${styles[type]}`}>
-    <span className={styles.icon}>{icons[type]}</span>
-    <span className={styles.message}>{message}</span>
-    {onRetry && (
-      <button onClick={onRetry} className={styles.retry}>
-        Повторить
-      </button>
-    )}
-  </div>
+      <span className={styles.icon}>{icons[type]}</span>
+      <span className={styles.message}>{message}</span>
+      {onRetry && (
+        <button onClick={onRetry} className={styles.retry}>
+          Повторить
+        </button>
+      )}
+    </div>
   );
 };
 

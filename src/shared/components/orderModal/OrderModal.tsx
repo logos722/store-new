@@ -11,14 +11,18 @@ interface OrderModalProps {
   onSubmit: (formData: OrderFormData) => void;
 }
 
-const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const OrderModal: React.FC<OrderModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}) => {
   const { cart } = useCart();
   const [formData, setFormData] = useState<OrderFormData>({
     email: '',
     name: '',
     phone: '',
     city: '',
-    comment: ''
+    comment: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,11 +30,13 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, onSubmit }) =>
     onSubmit(formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -39,17 +45,21 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, onSubmit }) =>
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-        <button className={styles.closeButton} onClick={onClose}>×</button>
-        
+        <button className={styles.closeButton} onClick={onClose}>
+          ×
+        </button>
+
         <h2>Оформление заказа</h2>
-        
+
         <div className={styles.orderSummary}>
           <h3>Ваш заказ</h3>
           <div className={styles.itemsList}>
             {cart.items.map(item => (
               <div key={item.product.id} className={styles.orderItem}>
                 <span>{item.product.name}</span>
-                <span>{item.quantity} × {item.product.price.toFixed(2)} ₽</span>
+                <span>
+                  {item.quantity} × {item.product.price.toFixed(2)} ₽
+                </span>
               </div>
             ))}
           </div>
@@ -128,4 +138,4 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, onSubmit }) =>
   );
 };
 
-export default OrderModal; 
+export default OrderModal;

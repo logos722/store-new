@@ -2,8 +2,7 @@
 
 import React from 'react';
 import styles from './ProductSorting.module.scss';
-import {SortOption} from '@/types/catalog';
-
+import { SortOption } from '@/types/catalog';
 
 interface ProductSortingProps {
   currentSort: SortOption;
@@ -20,7 +19,7 @@ const ProductSorting: React.FC<ProductSortingProps> = ({
       <select
         id="sort"
         value={currentSort}
-        onChange={(e) => onSortChange(e.target.value as SortOption)}
+        onChange={e => onSortChange(e.target.value as SortOption)}
       >
         <option value="price-asc">По цене (возрастание)</option>
         <option value="price-desc">По цене (убывание)</option>
@@ -31,4 +30,4 @@ const ProductSorting: React.FC<ProductSortingProps> = ({
   );
 };
 
-export default ProductSorting; 
+export default ProductSorting;

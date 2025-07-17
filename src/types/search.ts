@@ -13,4 +13,4 @@ export interface SearchResult {
 
 export interface SearchResponse {
   products: Product[];
-} 
+}

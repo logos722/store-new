@@ -10,49 +10,49 @@ import { OrderFormData } from '@/types/order';
 import { CartItem as CartItemType } from '@/types/cart';
 
 interface OrderPayload {
-  items: Array<CartItemType>
-  total: number
+  items: Array<CartItemType>;
+  total: number;
   customerInfo: {
-    email: string
-    name: string
-    phone: string
-    city: string
-    comment?: string
-  }
+    email: string;
+    name: string;
+    phone: string;
+    city: string;
+    comment?: string;
+  };
 }
 
 const CartPage = () => {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    phone: '',
-    city: '',
-    comment: ''
-  })
+  // const [formData, setFormData] = useState({
+  //   email: '',
+  //   name: '',
+  //   phone: '',
+  //   city: '',
+  //   comment: '',
+  // });
 
   const handleOrderSubmit = async (formData: OrderFormData) => {
     const payload: OrderPayload = {
-      items: cart.items,                // из контекста корзины
-      total: cart.total,                // из контекста корзины
-      customerInfo: formData
-    }
+      items: cart.items, // из контекста корзины
+      total: cart.total, // из контекста корзины
+      customerInfo: formData,
+    };
 
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      if (!response.ok) throw new Error('Failed to submit order')
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error('Failed to submit order');
 
-      clearCart()
-      alert('Заказ успешно оформлен!')
+      clearCart();
+      alert('Заказ успешно оформлен!');
     } catch (err) {
-      console.error('Error submitting order:', err)
-      alert('Ошибка при оформлении заказа, попробуйте ещё раз.')
+      console.error('Error submitting order:', err);
+      alert('Ошибка при оформлении заказа, попробуйте ещё раз.');
     }
   };
 
@@ -60,7 +60,7 @@ const CartPage = () => {
     <Container>
       <div className={styles.cartPage}>
         <h1>Корзина</h1>
-        
+
         {cart.items.length === 0 ? (
           <div className={styles.emptyCart}>
             <p>Ваша корзина пуста</p>
@@ -71,7 +71,7 @@ const CartPage = () => {
         ) : (
           <>
             <div className={styles.cartItems}>
-              {cart.items.map((item) => (
+              {cart.items.map(item => (
                 <CartItem
                   key={item.product.id}
                   item={item}
@@ -80,7 +80,7 @@ const CartPage = () => {
                 />
               ))}
             </div>
-            
+
             <div className={styles.cartSummary}>
               <div className={styles.summaryItem}>
                 <span>Товаров в корзине:</span>
@@ -92,7 +92,7 @@ const CartPage = () => {
                 <span>Итого:</span>
                 <span className={styles.total}>{cart.total} ₽</span>
               </div>
-              <button 
+              <button
                 className={styles.checkoutButton}
                 onClick={() => setIsOrderModalOpen(true)}
               >
