@@ -2,8 +2,8 @@
 
 import React from 'react';
 import styles from './ProductSorting.module.scss';
+import {SortOption} from '@/types/catalog';
 
-type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
 interface ProductSortingProps {
   currentSort: SortOption;

@@ -5,7 +5,6 @@ import { Footer, Header } from '../components';
 import styles from './layout.module.scss';
 import ClientProviders from '@/components/сlientProviders/ClientProviders';
 
-
 const montserrat = Montserrat({
   subsets: ['cyrillic'],
   weight: ['400', '500', '700'],
@@ -24,13 +23,13 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={montserrat.className}>
-          <ClientProviders>
+        <ClientProviders>
           <div className={styles.layout}>
             <Header />
             <main className={styles.main}>{children}</main>
             <Footer />
           </div>
-          </ClientProviders>
+        </ClientProviders>
       </body>
     </html>
   );

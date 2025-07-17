@@ -1,113 +1,158 @@
-/* src/components/productCard/ProductCard.module.scss */
 @import '@/styles/variables.scss';
 
-.productCard {
+.card {
+  position: relative;
   background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
+
+  // transition: transform .2s, box-shadow .2s;
+  transition: transform .3s ease, box-shadow .3s ease;
+  border: 0.5px solid #aba9a9;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+    transform: scale(1.03);              /* увеличиваем на 3% */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+      border: none;
 
-  /* общий стиль для картинки */
-  .imageWrapper {
-    position: relative;
-    width: 100%;
-    height: 100px; 
-    overflow: hidden;
-    background: #f5f5f5;
-  }
-
-  .productImage {
-    object-fit: cover;
-    position: relative;
-  }
-  
-  /* общий блок деталей */
-  .detailsWrapper {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #333;
-  }
-
-  .description {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-    flex: 1;
-  }
-
-  .price {
-    margin: 0;
-    font-weight: 600;
-    color: $primary-color;
   }
 }
 
-/* ---- режим GRID (карточки) ---- */
-.grid {
-  display: flex;
-  flex-direction: column;
-
-  .imageWrapper {
-    width: 100%;
-    height: 180px;
-  }
-
-  .detailsWrapper {
-    /* вся высота под контент */
-  }
-
-  .truncate {
-    width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+/* Обёртка для картинки */
+.imageWrap {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;  /* квадрат */
+  background: #f5f5f5;
+  overflow: hidden;
 }
 
-/* ---- режим LIST (список) ---- */
-.list {
+.image {
+  object-fit: cover;
+}
+
+/* Общий класс для кнопок поверх картинки */
+.iconButton {
+  position: absolute;
+  background: rgba(255,255,255,0.8);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 50%;
   display: flex;
-  flex-direction: row;
   align-items: center;
+  overflow: hidden;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  font-size: 1rem;
+  color: #aebbbf;
 
-  .imageWrapper {
-    flex: 0 0 120px;  /* фиксированная ширина картинки */
-    height: 80px;
+  &:hover {
+    background: rgba(255,255,255,1);
   }
 
-  .detailsWrapper {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  &.fav {
+    top: 0.5rem;
+    right: 0.5rem;
   }
 
-  /* В списке делаем текст и кнопки горизонтально */
-  .detailsWrapper > h3,
-  .detailsWrapper > .price,
-  .detailsWrapper > .description {
-    margin: 0 12px 0 0;
-    
+  &.cart {
+    bottom: 0.5rem;
+    right: 0.5rem;
   }
 
-  .truncate {
-    width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  svg {
+    // pointer-events: none;
+        transition: fill 0.3s ease, color 0.3s ease;
+
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px; height: 8px;
+    background: $accent-color;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.5;
+  }
+
+   &:active::after {
+    animation: ripple 0.6s ease-out;
+  }
+
+  &.fav .active {
+    fill: $accent-color;
+    color: $accent-color;
+  }
+
+  // .active {
+  //   color: $accent-color;
+  // }
+}
+
+/* Блок с названием, ценой и рейтинговой строкой */
+.body {
+  padding: 0.75rem 0.5rem 1.5rem; /* снизу отступ под кнопку корзины */
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+  color: $text-color;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* две строки */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.price {
+  font-weight: 600;
+  color: $primary-color;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: black;
+
+  svg {
+    color: #f5a623; /* цвет звёзд */
+    margin-right: 2px;
+  }
+
+  .count {
+    margin-left: 4px;
+    color: #888;
+  }
+}
+
+.buttonWraper {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1em;
+}
+
+/* Ключевые кадры растущей окружности */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(15);
+    opacity: 0;
   }
 }

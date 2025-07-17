@@ -5,43 +5,81 @@ import Cart from '@/shared/components/cart/Cart';
 import styles from './Header.module.scss';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaUser } from 'react-icons/fa';
+import {
+  FaBars,
+  FaBoxOpen,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaUser,
+} from 'react-icons/fa';
+import { useFavorites } from '@/context/fav/favorites';
+import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
+
+const MENU = [
+  { href: '/', label: 'Главная' },
+  { href: '/catalog', label: 'Каталог' },
+  { href: '/articles', label: 'Статьи' },
+];
 
 const Header = () => {
   const pathname = usePathname();
-  const menu = [
-    { href: '/',   label: 'Главная'  },
-    { href: '/catalog', label: 'Каталог' },
-    { href: '/articles', label: 'Статьи' },
-  ];
+  const { getFavoritesCount } = useFavorites();
+  const { open } = useAuthModal();
+
+  const favoritesCount = getFavoritesCount();
 
   return (
-    <nav className={styles.header}>
-      <h2>Гелион</h2>
+    <header className={styles.header}>
+      <div className={styles.row}>
+        <div className={styles.left}>
+          <Link href="/" className={styles.logo}>
+            Гелион
+          </Link>
 
-      <ul className={styles.menu}>
-        {menu.map(item => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className={pathname === item.href ? 'active' : ''}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+          <button className={styles.btnCategories}>
+            <FaBars /> Категории
+          </button>
+        </div>
 
-      <div className={styles.searchField}>
-        <HeaderSearchField />
+        <div className={styles.searchRow}>
+          <div className={styles.searchInput}>
+            <HeaderSearchField />
+          </div>
+        </div>
+
+        <div className={styles.right}>
+          <Link href="/orders" className={styles.iconLink}>
+            <FaBoxOpen />
+            <span className={styles.badge}>3</span>
+          </Link>
+          <Link href="/favorites" className={styles.iconLink}>
+            <FaHeart />
+            <span className={styles.badge}>{favoritesCount}</span>
+          </Link>
+          <Cart />
+          <button className={styles.signIn} onClick={open}>
+            <FaUser /> Войти
+          </button>
+        </div>
       </div>
 
-      <Cart />
-
-      <Link href="/account" className={styles.cartLink}>
-        <FaUser className={styles.icon} />
-      </Link>
-    </nav>
+      <div className={styles.navLocationWrapper}>
+        <div className={styles.location}>
+          <FaMapMarkerAlt /> Москва
+        </div>
+        <nav className={styles.nav}>
+          {MENU.map(m => (
+            <Link
+              key={m.href}
+              href={m.href}
+              className={pathname === m.href ? styles.active : ''}
+            >
+              {m.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
   );
 };
 

@@ -12,3 +12,5 @@ export interface CatalogFilters {
   priceRange?: [number, number];
   sortBy?: 'price' | 'name';
 }
+
+export type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';

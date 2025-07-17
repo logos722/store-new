@@ -9,34 +9,32 @@ import ProductSorting from '@/shared/components/sorting/ProductSorting';
 import styles from './CategoryPage.module.scss';
 import { Product } from '@/types/product';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import {Loading, Alert, BackToTopButton} from '@/shared/components';
+import { Loading, Alert, BackToTopButton } from '@/shared/components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { QueryFunctionContext } from '@tanstack/react-query';
 import { CatalogInfo } from '@/constants/catalogs';
-
+import { SortOption } from '@/types/catalog';
+import CategoryPageHeader from './components/CategoryPageHeader/CategoryPageHeader';
+import CategoryPageFilters from './components/CategoryPageFilters/CategoryPageFilters';
 const PAGE_SIZE = 20;
 interface CategoryPageResponse {
   products: Product[];
-  page:     number;
+  page: number;
   totalPages: number;
 }
 
 // Правильно типизируем context
 const fetchCategoryPage = async (
-  context: QueryFunctionContext<['catalog', string], number>
+  context: QueryFunctionContext<['catalog', string], number>,
 ): Promise<CategoryPageResponse> => {
   const page = context.pageParam ?? 1;
   const category = context.queryKey[1];
   const res = await fetch(
-    `/api/catalog/${encodeURIComponent(category)}?page=${page}&limit=${PAGE_SIZE}`
+    `/api/catalog/${encodeURIComponent(category)}?page=${page}&limit=${PAGE_SIZE}`,
   );
   if (!res.ok) throw new Error('Ошибка получения товаров');
   return res.json();
 };
-
-
-
-type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -44,6 +42,7 @@ const CategoryPage = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState<SortOption>('name-asc');
+  const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
 
   const {
     data: categoryProducts,
@@ -56,34 +55,33 @@ const CategoryPage = () => {
     isFetchingNextPage,
   } = useInfiniteQuery<CategoryPageResponse, Error>({
     queryKey: ['catalog', category as string],
-    queryFn:  fetchCategoryPage,
-    enabled:  Boolean(category),
+    queryFn: fetchCategoryPage,
+    enabled: Boolean(category),
     // ← здесь обязательно прокидываем initialPageParam
     initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.page < lastPage.totalPages
-        ? lastPage.page + 1
-        : undefined,
+    getNextPageParam: lastPage =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
   });
 
   const getCatalogName = (categorys: string) => {
     const category = CatalogInfo[categorys];
 
-    return category.title
-  }
+    return category.title;
+  };
 
   // все загруженные продукты
   const allProducts: Product[] = useMemo(
     () => categoryProducts?.pages.flatMap(page => page.products) ?? [],
-    [categoryProducts]
+    [categoryProducts],
   );
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...allProducts];
 
     // Фильтрация по цене
-    result = result.filter(product => 
-      product.price >= priceRange.min && product.price <= priceRange.max
+    result = result.filter(
+      product =>
+        product.price >= priceRange.min && product.price <= priceRange.max,
     );
 
     // Фильтрация по наличию
@@ -113,7 +111,7 @@ const CategoryPage = () => {
   if (isLoading) {
     return (
       <div className={styles.wrapper}>
-        <Container className='centered'>
+        <Container className="centered">
           <Loading isLoading={isLoading} />
         </Container>
       </div>
@@ -123,9 +121,9 @@ const CategoryPage = () => {
   if (error) {
     return (
       <div className={styles.wrapper}>
-      <Container>
-        <Alert message={error.message} onRetry={refetch} type='error'/>
-      </Container>
+        <Container>
+          <Alert message={error.message} onRetry={refetch} type="error" />
+        </Container>
       </div>
     );
   }
@@ -133,49 +131,61 @@ const CategoryPage = () => {
   if (!categoryProducts) {
     return (
       <div className={styles.wrapper}>
-      <Container>
-        <Alert message='Товары не найдены' type='error' />
-      </Container>
+        <Container>
+          <Alert message="Товары не найдены" type="error" />
+        </Container>
       </div>
-      
     );
   }
 
   return (
     <Container>
-      <div className={styles.categoryPage}>
-        <aside className={styles.sidebar}>
-          <ProductFilters
+      <div className={styles.page}>
+        {/* 1. Фильтры */}
+        <aside className={styles.filters}>
+          <CategoryPageFilters
             priceRange={priceRange}
-            onPriceChange={(min, max) => setPriceRange({ min, max })}
             inStock={inStock}
+            onPriceChange={(min, max) => setPriceRange({ min, max })}
             onStockChange={setInStock}
           />
         </aside>
 
-        <main className={styles.content}>
-          <div className={styles.header}>
-            <h1>{getCatalogName(category ?? '')}</h1>
-            <ProductSorting currentSort={sort} onSortChange={setSort} />
-          </div>
+        {/* 2. Основной блок */}
+        <div className={styles.main}>
+          {/* 2.1 Заголовок + контролы */}
+          <CategoryPageHeader
+            title={getCatalogName(
+              Array.isArray(category) ? category[0] : category,
+            )}
+            total={allProducts.length}
+            viewType={viewType}
+            onViewChange={setViewType}
+            sort={sort}
+            onSortChange={setSort}
+          />
 
+          {/* 2.2 Список карточек */}
           <InfiniteScroll
-            dataLength={allProducts.length}
+            dataLength={filteredAndSortedProducts.length}
             next={() => fetchNextPage()}
             hasMore={!!hasNextPage}
             loader={<Loading isLoading={isFetchingNextPage} />}
-            endMessage={<p style={{ textAlign: 'center' }}>Больше нет товаров</p>}
+            endMessage={<p className={styles.endMsg}>Больше нет товаров</p>}
           >
-            <div className={styles.products}>
+            <div
+              className={
+                viewType === 'grid' ? styles.productsGrid : styles.productsList
+              }
+            >
               {filteredAndSortedProducts.map(p => (
-                <ProductCard key={p.id} product={p} viewType="grid" />
+                <ProductCard key={p.id} product={p} viewType={viewType} />
               ))}
             </div>
           </InfiniteScroll>
-        </main>
+        </div>
       </div>
 
-      {/* Кнопка «вверх» */}
       <BackToTopButton />
     </Container>
   );

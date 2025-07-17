@@ -2,7 +2,7 @@
 
 .searchContainer {
   position: relative;
-  width: 300px;
+  width: 100%;
 }
 
 .searchInput {
@@ -27,6 +27,7 @@
   left: 0;
   right: 0;
   background: white;
+  color: #000;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-top: 4px;

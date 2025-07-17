@@ -25,7 +25,8 @@
       "@/types/*": ["./src/types/*"],
       "@/styles/*": ["./src/styles/*"],
       "@/context/*": ["./src/context/*"],
-      "@/constants/*": ["./src/constants/*"]
+      "@/constants/*": ["./src/constants/*"],
+      "@/api/*": ["./src/app/api/*"]
     }
   },
   "include": [
@@ -34,7 +35,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js",
-    "sass.config.js"
+    "sass.config.js",
+    "prettier.config.cjs"
   ],
   "exclude": ["node_modules"]
 }
