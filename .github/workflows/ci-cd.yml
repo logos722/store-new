@@ -60,7 +60,7 @@ jobs:
           envs: |
             CR_PAT=${{ secrets.CR_PAT }}
           script: |
-            echo "$CR_PAT" | docker login ghcr.io -u logos722 --password-stdin
+            echo "$CR_PAT" | docker login --username logos722 --password-stdin ghcr.io
             cd ~/project
             docker compose pull
             docker compose up -d
