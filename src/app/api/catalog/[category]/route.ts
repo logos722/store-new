@@ -7,13 +7,12 @@ export async function GET(
 ) {
   const { category } = params;
   const url = new URL(request.url);
-  const page = url.searchParams.get('page') || '1';
-  const limit = url.searchParams.get('limit') || '10';
+  const queryString = url.searchParams.toString();
 
   try {
     // Проксируем запрос, передавая page и limit в query
     const res = await fetch(
-      `${process.env.API_BASE_URL}/api/catalog/${encodeURIComponent(category)}?page=${page}&limit=${limit}`,
+      `${process.env.API_BASE_URL}/api/catalog/${encodeURIComponent(category)}?${queryString}`,
       { cache: 'no-store' },
     );
 

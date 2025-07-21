@@ -2,23 +2,38 @@
 
 import React from 'react';
 import styles from './ProductFilters.module.scss';
+import { fetchCategories } from '@/api/categories';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProductFiltersProps {
   priceRange: {
     min: number;
     max: number;
   };
-  onPriceChange: (min: number, max: number) => void;
   inStock: boolean;
+  selectedCategories: string[];
+  onPriceChange: (min: number, max: number) => void;
   onStockChange: (inStock: boolean) => void;
+  onCategoryChange: (category: string[]) => void;
 }
 
 const ProductFilters: React.FC<ProductFiltersProps> = ({
   priceRange,
-  onPriceChange,
   inStock,
+  selectedCategories,
+  onPriceChange,
   onStockChange,
+  onCategoryChange,
 }) => {
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+  } = useQuery<string[], Error>({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
   return (
     <div className={styles.filters}>
       <h3>Фильтры</h3>
@@ -63,6 +78,37 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           />
           Только в наличии
         </label>
+      </div>
+
+      <div className={styles.filterSection}>
+        <h4>Категории</h4>
+        {isLoading && <p>Загрузка категорий...</p>}
+        {isError && <p className={styles.error}>Ошибка при загрузке</p>}
+        {!isLoading && !isError && (
+          <ul className={styles.categoryList}>
+            {categories.map(product => (
+              <li key={product} className={styles.categoryItem}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    value={product}
+                    checked={selectedCategories.includes(product)}
+                    onChange={e => {
+                      if (e.target.checked) {
+                        onCategoryChange([...selectedCategories, product]);
+                      } else {
+                        onCategoryChange(
+                          selectedCategories.filter(c => c !== product),
+                        );
+                      }
+                    }}
+                  />
+                  <span className={styles.categoryLabel}>{product}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

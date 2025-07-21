@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCart } from '@/context/cart';
 import { OrderFormData } from '@/types/order';
 import styles from './OrderModal.module.scss';
+import { useCartStore } from '@/store/useCartStore';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -16,7 +16,9 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const { cart } = useCart();
+  const cartItem = useCartStore(s => s.getCart());
+  const totalPrice = useCartStore(s => s.totalPrice());
+
   const [formData, setFormData] = useState<OrderFormData>({
     email: '',
     name: '',
@@ -54,18 +56,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
         <div className={styles.orderSummary}>
           <h3>Ваш заказ</h3>
           <div className={styles.itemsList}>
-            {cart.items.map(item => (
-              <div key={item.product.id} className={styles.orderItem}>
-                <span>{item.product.name}</span>
+            {cartItem.map(item => (
+              <div key={item.id} className={styles.orderItem}>
+                <span>{item.name}</span>
                 <span>
-                  {item.quantity} × {item.product.price.toFixed(2)} ₽
+                  {item.quantity} × {item.price.toFixed(2)} ₽
                 </span>
               </div>
             ))}
           </div>
           <div className={styles.total}>
             <span>Итого:</span>
-            <span>{cart.total.toFixed(2)} ₽</span>
+            <span>{totalPrice.toFixed(2)} ₽</span>
           </div>
         </div>
 

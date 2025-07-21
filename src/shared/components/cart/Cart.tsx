@@ -4,12 +4,17 @@ import Link from 'next/link';
 import { FaShoppingCart } from 'react-icons/fa';
 import CartItem from './CartItem';
 import styles from './Cart.module.scss';
-import { useCart } from '@/context/cart';
+import { useCartStore } from '@/store/useCartStore';
 
 const Cart: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const cartRef = useRef<HTMLDivElement>(null);
-  const { cart, updateQuantity, removeFromCart } = useCart();
+
+  const cartItems = useCartStore(s => s.getCart());
+  const totalItems = useCartStore(s => s.totalItems());
+  const totalPrice = useCartStore(s => s.totalPrice());
+  const updateQuantity = useCartStore(s => s.updateQuantity);
+  const removeItem = useCartStore(s => s.removeItem);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -21,8 +26,6 @@ const Cart: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className={styles.cartContainer} ref={cartRef}>
@@ -37,23 +40,23 @@ const Cart: React.FC = () => {
 
       {isOpen && (
         <div className={styles.cartDropdown}>
-          {cart.items.length === 0 ? (
+          {cartItems.length === 0 ? (
             <p className={styles.emptyCart}>Корзина пуста</p>
           ) : (
             <>
               <div className={styles.cartItems}>
-                {cart.items.map(item => (
+                {cartItems.map(item => (
                   <CartItem
-                    key={item.product.id}
+                    key={item.id}
                     item={item}
                     onUpdateQuantity={updateQuantity}
-                    onRemove={removeFromCart}
+                    onRemove={removeItem}
                   />
                 ))}
               </div>
               <div className={styles.cartFooter}>
                 <div className={styles.total}>
-                  Итого: <span>{cart.total} ₽</span>
+                  Итого: <span>{totalPrice} ₽</span>
                 </div>
                 <Link
                   href="/cart"

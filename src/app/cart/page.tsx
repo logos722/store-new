@@ -4,13 +4,12 @@ import Container from '@/shared/components/container/Container';
 import CartItem from '@/shared/components/cart/CartItem';
 import OrderModal from '@/shared/components/orderModal/OrderModal';
 import styles from './CartPage.module.scss';
-import { useCart } from '@/context/cart';
 import Link from 'next/link';
 import { OrderFormData } from '@/types/order';
-import { CartItem as CartItemType } from '@/types/cart';
-
+import { useCartStore } from '@/store/useCartStore';
+import { Product } from '@/types/product';
 interface OrderPayload {
-  items: Array<CartItemType>;
+  items: Array<Product>;
   total: number;
   customerInfo: {
     email: string;
@@ -22,21 +21,19 @@ interface OrderPayload {
 }
 
 const CartPage = () => {
-  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const cartItems = useCartStore(s => s.getCart());
+  const totalItems = useCartStore(s => s.totalItems());
+  const totalPrice = useCartStore(s => s.totalPrice());
+  const updateQuantity = useCartStore(s => s.updateQuantity);
+  const removeItem = useCartStore(s => s.removeItem);
+  const clearCart = useCartStore(s => s.clearCart);
 
-  // const [formData, setFormData] = useState({
-  //   email: '',
-  //   name: '',
-  //   phone: '',
-  //   city: '',
-  //   comment: '',
-  // });
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   const handleOrderSubmit = async (formData: OrderFormData) => {
     const payload: OrderPayload = {
-      items: cart.items, // из контекста корзины
-      total: cart.total, // из контекста корзины
+      items: cartItems, // из контекста корзины
+      total: totalItems, // из контекста корзины
       customerInfo: formData,
     };
 
@@ -61,7 +58,7 @@ const CartPage = () => {
       <div className={styles.cartPage}>
         <h1>Корзина</h1>
 
-        {cart.items.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className={styles.emptyCart}>
             <p>Ваша корзина пуста</p>
             <Link href="/catalog" className={styles.continueShopping}>
@@ -71,12 +68,12 @@ const CartPage = () => {
         ) : (
           <>
             <div className={styles.cartItems}>
-              {cart.items.map(item => (
+              {cartItems.map(item => (
                 <CartItem
-                  key={item.product.id}
+                  key={item.id}
                   item={item}
                   onUpdateQuantity={updateQuantity}
-                  onRemove={removeFromCart}
+                  onRemove={removeItem}
                 />
               ))}
             </div>
@@ -85,12 +82,12 @@ const CartPage = () => {
               <div className={styles.summaryItem}>
                 <span>Товаров в корзине:</span>
                 <span>
-                  {cart.items.reduce((sum, item) => sum + item.quantity, 0)}
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               </div>
               <div className={styles.summaryItem}>
                 <span>Итого:</span>
-                <span className={styles.total}>{cart.total} ₽</span>
+                <span className={styles.total}>{totalPrice} ₽</span>
               </div>
               <button
                 className={styles.checkoutButton}

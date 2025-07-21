@@ -12,8 +12,8 @@ import {
   FaMapMarkerAlt,
   FaUser,
 } from 'react-icons/fa';
-import { useFavorites } from '@/context/fav/favorites';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
+import { useFavoritesStore } from '@/store/useFavoritesStore';
 
 const MENU = [
   { href: '/', label: 'Главная' },
@@ -23,10 +23,14 @@ const MENU = [
 
 const Header = () => {
   const pathname = usePathname();
-  const { getFavoritesCount } = useFavorites();
+  // const { favoritesQuenty } = useFavoritesStore(s => ({
+  //   favoritesQuenty: s.favoriteQuenty,
+  // }));
+  const favoritesCount = useFavoritesStore(s => s.ids.length);
+
   const { open } = useAuthModal();
 
-  const favoritesCount = getFavoritesCount();
+  // const favoritesCount = favoritesQuenty();
 
   return (
     <header className={styles.header}>

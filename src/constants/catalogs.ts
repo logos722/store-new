@@ -3,6 +3,9 @@ export enum CatalogId {
   FITTINGS = '12345678-90ab-cdef-1234-567890abcdef',
 }
 
+// Стандартная длина страницы
+export const PAGE_SIZE = 20;
+
 // Мэппинг с названиями, описанием и урлами на изображения
 export const CatalogInfo: Record<
   CatalogId,

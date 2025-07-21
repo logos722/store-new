@@ -7,19 +7,25 @@
   padding: 2rem 0;
 }
 
-.filters {
-  position: sticky;
-  top: 120px; /* чуть ниже Header */
-}
-
 .main {
   display: flex;
   flex-direction: column;
 }
 
+.filters {
+  position: sticky;
+  top: 1rem;
+  align-self: start; 
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  z-index: 2;
+}
+
 .productsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
   // gap: 1rem;
 }
 

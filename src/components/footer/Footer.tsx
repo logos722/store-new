@@ -4,7 +4,7 @@ import styles from './Footer.module.scss'; // Не забудьте добави
 
 const Footer = () => {
   return (
-    <footer className={styles.footer}>
+    <footer id="footer" className={styles.footer}>
       <div>
         <ul>
           <h3>О нас</h3>

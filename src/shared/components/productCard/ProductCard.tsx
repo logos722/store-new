@@ -8,7 +8,7 @@ import styles from './ProductCard.module.scss';
 import placeholder from '../../../../public/cat1.jpeg';
 import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
-import { useFavorites } from '@/context/fav/favorites';
+import { useFavoritesStore } from '@/store/useFavoritesStore';
 
 interface ProductCardProps {
   product: Product & {
@@ -19,9 +19,8 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
-  const { toggleFavorite, isFavorite: checkIsFavorite } = useFavorites();
-
-  const isFavorite = checkIsFavorite(product.id);
+  const toggleFavorite = useFavoritesStore(s => s.toggleFavorite);
+  const isFavorite = useFavoritesStore(s => s.isFavorite(product.id));
 
   const handleCardClick = () => {
     router.push(`/product/${product.id}`);
@@ -32,20 +31,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toggleFavorite(product.id);
   };
 
-  // Генерация массива звёзд
   const stars = (() => {
-    const fullStars = Math.floor(product.rating ?? 0);
-    const halfStar = (product.rating ?? 0) - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-    return [
-      ...Array(fullStars).fill(<FaStar key="full" />),
-      ...(halfStar ? [<FaStarHalfAlt key="half" />] : []),
-      ...Array(emptyStars).fill(<FaRegStar key="empty" />),
-    ];
+    const rating = product.rating ?? 0;
+    const fullStars = Math.floor(rating);
+    const halfStars = rating - fullStars >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStars;
+    const result: React.ReactNode[] = [];
+    for (let i = 0; i < fullStars; i++) {
+      result.push(<FaStar key={`star-full-${i}`} />);
+    }
+    if (halfStars) {
+      result.push(<FaStarHalfAlt key="star-half" />);
+    }
+    for (let i = 0; i < emptyStars; i++) {
+      result.push(<FaRegStar key={`star-empty-${i}`} />);
+    }
+    return result;
   })();
 
   return (
-    <div className={styles.card} onClick={handleCardClick}>
+    <div key={product.id} className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageWrap}>
         <Image
           src={product.image ?? placeholder}
@@ -60,7 +65,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'
           }
         >
-          <FaHeart className={isFavorite ? styles.active : ''} />
+          <FaHeart
+            key={product.id}
+            className={isFavorite ? styles.active : ''}
+          />
         </button>
       </div>
 

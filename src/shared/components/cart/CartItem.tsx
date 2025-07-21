@@ -1,11 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
-import { CartItem as CartItemType } from '@/types/cart';
 import styles from './CartItem.module.scss';
 import cat1 from '../../../../public/cat1.jpeg';
-
+import { Product } from '@/types/product';
 interface CartItemProps {
-  item: CartItemType;
+  item: Product;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
 }
@@ -15,47 +14,44 @@ const CartItem: React.FC<CartItemProps> = ({
   onUpdateQuantity,
   onRemove,
 }) => {
-  const { product, quantity } = item;
+  console.log(' item', item);
+  const { image, name, price, quantity, id, stock } = item;
 
   return (
     <div className={styles.cartItem}>
       <div className={styles.imageWrapper}>
         <Image
-          src={product.image ?? cat1}
-          alt={product.name}
+          src={image ?? cat1}
+          alt={name}
           width={80}
           height={80}
           className={styles.image}
         />
       </div>
       <div className={styles.content}>
-        <h3 className={styles.title}>{product.name}</h3>
-        <p className={styles.price}>{product.price.toFixed(2)} ₽</p>
+        <h3 className={styles.title}>{name}</h3>
+        <p className={styles.price}>{price.toFixed(2)} ₽</p>
 
         <p className={styles.total}>
-          {quantity} × {product.price.toFixed(2)} ₽ ={' '}
-          {(quantity * product.price).toFixed(2)} ₽
+          {quantity} × {price.toFixed(2)} ₽ = {(quantity * price).toFixed(2)} ₽
         </p>
         <div className={styles.quantity}>
           <button
-            onClick={() => onUpdateQuantity(product.id, quantity - 1)}
+            onClick={() => onUpdateQuantity(id, quantity - 1)}
             disabled={quantity <= 1}
           >
             -
           </button>
           <span>{quantity}</span>
           <button
-            onClick={() => onUpdateQuantity(product.id, quantity + 1)}
-            disabled={quantity >= product.stock}
+            onClick={() => onUpdateQuantity(id, quantity + 1)}
+            disabled={quantity >= stock}
           >
             +
           </button>
         </div>
       </div>
-      <button
-        className={styles.removeButton}
-        onClick={() => onRemove(product.id)}
-      >
+      <button className={styles.removeButton} onClick={() => onRemove(id)}>
         ×
       </button>
     </div>

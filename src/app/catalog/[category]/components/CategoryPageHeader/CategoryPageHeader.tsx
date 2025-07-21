@@ -15,7 +15,7 @@ interface CategoryPageHeaderProps {
   onSortChange: (sort: SortOption) => void;
 }
 
-const CategoryPageHeader: React.FC<CategoryPageHeaderProps> = ({
+const CategoryPageHeaderComponent: React.FC<CategoryPageHeaderProps> = ({
   title,
   total,
   viewType,
@@ -55,5 +55,7 @@ const CategoryPageHeader: React.FC<CategoryPageHeaderProps> = ({
     </div>
   );
 };
+
+const CategoryPageHeader = React.memo(CategoryPageHeaderComponent);
 
 export default CategoryPageHeader;

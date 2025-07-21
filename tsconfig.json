@@ -26,6 +26,7 @@
       "@/styles/*": ["./src/styles/*"],
       "@/context/*": ["./src/context/*"],
       "@/constants/*": ["./src/constants/*"],
+      "@/store/*": ["./src/stores/*"],
       "@/api/*": ["./src/app/api/*"]
     }
   },
