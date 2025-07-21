@@ -12,10 +12,11 @@ const nextConfig = {
     API_BASE_URL: process.env.API_BASE_URL,
   },
   async rewrites() {
+    const host = process.env.NEXT_PUBLIC_IMAGE_HOST ?? 'http://localhost:5000';
     return [
       {
         source: '/images/:path*',
-        destination: 'http://localhost:5000/images/:path*',
+        destination: `${host}/images/:path*`,
       },
     ];
   },
