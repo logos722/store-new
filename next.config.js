@@ -8,6 +8,9 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'src')],
   },
+  images: {
+    domains: ['localhost', 'backend'],
+  },
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
   },
