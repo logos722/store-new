@@ -5,13 +5,7 @@ import Cart from '@/shared/components/cart/Cart';
 import styles from './Header.module.scss';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  FaBars,
-  FaBoxOpen,
-  FaHeart,
-  FaMapMarkerAlt,
-  FaUser,
-} from 'react-icons/fa';
+import { FaBars, FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 
@@ -23,14 +17,9 @@ const MENU = [
 
 const Header = () => {
   const pathname = usePathname();
-  // const { favoritesQuenty } = useFavoritesStore(s => ({
-  //   favoritesQuenty: s.favoriteQuenty,
-  // }));
   const favoritesCount = useFavoritesStore(s => s.ids.length);
 
   const { open } = useAuthModal();
-
-  // const favoritesCount = favoritesQuenty();
 
   return (
     <header className={styles.header}>
@@ -52,10 +41,6 @@ const Header = () => {
         </div>
 
         <div className={styles.right}>
-          <Link href="/orders" className={styles.iconLink}>
-            <FaBoxOpen />
-            <span className={styles.badge}>3</span>
-          </Link>
           <Link href="/favorites" className={styles.iconLink}>
             <FaHeart />
             <span className={styles.badge}>{favoritesCount}</span>
@@ -69,7 +54,7 @@ const Header = () => {
 
       <div className={styles.navLocationWrapper}>
         <div className={styles.location}>
-          <FaMapMarkerAlt /> Москва
+          <FaMapMarkerAlt /> Краснодар
         </div>
         <nav className={styles.nav}>
           {MENU.map(m => (

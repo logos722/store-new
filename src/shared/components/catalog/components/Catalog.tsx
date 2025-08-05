@@ -21,7 +21,8 @@ const Catalog: React.FC<CatalogProps> = ({ catalog }) => {
         <button onClick={() => setView('list')}>📃</button>
       </div> */}
       <div
-      // className={view === 'grid' ? styles.productsGrid : styles.productsList}
+        className={styles.productsGrid}
+        // className={view === 'grid' ? styles.productsGrid : styles.productsList}
       >
         {catalog.products.map(product => (
           <ProductCard key={product.id} product={product} />
