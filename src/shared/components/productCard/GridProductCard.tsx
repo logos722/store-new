@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { FaHeart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { Product } from '@/types/product';
-import styles from './ProductCard.module.scss';
+import styles from './GridProductCard.module.scss';
 import placeholder from '../../../../public/cat1.jpeg';
 import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
@@ -17,7 +17,7 @@ interface ProductCardProps {
   };
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
   const toggleFavorite = useFavoritesStore(s => s.toggleFavorite);
   const isFavorite = useFavoritesStore(s => s.isFavorite(product.id));
@@ -89,4 +89,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default GridProductCard;

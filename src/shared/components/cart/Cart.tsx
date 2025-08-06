@@ -16,6 +16,11 @@ const Cart: React.FC = () => {
   const updateQuantity = useCartStore(s => s.updateQuantity);
   const removeItem = useCartStore(s => s.removeItem);
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
@@ -31,7 +36,7 @@ const Cart: React.FC = () => {
     <div className={styles.cartContainer} ref={cartRef}>
       <button className={styles.cartLink} onClick={() => setIsOpen(!isOpen)}>
         <FaShoppingCart className={styles.icon} />
-        {totalItems > 0 && (
+        {isMounted && totalItems > 0 && (
           <span className={styles.badge}>
             {totalItems > 99 ? '99+' : totalItems}
           </span>

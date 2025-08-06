@@ -1,32 +1,46 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Catalog as CatalogType } from '@/types/catalog';
-import ProductCard from '../../productCard/ProductCard';
 import styles from './Catalog.module.scss';
-
+import GridProductCard from '../../productCard/GridProductCard';
+import ListProductCard from '../../productCard/ListProductCard';
+import { ViewButton } from '../..';
 interface CatalogProps {
   catalog: CatalogType;
 }
 
 const Catalog: React.FC<CatalogProps> = ({ catalog }) => {
-  // const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+
+  const containerClass = useMemo(() => {
+    return view === 'grid' ? styles.productsGrid : styles.productsList;
+  }, [view]);
+
+  // Handler to toggle view mode
+  const handleToggle = (mode: 'grid' | 'list') => {
+    setView(mode);
+  };
+
+  if (!catalog || !Array.isArray(catalog.products)) {
+    return <div className={styles.catalog}>No products available.</div>;
+  }
 
   return (
     <div className={styles.catalog}>
       <h2>{catalog.title}</h2>
       {catalog.description && <p>{catalog.description}</p>}
-      {/* <div className={styles.viewToggle}>
-        <button onClick={() => setView('grid')}>🔲</button>
-        <button onClick={() => setView('list')}>📃</button>
-      </div> */}
-      <div
-        className={styles.productsGrid}
-        // className={view === 'grid' ? styles.productsGrid : styles.productsList}
-      >
-        {catalog.products.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+      <div className={styles.viewContainer}>
+        <ViewButton view={view} handleToggle={handleToggle} />
+      </div>
+      <div className={containerClass}>
+        {catalog.products.map(product =>
+          view === 'grid' ? (
+            <GridProductCard key={product.id} product={product} />
+          ) : (
+            <ListProductCard key={product.id} product={product} />
+          ),
+        )}
       </div>
     </div>
   );

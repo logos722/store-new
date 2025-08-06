@@ -1,0 +1,175 @@
+// components/productCard/ListProductCard.module.scss
+
+@import '@/styles/variables.scss';
+
+.cardList {
+  // Layout: horizontal flex container
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border: 0.5px solid #aba9a9;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  // Keyboard accessibility
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+.imageWrapList {
+  position: relative;
+  flex-shrink: 0;
+  width: 135px;
+  height: 80px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .image {
+    object-fit: cover;
+  }
+
+  // Favorite icon sits on top-right of image
+  .iconButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+.content {
+  flex: 1;
+
+  .title {
+    margin: 0;
+    font-size: 1rem;
+    color: $text-color;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.detailsList {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: $text-color;
+
+  li {
+    margin-bottom: 0.25rem;
+
+    strong {
+      color: $text-color;
+    }
+  }
+}
+
+.listActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .total {
+    font-weight: 600;
+    color: $primary-color;
+    white-space: nowrap;
+  }
+
+  // QuantityToggleButton sits here (no extra wrapper needed)
+
+  .removeBtn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// Shared iconButton overrides (imported from global or reused)
+// If needed, you can override here:
+.iconButton {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 1rem;
+  color: #aebbbf;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+
+  &.fav {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  &.cart {
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+
+  svg {
+    // pointer-events: none;
+    transition:
+      fill 0.3s ease,
+      color 0.3s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: $accent-color;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.5;
+  }
+
+  &:active::after {
+    animation: ripple 0.6s ease-out;
+  }
+
+  &.fav .active {
+    fill: $accent-color;
+    color: $accent-color;
+  }
+
+  .active {
+    color: $accent-color;
+  }
+}

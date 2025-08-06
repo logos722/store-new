@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Container from '@/shared/components/container/Container';
-import ProductCard from '@/shared/components/productCard/ProductCard';
 import styles from './CategoryPage.module.scss';
 import { Product } from '@/types/product';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -16,7 +15,10 @@ import CategoryPageHeader from './components/CategoryPageHeader/CategoryPageHead
 import CategoryPageFilters from './components/CategoryPageFilters/CategoryPageFilters';
 import { InfiniteData } from '@tanstack/react-query';
 import { useFilterStore } from '@/store/useFilterStore';
-
+import {
+  GridProductCard,
+  ListProductCard,
+} from '@/shared/components/productCard';
 type QuizParams = {
   category: string[];
 };
@@ -191,9 +193,13 @@ const CategoryPage = () => {
               viewType === 'grid' ? styles.productsGrid : styles.productsList
             }
           >
-            {allProducts.map(p => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+            {allProducts.map(p =>
+              viewType === 'grid' ? (
+                <GridProductCard key={p.id} product={p} />
+              ) : (
+                <ListProductCard key={p.id} product={p} />
+              ),
+            )}
           </div>
         </InfiniteScroll>
       );

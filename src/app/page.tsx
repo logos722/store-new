@@ -18,10 +18,9 @@ export default async function Home() {
   return (
     <Container>
       <div className={styles.mainLayout}>
-        {/* <Sidebar /> */}
         <div className={styles.mainContent}>
           <SliderMain images={images} />
-          <CatalogPage categoryId={categoryId} pageSize={6} />
+          <CatalogPage categoryId={categoryId} pageSize={8} />
         </div>
       </div>
     </Container>

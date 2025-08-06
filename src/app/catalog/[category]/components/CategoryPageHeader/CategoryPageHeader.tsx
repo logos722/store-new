@@ -3,8 +3,8 @@
 import React from 'react';
 import styles from './CategoryPageHeader.module.scss';
 import ProductSorting from '@/shared/components/sorting/ProductSorting';
-import { FaTh, FaThList } from 'react-icons/fa';
 import { SortOption } from '@/types/catalog';
+import { ViewButton } from '@/shared/components';
 
 interface CategoryPageHeaderProps {
   title: string;
@@ -34,23 +34,7 @@ const CategoryPageHeaderComponent: React.FC<CategoryPageHeaderProps> = ({
 
       <div className={styles.controls}>
         <ProductSorting currentSort={sort} onSortChange={onSortChange} />
-
-        <div className={styles.viewToggle}>
-          <button
-            className={viewType === 'grid' ? styles.active : ''}
-            onClick={() => onViewChange('grid')}
-            aria-label="Grid view"
-          >
-            <FaTh />
-          </button>
-          <button
-            className={viewType === 'list' ? styles.active : ''}
-            onClick={() => onViewChange('list')}
-            aria-label="List view"
-          >
-            <FaThList />
-          </button>
-        </div>
+        <ViewButton view={viewType} handleToggle={onViewChange} />
       </div>
     </div>
   );

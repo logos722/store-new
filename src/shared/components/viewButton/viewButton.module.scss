@@ -1,0 +1,30 @@
+@import '@/styles/variables.scss';
+
+
+.viewToggle {
+  display: inline-flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+
+  button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: black;
+    font-size: 1rem;
+    transition:
+      background 0.2s,
+      color 0.2s;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &.active {
+      background: $accent-color;
+      color: white;
+    }
+  }
+}
