@@ -4,80 +4,21 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Container from '@/shared/components/container/Container';
 import styles from './CategoryPage.module.scss';
-import { Product } from '@/types/product';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { Loading, Alert, BackToTopButton } from '@/shared/components';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { QueryFunctionContext } from '@tanstack/react-query';
-import { CatalogInfo, PAGE_SIZE } from '@/constants/catalogs';
-import { SortOption } from '@/types/catalog';
+import { CatalogInfo } from '@/constants/catalogs';
 import CategoryPageHeader from './components/CategoryPageHeader/CategoryPageHeader';
 import CategoryPageFilters from './components/CategoryPageFilters/CategoryPageFilters';
-import { InfiniteData } from '@tanstack/react-query';
 import { useFilterStore } from '@/store/useFilterStore';
 import {
   GridProductCard,
   ListProductCard,
 } from '@/shared/components/productCard';
+import { useCategoryProducts } from './hooks/useCategoryProducts';
+import { CategoryPageSkeleton } from './components/CategoryPageSkeleton/CategoryPageSkeleton';
+
 type QuizParams = {
   category: string[];
-};
-
-interface CategoryPageResponse {
-  category: string; // slug или id категории (по желанию можно не использовать)
-  products: Product[]; // товары на текущей странице
-  page: number; // номер текущей страницы
-  totalPages: number; // всего страниц
-  total: number; // общее число товаров по текущему фильтру
-}
-
-// Правильно типизируем context
-const fetchCategoryPage = async (
-  ctx: QueryFunctionContext<
-    [
-      'catalog',
-      string, // category slug
-      string[], // selectedCategories
-      number,
-      number, // priceMin, priceMax
-      boolean, // inStock
-      SortOption, // sort
-    ],
-    number // pageParam
-  >,
-): Promise<CategoryPageResponse> => {
-  const [
-    ,
-    category,
-    selectedCategories,
-    priceMin,
-    priceMax,
-    inStock,
-    sortOption,
-  ] = ctx.queryKey;
-  const page = ctx.pageParam ?? 1;
-
-  // Собираем query params
-  const params = new URLSearchParams({
-    page: String(page),
-    limit: String(PAGE_SIZE),
-    minPrice: String(priceMin),
-    maxPrice: String(priceMax),
-    inStock: inStock ? '1' : '0',
-    sort: sortOption,
-  });
-
-  if (selectedCategories.length > 0) {
-    selectedCategories.forEach(cat => params.append('categories', cat));
-  }
-
-  const res = await fetch(
-    `/api/catalog/${encodeURIComponent(category)}?${params.toString()}`,
-  );
-  if (!res.ok) {
-    throw new Error(`Ошибка получения товаров: ${res.status}`);
-  }
-  return res.json();
 };
 
 const CategoryPage = () => {
@@ -112,42 +53,21 @@ const CategoryPage = () => {
 
   const {
     data: categoryProducts,
-    isLoading,
     error,
+    isLoading,
+    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
     refetch,
-    isFetchingNextPage,
-  } = useInfiniteQuery<
-    CategoryPageResponse,
-    Error,
-    InfiniteData<CategoryPageResponse>,
-    [
-      'catalog',
-      string, // category slug
-      string[], // selectedCategories
-      number,
-      number, // priceMin, priceMax
-      boolean, // inStock
-      SortOption, // sort
-    ],
-    number
-  >({
-    queryKey: [
-      'catalog',
-      categorySlug,
-      debouncedFilters.selectedCategories,
-      debouncedFilters.priceRange.min,
-      debouncedFilters.priceRange.max,
-      debouncedFilters.inStock,
-      debouncedFilters.sort,
-    ],
-    staleTime: 5 * 60_000,
-    queryFn: fetchCategoryPage,
-    enabled: Boolean(categorySlug),
-    initialPageParam: 1,
-    getNextPageParam: last =>
-      last.page < last.totalPages ? last.page + 1 : undefined,
+  } = useCategoryProducts(categorySlug, {
+    selectedCategories: debouncedFilters.selectedCategories,
+    priceRange: {
+      min: debouncedFilters.priceRange.min,
+      max: debouncedFilters.priceRange.max,
+    },
+
+    inStock: debouncedFilters.inStock,
+    sort: debouncedFilters.sort,
   });
 
   const loadMore = useCallback(() => fetchNextPage(), [fetchNextPage]);
@@ -164,6 +84,24 @@ const CategoryPage = () => {
   );
 
   console.log('allProducts', allProducts);
+
+  if (error) {
+    return (
+      <Container>
+        <Alert message={error.message} onRetry={refetch} type="error" />
+      </Container>
+    );
+  }
+  if (isLoading) {
+    return <CategoryPageSkeleton />;
+  }
+  if (!allProducts.length) {
+    return (
+      <Container>
+        <Alert message="Товары не найдены по заданным фильтрам" type="info" />
+      </Container>
+    );
+  }
 
   const getProductBlock = () => {
     if (isLoading) {
