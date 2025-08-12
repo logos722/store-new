@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './ProductFilters.module.scss';
-import { fetchCategories } from '@/api/categories';
+import { fetchCategories } from '@/shared/api/fetchCategories';
 import { useQuery } from '@tanstack/react-query';
 import { IS_CATEGORY_MULTISELECT_ENABLED } from '@/constants/featureFlags';
 

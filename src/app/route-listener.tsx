@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useNavProgress } from '@/context/nav/nav-progress';
 
-export default function RouteListener() {
+function RouteListenerInner() {
   const pathname = usePathname();
   const search = useSearchParams();
   const { stop } = useNavProgress();
@@ -14,4 +14,12 @@ export default function RouteListener() {
   }, [pathname, search, stop]);
 
   return null;
+}
+
+export default function RouteListener() {
+  return (
+    <Suspense fallback={null}>
+      <RouteListenerInner />
+    </Suspense>
+  );
 }

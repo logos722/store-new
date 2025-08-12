@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
 
-// GET /api/categories
 export async function GET() {
   try {
-    const res = await fetch(`${process.env.API_BASE_URL}/api/categories`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(`${process.env.API_BASE_URL}/api/categories`);
     if (!res.ok) {
       return NextResponse.json(
         { error: `Categories not found` },
