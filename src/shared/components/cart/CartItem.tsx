@@ -2,9 +2,10 @@ import React from 'react';
 import Image from 'next/image';
 import styles from './CartItem.module.scss';
 import cat1 from '../../../../public/cat1.jpeg';
-import { Product } from '@/types/product';
+import { CartItem as CartItemType } from '@/store/useCartStore';
+
 interface CartItemProps {
-  item: Product;
+  item: CartItemType;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
 }
@@ -14,7 +15,6 @@ const CartItem: React.FC<CartItemProps> = ({
   onUpdateQuantity,
   onRemove,
 }) => {
-  console.log(' item', item);
   const { image, name, price, quantity, id, stock } = item;
 
   return (

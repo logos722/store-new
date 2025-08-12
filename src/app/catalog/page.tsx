@@ -1,9 +1,9 @@
 import React from 'react';
-import Link from 'next/link';
 import Container from '@/shared/components/container/Container';
 import styles from './CatalogPage.module.scss';
 import { CatalogId, CatalogInfo } from '@/constants/catalogs';
 import Image from 'next/image';
+import { LinkTrack } from '@/shared/components/linkTrack/LinkTrack';
 
 const CatalogPage = () => {
   const ids = Object.values(CatalogId);
@@ -17,7 +17,7 @@ const CatalogPage = () => {
             const category = CatalogInfo[id];
 
             return (
-              <Link
+              <LinkTrack
                 href={`/catalog/${id}`}
                 key={id}
                 className={styles.categoryCard}
@@ -33,7 +33,7 @@ const CatalogPage = () => {
                 </div>
                 <h2>{category.title}</h2>
                 <p>{category.description}</p>
-              </Link>
+              </LinkTrack>
             );
           })}
         </div>

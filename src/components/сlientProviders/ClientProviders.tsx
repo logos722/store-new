@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { FavoritesProvider } from '@/context/fav/favorites';
 import { AuthProvider } from '@/context/auth/auth';
 import { AuthModalProvider } from '@/context/authModalProvider/AuthModalContext';
+import RouteListener from '../../app/route-listener';
+import { NavProgressProvider } from '@/context/nav/nav-progress';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +28,12 @@ const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AuthModalProvider>{children}</AuthModalProvider>
+        <AuthModalProvider>
+          <NavProgressProvider>
+            <RouteListener />
+            {children}
+          </NavProgressProvider>
+        </AuthModalProvider>
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
       <ToastContainer

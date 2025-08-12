@@ -1,0 +1,1 @@
+export const IS_CATEGORY_MULTISELECT_ENABLED = false;

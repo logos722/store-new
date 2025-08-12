@@ -1,4 +1,3 @@
-// hooks/useFilters.ts
 import { useReducer, useCallback } from 'react';
 import { useDebounce } from '@/components/header/hooks/useDebounce';
 import { SortOption } from '@/types/catalog';

@@ -6,6 +6,9 @@ export enum CatalogId {
 // Стандартная длина страницы
 export const PAGE_SIZE = 20;
 
+// Стандартная длина заглушек для skeleton
+export const SKELETON_PAGE_SIZE = 12;
+
 // Мэппинг с названиями, описанием и урлами на изображения
 export const CatalogInfo: Record<
   CatalogId,

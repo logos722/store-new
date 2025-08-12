@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 import { useParams } from 'next/navigation';
 import Container from '@/shared/components/container/Container';
 import styles from './CategoryPage.module.scss';
@@ -23,6 +29,7 @@ type QuizParams = {
 
 const CategoryPage = () => {
   const { category: rawCategory } = useParams<QuizParams>();
+  const listRef = useRef<HTMLDivElement>(null);
 
   // приводим к строке
   const categorySlug =
@@ -50,6 +57,16 @@ const CategoryPage = () => {
   const setInStock = useFilterStore(s => s.setInStock);
 
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia?.(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    (listRef.current ?? window).scrollTo({
+      top: 0,
+      behavior: prefersReduced ? 'auto' : 'smooth',
+    });
+  }, [selectedCategories]);
 
   const {
     data: categoryProducts,
@@ -83,32 +100,12 @@ const CategoryPage = () => {
     [categoryProducts],
   );
 
-  console.log('allProducts', allProducts);
-
-  if (error) {
-    return (
-      <Container>
-        <Alert message={error.message} onRetry={refetch} type="error" />
-      </Container>
-    );
-  }
-  if (isLoading) {
-    return <CategoryPageSkeleton />;
-  }
-  if (!allProducts.length) {
-    return (
-      <Container>
-        <Alert message="Товары не найдены по заданным фильтрам" type="info" />
-      </Container>
-    );
-  }
-
   const getProductBlock = () => {
     if (isLoading) {
       return (
         <div className={styles.wrapper}>
           <Container className="centered">
-            <Loading isLoading={isLoading} />
+            <CategoryPageSkeleton />
           </Container>
         </div>
       );

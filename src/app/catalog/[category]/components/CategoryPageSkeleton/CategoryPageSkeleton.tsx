@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './CategoryPageSkeleton.module.scss';
-import { PAGE_SIZE } from '@/constants/catalogs';
+import { SKELETON_PAGE_SIZE } from '@/constants/catalogs';
 
 export const CategoryPageSkeleton = () => (
   <div className={styles.page}>
@@ -16,7 +16,7 @@ export const CategoryPageSkeleton = () => (
         <div className={styles.controlSkeleton} />
       </div>
       <div className={styles.productsGrid}>
-        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+        {Array.from({ length: SKELETON_PAGE_SIZE }).map((_, i) => (
           <div key={i} className={styles.cardSkeleton} />
         ))}
       </div>

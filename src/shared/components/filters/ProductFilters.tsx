@@ -4,6 +4,7 @@ import React from 'react';
 import styles from './ProductFilters.module.scss';
 import { fetchCategories } from '@/api/categories';
 import { useQuery } from '@tanstack/react-query';
+import { IS_CATEGORY_MULTISELECT_ENABLED } from '@/constants/featureFlags';
 
 interface ProductFiltersProps {
   priceRange: {
@@ -33,6 +34,20 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
+
+  const handleChangeCategory = (product: string, checked?: boolean) => {
+    if (IS_CATEGORY_MULTISELECT_ENABLED) {
+      if (checked) {
+        onCategoryChange([...selectedCategories, product]);
+      } else {
+        onCategoryChange(selectedCategories.filter(c => c !== product));
+      }
+
+      return;
+    }
+
+    return checked ? onCategoryChange([product]) : onCategoryChange([]);
+  };
 
   return (
     <div className={styles.filters}>
@@ -86,27 +101,24 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         {isError && <p className={styles.error}>Ошибка при загрузке</p>}
         {!isLoading && !isError && (
           <ul className={styles.categoryList}>
-            {categories.map(product => (
-              <li key={product} className={styles.categoryItem}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    value={product}
-                    checked={selectedCategories.includes(product)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        onCategoryChange([...selectedCategories, product]);
-                      } else {
-                        onCategoryChange(
-                          selectedCategories.filter(c => c !== product),
-                        );
-                      }
-                    }}
-                  />
-                  <span className={styles.categoryLabel}>{product}</span>
-                </label>
-              </li>
-            ))}
+            {categories.map(product => {
+              const isSelected = IS_CATEGORY_MULTISELECT_ENABLED
+                ? selectedCategories.includes(product)
+                : selectedCategories[0] === product;
+
+              return (
+                <li key={product} className={styles.categoryItem}>
+                  <button
+                    type="button"
+                    className={`${styles.categoryBtn} ${isSelected ? styles.active : ''}`}
+                    aria-pressed={isSelected}
+                    onClick={() => handleChangeCategory(product, !isSelected)}
+                  >
+                    {product}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

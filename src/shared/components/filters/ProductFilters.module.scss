@@ -51,19 +51,23 @@
   }
 }
 
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #666;
-  font-size: 0.9rem;
+.categoryBtn {
+  background: none;
+  text-align: start;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  color: #333;
+  font: inherit;
+  line-height: 1.4;
+  transition: color .15s ease, font-weight .15s ease;
+}
+.categoryBtn:hover { text-decoration: underline; }
+.categoryBtn:focus-visible { outline: 2px solid #0070f3; outline-offset: 2px; }
 
-  input[type='checkbox'] {
-    min-width: 16px;
-    height: 16px;
-    cursor: pointer;
-  }
+.active {
+  color: #0070f3;
+  font-weight: 600;
 }
 
 .categoryList {
