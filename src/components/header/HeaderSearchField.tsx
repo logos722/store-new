@@ -62,8 +62,9 @@ const HeaderSearchField = () => {
         console.error('Search API error', res.status);
         return [];
       }
-      const data: { query: string; results: SearchResult[] } = await res.json();
-      return data.results[0]?.products || [];
+      const data: { query: string; results: Product[] } = await res.json();
+
+      return data.results || [];
     } catch (error) {
       console.error('Ошибка при поиске продуктов:', error);
       return [];

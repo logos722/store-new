@@ -60,10 +60,17 @@
   color: #333;
   font: inherit;
   line-height: 1.4;
-  transition: color .15s ease, font-weight .15s ease;
+  transition:
+    color 0.15s ease,
+    font-weight 0.15s ease;
 }
-.categoryBtn:hover { text-decoration: underline; }
-.categoryBtn:focus-visible { outline: 2px solid #0070f3; outline-offset: 2px; }
+.categoryBtn:hover {
+  text-decoration: underline;
+}
+.categoryBtn:focus-visible {
+  outline: 2px solid #0070f3;
+  outline-offset: 2px;
+}
 
 .active {
   color: #0070f3;

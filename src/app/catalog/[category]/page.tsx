@@ -27,9 +27,35 @@ type QuizParams = {
   category: string[];
 };
 
+const useMediaQuery = (query: string) => {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    // isomorphic guard to avoid hydration mismatch
+    if (typeof window === 'undefined') return;
+    const m = window.matchMedia(query);
+    const handler = () => setMatches(m.matches);
+    handler();
+    m.addEventListener('change', handler);
+    return () => m.removeEventListener('change', handler);
+  }, [query]);
+  return matches;
+};
+
 const CategoryPage = () => {
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const [isFiltersOpen, setFiltersOpen] = useState(false);
   const { category: rawCategory } = useParams<QuizParams>();
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const original = document.body.style.overflow;
+    if (isFiltersOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = original || '';
+    return () => {
+      document.body.style.overflow = original || '';
+    };
+  }, [isFiltersOpen, isMobile]);
 
   // приводим к строке
   const categorySlug =
@@ -127,6 +153,7 @@ const CategoryPage = () => {
             className={
               viewType === 'grid' ? styles.productsGrid : styles.productsList
             }
+            aria-busy={isFetchingNextPage ? 'true' : 'false'}
           >
             {allProducts.map(p =>
               viewType === 'grid' ? (
@@ -188,12 +215,78 @@ const CategoryPage = () => {
             onSortChange={setSort}
           />
 
+          <div className={styles.controlsBar} aria-hidden={!isMobile}>
+            <button
+              type="button"
+              className={styles.filtersBtn}
+              onClick={() => setFiltersOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={isFiltersOpen}
+              aria-controls="filters-drawer"
+            >
+              Фильтры
+            </button>
+          </div>
+
           {/* 2.2 Список карточек */}
           {getProductBlock()}
         </div>
       </div>
 
       <BackToTopButton />
+
+      {isMobile && (
+        <>
+          <div
+            id="filters-drawer"
+            role="dialog"
+            aria-modal="true"
+            className={`${styles.filtersDrawer} ${isFiltersOpen ? styles.drawerOpen : ''}`}
+          >
+            <div className={styles.drawerHeader}>
+              <span>Фильтры</span>
+              <button
+                className={styles.drawerClose}
+                onClick={() => setFiltersOpen(false)}
+                aria-label="Закрыть фильтры"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.drawerBody}>
+              <CategoryPageFilters
+                selectedCategories={selectedCategories}
+                onCategoryChange={v => {
+                  setSelectedCategories(v);
+                  // UX: after applying a filter, scroll to top and close the drawer
+                  if (typeof window !== 'undefined')
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                priceRange={priceRangeState}
+                inStock={inStockState}
+                onPriceChange={setPriceRange}
+                onStockChange={setInStock}
+              />
+            </div>
+
+            <div className={styles.drawerFooter}>
+              <button
+                className={styles.applyBtn}
+                onClick={() => setFiltersOpen(false)}
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+
+          {/* Overlay */}
+          <div
+            className={`${styles.overlay} ${isFiltersOpen ? styles.overlayVisible : ''}`}
+            onClick={() => setFiltersOpen(false)}
+          />
+        </>
+      )}
     </Container>
   );
 };

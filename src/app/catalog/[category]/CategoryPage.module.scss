@@ -10,6 +10,7 @@
 .main {
   display: flex;
   flex-direction: column;
+  min-width: 0; // prevent overflow on long product names
 }
 
 .filters {
@@ -49,11 +50,156 @@
 }
 
 /* Mobile */
+
+/* Header + top controls */
+.headerWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile controls bar (hidden on desktop) */
+.controlsBar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.filtersBtn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.5rem 0.875rem;
+  font-weight: 600;
+}
+
+.totalHint {
+  font-weight: 600;
+}
+
+.filtersDrawer {
+  position: fixed;
+  inset: auto 0 0 0;
+  transform: translateY(105%);
+  transition: transform 240ms ease;
+  background: #fff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerOpen {
+  transform: translateY(0);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-weight: 700;
+}
+
+.drawerClose {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.drawerBody {
+  padding: 0.75rem 1rem 1rem;
+  overflow: auto;
+}
+
+.drawerFooter {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+}
+
+.applyBtn {
+  width: 100%;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: #1f73ff;
+  color: #fff;
+  border: none;
+}
+
+/* Overlay behind drawer */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+  z-index: 40;
+}
+
+.overlayVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Accessibility helper */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .page {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .page {
     grid-template-columns: 1fr;
   }
+
   .filters {
-    display: none;
+    display: none; // desktop sidebar hidden on mobile
+  }
+
+  .controlsBar {
+    display: flex;
+  }
+
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .productsGrid {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); // consistent 2-up grid for tiny screens
   }
 }
