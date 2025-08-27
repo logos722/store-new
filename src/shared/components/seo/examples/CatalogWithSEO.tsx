@@ -5,6 +5,7 @@ import SEOHead from '../SEOHead';
 import Breadcrumbs from '../Breadcrumbs';
 import StructuredData, { StructuredDataGenerator } from '../StructuredData';
 import useSEO from '@/shared/hooks/useSEO';
+import { Product } from '@/types/product';
 
 /**
  * Пример использования SEOHead в компоненте каталога
@@ -14,7 +15,7 @@ import useSEO from '@/shared/hooks/useSEO';
 interface CatalogWithSEOProps {
   categoryName: string;
   categoryId: string;
-  products: any[];
+  products: Product[];
   productsCount: number;
 }
 
