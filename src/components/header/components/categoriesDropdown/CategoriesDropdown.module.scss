@@ -1,0 +1,252 @@
+@import '@/styles/variables.scss';
+
+
+.dropdownWrapper {
+  position: relative;
+  display: inline-block;
+
+  
+  .btnCategories {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: $primary-color;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+
+      &:hover {
+        background: $primary-color;
+        opacity: 0.5;
+      }
+    }
+
+  
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 4px;
+  padding: 6px 0;
+  list-style: none;
+  min-width: 160px;
+  z-index: 1000;
+  list-style: none;
+  }
+
+  .dropdownItem {
+    position: relative;
+    display: block;
+    padding: 0;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s ease-in-out;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    // Стили для категорий с вложенными элементами
+    &.hasNested {
+      cursor: pointer;
+      
+      .categoryContent {
+        position: relative;
+      }
+    }
+
+    // Стили для вложенных элементов
+    &.nestedItem {
+      border-left: 2px solid $primary-color;
+      margin-left: 8px;
+    }
+  }
+
+  // Контейнер для содержимого категории
+  .categoryContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    min-height: 40px;
+  }
+
+  // Ссылка внутри категории
+  .dropdownLink {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    flex: 1;
+    
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  // Индикатор вложенных элементов
+  .nestedIndicator {
+    font-size: 10px;
+    color: #999;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+    
+    .dropdownItem:hover & {
+      color: $primary-color;
+    }
+  }
+
+  // Стили для submenu
+  .subMenu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    min-width: 180px;
+    z-index: 1001;
+    
+    // Анимация появления
+    animation: slideInRight 0.2s ease-out;
+    
+    // Стили для разных уровней глубины
+    &.depth-1 {
+      left: 100%;
+      margin-left: 4px;
+    }
+    
+    &.depth-2 {
+      left: 100%;
+      margin-left: 4px;
+    }
+    
+    &.depth-3 {
+      left: 100%;
+      margin-left: 4px;
+    }
+    
+    // Больше уровней при необходимости
+    &.depth-4,
+    &.depth-5,
+    &.depth-6 {
+      left: 100%;
+      margin-left: 4px;
+    }
+  }
+
+  // Анимация для submenu
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+
+
+@media (max-width: 768px) {
+  .dropdownMenu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    list-style: none;
+    border: none;
+    border-radius: 0;
+  }
+
+  .dropdownItem {
+    font-size: 16px;
+    
+    &.nestedItem {
+      border-left: 3px solid $primary-color;
+      margin-left: 12px;
+    }
+  }
+
+  .categoryContent {
+    padding: 12px 16px;
+    min-height: 48px; // увеличиваем высоту для мобильных
+  }
+
+  .nestedIndicator {
+    font-size: 12px;
+  }
+
+  // На мобильных submenu отображается внизу, а не сбоку
+  .subMenu {
+    position: static;
+    left: auto;
+    top: auto;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: #f8f9fa;
+    animation: none;
+    
+    // Все уровни отображаются одинаково на мобильных
+    &.depth-1,
+    &.depth-2,
+    &.depth-3,
+    &.depth-4,
+    &.depth-5,
+    &.depth-6 {
+      left: auto;
+      margin-left: 0;
+      padding-left: 16px;
+    }
+  }
+
+  // Адаптация для очень маленьких экранов
+  @media (max-width: 480px) {
+    .categoryContent {
+      padding: 10px 12px;
+      min-height: 44px;
+    }
+
+    .dropdownItem {
+      font-size: 15px;
+      
+      &.nestedItem {
+        margin-left: 8px;
+      }
+    }
+
+    .subMenu {
+      &.depth-1,
+      &.depth-2,
+      &.depth-3,
+      &.depth-4,
+      &.depth-5,
+      &.depth-6 {
+        padding-left: 12px;
+      }
+    }
+  }
+}
+
+

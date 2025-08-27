@@ -1,6 +1,6 @@
 'use client';
-import React from 'react';
-import HeaderSearchField from './HeaderSearchField';
+import React, { useState } from 'react';
+import HeaderSearchField from './components/HeaderSearchField/HeaderSearchField';
 import Cart from '@/shared/components/cart/Cart';
 import styles from './Header.module.scss';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { FaBars, FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
+import CategoriesDropdown from './components/categoriesDropdown/CategoriesDropdown';
 
 const MENU = [
   { href: '/', label: 'Главная' },
@@ -21,6 +22,17 @@ const Header = () => {
 
   const { open } = useAuthModal();
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // ✅ Safe handler with fallback
+  const handleAuthOpen = () => {
+    try {
+      open();
+    } catch (err) {
+      console.error('Auth modal failed to open:', err);
+    }
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.row}>
@@ -29,9 +41,22 @@ const Header = () => {
             Гелион
           </Link>
 
-          <button className={styles.btnCategories}>
-            <FaBars /> Категории
-          </button>
+          <CategoriesDropdown
+            categories={[
+              {
+                id: '1',
+                name: 'Каталог',
+                children: [
+                  {
+                    id: '3',
+                    name: 'ПВХ',
+                    link: '/catalog/936a16d1-79a7-11e6-ab15-d017c2d57ada',
+                  },
+                ],
+              },
+              { id: '2', name: 'Статьи', link: '/articles' },
+            ]}
+          />
         </div>
 
         <div className={styles.searchRow}>
@@ -46,7 +71,7 @@ const Header = () => {
             <span className={styles.badge}>{favoritesCount}</span>
           </Link>
           <Cart />
-          <button className={styles.signIn} onClick={open}>
+          <button className={styles.signIn} onClick={() => handleAuthOpen()}>
             <FaUser /> Войти
           </button>
         </div>
@@ -68,6 +93,21 @@ const Header = () => {
           ))}
         </nav>
       </div>
+
+      {isMobileMenuOpen && (
+        <div className={styles.mobileNav}>
+          {MENU.map(m => (
+            <Link
+              key={m.href}
+              href={m.href}
+              className={pathname === m.href ? styles.active : ''}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {m.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </header>
   );
 };

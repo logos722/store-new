@@ -93,3 +93,13 @@
 .backWrapper {
   margin-bottom: 12px; /* разделяет кнопку и карточку */
 }
+
+@media (max-width: 768px) {
+  .productPage {
+    grid-template-columns: 1fr;
+  }
+
+  .productImage {
+    height: 200px;
+  }
+}

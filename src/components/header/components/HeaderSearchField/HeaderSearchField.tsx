@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { SearchCategory, SearchResult } from '@/types/search';
 import styles from './HeaderSearchField.module.scss';
-import { useDebounce } from './hooks/useDebounce';
+import { useDebounce } from '../../hooks/useDebounce';
 import { Product } from '@/types/product';
 
 const categories: SearchCategory[] = [
