@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Catalog from './components/Catalog';
 import styles from './CatalogPage.module.scss';
 import { Catalog as CatalogType } from '@/types/catalog';
@@ -26,7 +26,7 @@ const CatalogPage: React.FC<CatalogPageProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPage = async () => {
+  const fetchPage = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -42,11 +42,11 @@ const CatalogPage: React.FC<CatalogPageProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, categoryId, pageSize]);
 
   useEffect(() => {
     fetchPage();
-  }, [page, categoryId]);
+  }, [fetchPage]);
 
   if (error) return <div>{error}</div>;
 

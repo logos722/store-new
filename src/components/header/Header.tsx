@@ -5,7 +5,7 @@ import Cart from '@/shared/components/cart/Cart';
 import styles from './Header.module.scss';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaBars, FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
+import { FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import CategoriesDropdown from './components/categoriesDropdown/CategoriesDropdown';
