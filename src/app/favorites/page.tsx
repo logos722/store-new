@@ -7,20 +7,27 @@ import {
   ListProductCard,
 } from '@/shared/components/productCard';
 import Container from '@/shared/components/container/Container';
+import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
+import StructuredData from '@/shared/components/seo/StructuredData';
+import { StructuredDataGenerator } from '@/shared/components/seo/StructuredData';
+import SEOHead from '@/shared/components/seo/SEOHead';
+import useSEO from '@/shared/hooks/useSEO';
 import styles from './FavoritesPage.module.scss';
 import { FaThLarge, FaList, FaHeart } from 'react-icons/fa';
 import Link from 'next/link';
 
-/**
- * Тип отображения товаров в списке избранного
- */
+// Типы для режима отображения
 type ViewMode = 'grid' | 'list';
 
 /**
- * Компонент страницы избранных товаров
+ * Страница избранных товаров
  *
- * Особенности реализации:
- * - Поддерживает два режима отображения: сетка и список
+ * Функциональность:
+ * - Отображение списка избранных товаров в виде сетки или списка
+ * - Переключение между режимами отображения
+ * - Очистка всего списка избранного с подтверждением
+ * - Обработка пустого состояния
+ * - SEO оптимизация с использованием SEOHead компонента
  * - Работает с обновленным useFavoritesStore, который хранит полные объекты товаров
  * - Не требует дополнительных запросов к API
  * - Оптимизирован с помощью React.memo и useCallback
@@ -31,6 +38,9 @@ const FavoritesPage: React.FC = () => {
   const products = useFavoritesStore(s => s.products);
   const clearFavorites = useFavoritesStore(s => s.clearFavorites);
   const favoriteQuenty = useFavoritesStore(s => s.favoriteQuenty);
+
+  // SEO хук
+  const { favoritesPageSEO } = useSEO();
 
   // Локальное состояние компонента
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -43,7 +53,8 @@ const FavoritesPage: React.FC = () => {
   }, []);
 
   /**
-   * Обработчик очистки всего списка избранного
+   * Обработчик очистки всех избранных товаров
+   * Показывает диалог подтверждения перед очисткой
    */
   const handleClearFavorites = useCallback(() => {
     if (
@@ -53,104 +64,154 @@ const FavoritesPage: React.FC = () => {
     }
   }, [clearFavorites]);
 
+  // Генерируем структурированные данные для страницы избранного
+  const favoritesSchema = StructuredDataGenerator.generateFavoritesPageSchema();
+
+  // Получаем SEO данные для текущего состояния
+  const seoData = favoritesPageSEO(favoriteQuenty());
+
   // Рендер пустого состояния
   if (products.length === 0) {
     return (
-      <Container>
-        <div className={styles.favoritesPage}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>
-              <FaHeart className={styles.heartIcon} />
-              Избранное
-            </h1>
-          </div>
+      <>
+        {/* SEO метаданные */}
+        <SEOHead
+          title={seoData.title}
+          description={seoData.description}
+          keywords={seoData.keywords}
+          noindex={seoData.noindex}
+          nofollow={seoData.nofollow}
+          canonicalUrl="/favorites"
+          structuredData={favoritesSchema}
+        />
 
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
-              <FaHeart />
+        {/* Структурированные данные */}
+        <StructuredData data={favoritesSchema} />
+
+        <Container>
+          {/* Хлебные крошки для навигации и SEO */}
+          <Breadcrumbs />
+
+          <div className={styles.favoritesPage}>
+            <div className={styles.header}>
+              <h1 className={styles.title}>
+                <FaHeart className={styles.heartIcon} />
+                Избранное
+              </h1>
             </div>
-            <h2 className={styles.emptyTitle}>Список избранного пуст</h2>
-            <p className={styles.emptyDescription}>
-              Добавляйте товары в избранное, нажимая на иконку сердечка на
-              карточках товаров
-            </p>
-            <Link href="/catalog" className={styles.continueShopping}>
-              Перейти к покупкам
-            </Link>
+
+            {/* Пустое состояние */}
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <FaHeart />
+              </div>
+              <h2 className={styles.emptyTitle}>Список избранного пуст</h2>
+              <p className={styles.emptyDescription}>
+                Добавляйте товары в избранное, нажимая на иконку сердечка на
+                карточках товаров
+              </p>
+              <Link href="/catalog" className={styles.continueShopping}>
+                Перейти к покупкам
+              </Link>
+            </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </>
     );
   }
 
   return (
-    <Container>
-      <div className={styles.favoritesPage}>
-        {/* Заголовок страницы */}
-        <div className={styles.header}>
-          <div className={styles.titleSection}>
-            <h1 className={styles.title}>
-              <FaHeart className={styles.heartIcon} />
-              Избранное
-            </h1>
-            <span className={styles.count}>
-              {favoriteQuenty()} {favoriteQuenty() === 1 ? 'товар' : 'товаров'}
-            </span>
-          </div>
+    <>
+      {/* SEO метаданные */}
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        noindex={seoData.noindex}
+        nofollow={seoData.nofollow}
+        canonicalUrl="/favorites"
+        structuredData={favoritesSchema}
+      />
 
-          {/* Элементы управления */}
-          <div className={styles.controls}>
-            {/* Переключатель режима отображения */}
-            <div className={styles.viewModeToggle}>
-              <button
-                className={`${styles.viewButton} ${viewMode === 'grid' ? styles.active : ''}`}
-                onClick={() => handleViewModeChange('grid')}
-                aria-label="Отображение сеткой"
-              >
-                <FaThLarge />
-              </button>
-              <button
-                className={`${styles.viewButton} ${viewMode === 'list' ? styles.active : ''}`}
-                onClick={() => handleViewModeChange('list')}
-                aria-label="Отображение списком"
-              >
-                <FaList />
-              </button>
+      {/* Структурированные данные */}
+      <StructuredData data={favoritesSchema} />
+
+      <Container>
+        {/* Хлебные крошки для навигации и SEO */}
+        <Breadcrumbs />
+
+        <div className={styles.favoritesPage}>
+          {/* Заголовок страницы */}
+          <div className={styles.header}>
+            <div className={styles.titleSection}>
+              <h1 className={styles.title}>
+                <FaHeart className={styles.heartIcon} />
+                Избранное
+              </h1>
+              <span className={styles.count}>
+                {favoriteQuenty()}{' '}
+                {favoriteQuenty() === 1 ? 'товар' : 'товаров'}
+              </span>
             </div>
 
-            {/* Кнопка очистки */}
-            <button
-              onClick={handleClearFavorites}
-              className={styles.clearButton}
-            >
-              Очистить все
-            </button>
+            {/* Элементы управления */}
+            <div className={styles.controls}>
+              {/* Переключатель режима отображения */}
+              <div className={styles.viewModeToggle}>
+                <button
+                  className={`${styles.viewButton} ${
+                    viewMode === 'grid' ? styles.active : ''
+                  }`}
+                  onClick={() => handleViewModeChange('grid')}
+                  aria-label="Отображение сеткой"
+                >
+                  <FaThLarge />
+                </button>
+                <button
+                  className={`${styles.viewButton} ${
+                    viewMode === 'list' ? styles.active : ''
+                  }`}
+                  onClick={() => handleViewModeChange('list')}
+                  aria-label="Отображение списком"
+                >
+                  <FaList />
+                </button>
+              </div>
+
+              {/* Кнопка очистки всех товаров */}
+              <button
+                onClick={handleClearFavorites}
+                className={styles.clearButton}
+              >
+                Очистить все
+              </button>
+            </div>
+          </div>
+
+          {/* Список товаров */}
+          <div
+            className={
+              viewMode === 'grid' ? styles.gridContainer : styles.listContainer
+            }
+          >
+            {products.map(product =>
+              viewMode === 'grid' ? (
+                <GridProductCard
+                  key={product.id}
+                  product={{
+                    ...product,
+                    rating: 4.5,
+                    ratingCount: 25,
+                  }}
+                />
+              ) : (
+                <ListProductCard key={product.id} product={product} />
+              ),
+            )}
           </div>
         </div>
-
-        {/* Список товаров */}
-        <div
-          className={
-            viewMode === 'grid' ? styles.gridContainer : styles.listContainer
-          }
-        >
-          {products.map(product =>
-            viewMode === 'grid' ? (
-              <GridProductCard
-                key={product.id}
-                product={{
-                  ...product,
-                  rating: 4.5, // Можно добавить в FavoriteProduct если нужно
-                  ratingCount: 25, // Можно добавить в FavoriteProduct если нужно
-                }}
-              />
-            ) : (
-              <ListProductCard key={product.id} product={product} />
-            ),
-          )}
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 };
 

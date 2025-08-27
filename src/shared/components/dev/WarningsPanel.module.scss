@@ -1,0 +1,220 @@
+/**
+ * Стили для панели предупреждений React
+ * Показывается только в development режиме
+ */
+
+.warningsPanel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 400px;
+  max-height: 500px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #fff;
+  backdrop-filter: blur(10px);
+
+  @media (max-width: 768px) {
+    width: 90vw;
+    right: 5vw;
+    top: 10px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.title {
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.clearButton,
+.toggleButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.content {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px;
+
+  /* Кастомный скроллбар */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.warning {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #ff9800;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.warningHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.icon {
+  font-size: 14px;
+}
+
+.type {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.component {
+  color: #64b5f6;
+  font-style: italic;
+}
+
+.count {
+  background: #f44336;
+  color: white;
+  padding: 1px 5px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  text-align: center;
+}
+
+.timestamp {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 10px;
+}
+
+.message {
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  word-break: break-word;
+  
+  /* Подсветка ключевых слов */
+  :global {
+    .highlight {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      padding: 1px 2px;
+      border-radius: 2px;
+    }
+  }
+}
+
+.noWarnings {
+  text-align: center;
+  padding: 20px;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+/* Анимации появления */
+.warningsPanel {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Темы для разных типов предупреждений */
+.warning[data-type="key"] {
+  border-left-color: #ff9800;
+}
+
+.warning[data-type="prop"] {
+  border-left-color: #f44336;
+}
+
+.warning[data-type="performance"] {
+  border-left-color: #2196f3;
+}
+
+.warning[data-type="deprecation"] {
+  border-left-color: #9c27b0;
+}
+
+.warning[data-type="other"] {
+  border-left-color: #607d8b;
+}
