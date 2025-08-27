@@ -28,7 +28,7 @@ const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleFav = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleFavorite(product.id);
+    toggleFavorite(product);
   };
 
   const stars = (() => {

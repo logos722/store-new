@@ -1,0 +1,270 @@
+@import '@/styles/variables.scss';
+
+.favoritesPage {
+  padding: 24px 0;
+  min-height: 60vh;
+}
+
+/* Заголовок страницы */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: $text-color;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.heartIcon {
+  color: $accent-color;
+  font-size: 1.8rem;
+}
+
+.count {
+  background: $primary-color;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Элементы управления */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.viewModeToggle {
+  display: flex;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.viewButton {
+  background: white;
+  border: none;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+
+  &:hover {
+    background: #f5f5f5;
+    color: $primary-color;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: white;
+  }
+
+  &:first-child {
+    border-right: 1px solid #e0e0e0;
+  }
+}
+
+.clearButton {
+  background: white;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  &:active {
+    background: #e8e8e8;
+  }
+}
+
+/* Контейнеры для товаров */
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+}
+
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+  }
+}
+
+/* Пустое состояние */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 60px 20px;
+  }
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: #ddd;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $text-color;
+  margin: 0 0 16px;
+
+  @media (max-width: 768px) {
+    font-size: 1.3rem;
+  }
+}
+
+.emptyDescription {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 32px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+}
+
+.continueShopping {
+  display: inline-block;
+  background: $primary-color;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: darken($primary-color, 10%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Анимации и переходы */
+.gridContainer,
+.listContainer {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  .favoritesPage {
+    padding: 16px 0;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .titleSection {
+    gap: 12px;
+  }
+
+  .controls {
+    gap: 12px;
+  }
+
+  .clearButton {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+}

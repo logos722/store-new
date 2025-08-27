@@ -40,7 +40,7 @@ const ListProductCard: React.FC<Props> = ({ product }) => {
           className={`${styles.iconButton} ${isFavorite ? styles.active : ''}`}
           onClick={e => {
             e.stopPropagation();
-            toggleFavorite(product.id);
+            toggleFavorite(product);
           }}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
