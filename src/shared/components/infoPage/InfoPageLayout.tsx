@@ -9,20 +9,20 @@ import BackButton from '../backButton/BackButton';
 export interface PageSection {
   heading: string;
   content?: string;
-  items?: string[];
-  questions?: Array<{ q: string; a: string }>;
-  departments?: Array<{ name: string; description: string }>;
-  positions?: Array<{ title: string; requirements: string[] }>;
-  benefits?: string[];
-  newsTypes?: string[];
-  contacts?: string[];
-  services?: string[];
-  options?: Array<{ name: string; description: string }>;
-  pricing?: string[];
-  conditions?: string[];
-  steps?: string[];
+  items?: readonly string[];
+  questions?: ReadonlyArray<{ q: string; a: string }>;
+  departments?: ReadonlyArray<{ name: string; description: string }>;
+  positions?: ReadonlyArray<{ title: string; requirements: readonly string[] }>;
+  benefits?: readonly string[];
+  newsTypes?: readonly string[];
+  contacts?: readonly string[];
+  services?: readonly string[];
+  options?: ReadonlyArray<{ name: string; description: string }>;
+  pricing?: readonly string[];
+  conditions?: readonly string[];
+  steps?: readonly string[];
   contactInfo?: {
-    phones: string[];
+    phones: readonly string[];
     email: string;
     address: string;
     schedule: string;
@@ -36,9 +36,9 @@ export interface PageSection {
     city: string;
   };
   address?: string;
-  directions?: string[];
+  directions?: readonly string[];
   landmarks?: string;
-  brands?: string[];
+  brands?: readonly string[];
 }
 
 /**
@@ -46,13 +46,13 @@ export interface PageSection {
  */
 export interface InfoPageLayoutProps {
   title: string;
-  sections: PageSection[];
+  sections: readonly PageSection[];
   cta?: string;
   ctaLink?: string;
   includeContactForm?: boolean;
   includeFeedbackForm?: boolean;
   includeMap?: boolean;
-  formFields?: string[];
+  formFields?: readonly string[];
   children?: ReactNode;
 }
 

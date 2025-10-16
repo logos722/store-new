@@ -163,7 +163,7 @@
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.9);
   word-break: break-word;
-  
+
   /* Подсветка ключевых слов */
   :global {
     .highlight {
@@ -199,22 +199,22 @@
 }
 
 /* Темы для разных типов предупреждений */
-.warning[data-type="key"] {
+.warning[data-type='key'] {
   border-left-color: #ff9800;
 }
 
-.warning[data-type="prop"] {
+.warning[data-type='prop'] {
   border-left-color: #f44336;
 }
 
-.warning[data-type="performance"] {
+.warning[data-type='performance'] {
   border-left-color: #2196f3;
 }
 
-.warning[data-type="deprecation"] {
+.warning[data-type='deprecation'] {
   border-left-color: #9c27b0;
 }
 
-.warning[data-type="other"] {
+.warning[data-type='other'] {
   border-left-color: #607d8b;
 }

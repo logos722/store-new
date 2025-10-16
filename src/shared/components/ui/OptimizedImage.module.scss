@@ -4,7 +4,7 @@
   position: relative;
   overflow: hidden;
   background-color: #f5f5f5;
-  
+
   // Плавный переход для состояний загрузки
   transition: background-color 0.3s ease;
 }
@@ -14,11 +14,11 @@
   height: 100%;
   object-fit: cover;
   transition: opacity 0.3s ease;
-  
+
   &.loading {
     opacity: 0;
   }
-  
+
   &.error {
     opacity: 0.5;
     filter: grayscale(100%);
@@ -107,7 +107,7 @@
     width: 20px;
     height: 20px;
   }
-  
+
   .errorText {
     font-size: 0.7rem;
     padding: 6px;
@@ -119,16 +119,16 @@
   .container {
     background-color: #2a2a2a;
   }
-  
+
   .placeholder {
     background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
     background-size: 200% 100%;
   }
-  
+
   .defaultPlaceholder {
     color: #666;
   }
-  
+
   .errorText {
     color: #ccc;
     background-color: rgba(0, 0, 0, 0.8);
@@ -140,7 +140,7 @@
   // Оптимизация рендеринга
   transform: translateZ(0);
   backface-visibility: hidden;
-  
+
   // Улучшение качества масштабирования
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;

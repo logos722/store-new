@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Image, { ImageProps } from 'next/image';
 import styles from './OptimizedImage.module.scss';
 
-interface OptimizedImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
+interface OptimizedImageProps
+  extends Omit<ImageProps, 'onLoad' | 'onError' | 'placeholder'> {
   /**
    * Показывать ли placeholder во время загрузки
    */
