@@ -5,6 +5,7 @@ import { Product } from '@/types/product';
 interface FavoriteProduct {
   id: string;
   name: string;
+  slug: string;
   description: string;
   price: number;
   image: string | import('next/image').StaticImageData;
@@ -48,6 +49,7 @@ export const useFavoritesStore = create<FavoritesState>()(
         const favoriteProduct: FavoriteProduct = {
           id: product.id,
           name: product.name,
+          slug: product.slug as string,
           description: product.description,
           price: product.price,
           image: product.image,
