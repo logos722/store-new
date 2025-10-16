@@ -5,6 +5,8 @@ import cat1 from '../../../public/cat1.jpeg';
 import cat2 from '../../../public/cat2.jpeg';
 import cat3 from '../../../public/cat3.jpeg';
 import styles from './page.module.scss';
+import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
+
 const sampleArticles = [
   {
     id: '1',
@@ -35,6 +37,8 @@ const sampleArticles = [
 const ArticlesPage = () => {
   return (
     <Container>
+      <Breadcrumbs />
+
       <div className={styles.articleDiv}>
         <h1>Статьи</h1>
         <ArticleList articles={sampleArticles} />

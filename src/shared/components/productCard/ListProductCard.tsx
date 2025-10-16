@@ -22,11 +22,11 @@ const ListProductCard: React.FC<Props> = ({ product }) => {
   return (
     <div
       className={styles.cardList}
-      onClick={() => router.push(`/product/${product.id}`)}
+      onClick={() => router.push(`/product/${product.slug}`)}
       role="button"
       tabIndex={0}
       onKeyPress={e =>
-        e.key === 'Enter' && router.push(`/product/${product.id}`)
+        e.key === 'Enter' && router.push(`/product/${product.slug}`)
       }
     >
       <div className={styles.imageWrapList}>

@@ -93,7 +93,7 @@ const HeaderSearchField = () => {
   // Обработчик выбора результата
   const handleSelect = (type: 'product' | 'category', item: SearchItem) => {
     if (type === 'product') {
-      router.push(`/product/${item.id}`);
+      router.push(`/product/${item.slug}`);
     } else {
       router.push(`/catalog/${item.slug}`);
     }

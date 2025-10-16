@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { FaBars } from 'react-icons/fa';
 import styles from './CategoriesDropdown.module.scss'; // keep your existing styles
-import ReactDOM from 'react-dom';
+import SafePortal from '@/shared/components/ui/SafePortal';
 import RecursiveCategory from './components/RecursiveCategory';
 
 // Example type for categories
@@ -158,11 +158,11 @@ const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
         <FaBars /> Категории
       </button>
 
-      {isOpen &&
-        ReactDOM.createPortal(
-          <div ref={menuRef}>{renderCategories(validCategories)}</div>,
-          document.body,
-        )}
+      {isOpen && (
+        <SafePortal>
+          <div ref={menuRef}>{renderCategories(validCategories)}</div>
+        </SafePortal>
+      )}
     </div>
   );
 };

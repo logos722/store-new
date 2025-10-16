@@ -50,7 +50,7 @@ const Header = () => {
                   {
                     id: '3',
                     name: 'ПВХ',
-                    link: '/catalog/936a16d1-79a7-11e6-ab15-d017c2d57ada',
+                    link: '/catalog/PVC',
                   },
                 ],
               },

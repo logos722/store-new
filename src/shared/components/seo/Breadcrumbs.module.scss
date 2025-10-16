@@ -1,0 +1,157 @@
+@import '@/styles/variables.scss';
+
+.breadcrumbs {
+  margin: 16px 0;
+  font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    margin: 12px 0;
+    font-size: 0.8rem;
+  }
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  
+  &:not(:last-child) {
+    margin-right: 4px;
+  }
+}
+
+.link {
+  color: #666;
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  
+  &:hover {
+    color: $primary-color;
+    background-color: rgba($primary-color, 0.1);
+    text-decoration: underline;
+  }
+  
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+.homeIcon {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  
+  svg {
+    margin-right: 4px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    
+    svg {
+      margin-right: 2px;
+    }
+  }
+}
+
+.currentPage {
+  color: $text-color;
+  font-weight: 500;
+  padding: 4px 6px;
+  
+  &.current {
+    color: $primary-color;
+  }
+}
+
+.separator {
+  color: #999;
+  margin: 0 4px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    margin: 0 2px;
+    font-size: 0.7rem;
+    
+    svg {
+      width: 8px;
+      height: 8px;
+    }
+  }
+}
+
+// Скрытый текст для screen readers
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Адаптивность для очень маленьких экранов
+@media (max-width: 480px) {
+  .breadcrumbs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  
+  .list {
+    flex-wrap: nowrap;
+    min-width: max-content;
+  }
+  
+  .item {
+    flex-shrink: 0;
+  }
+}
+
+// Темная тема (если используется)
+@media (prefers-color-scheme: dark) {
+  .link {
+    color: #ccc;
+    
+    &:hover {
+      color: lighten($primary-color, 20%);
+      background-color: rgba($primary-color, 0.2);
+    }
+  }
+  
+  .currentPage {
+    color: #fff;
+  }
+  
+  .separator {
+    color: #666;
+  }
+}

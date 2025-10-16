@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { ProductDetail } from '../../types';
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 
 export async function GET(
   _request: Request,
   { params }: { params: { id: string } },
 ) {
   const { id } = params;
+
+  const apiUrl = getApiUrl();
   try {
-    const res = await fetch(
-      `${process.env.API_BASE_URL}/api/product/${encodeURIComponent(id)}`,
-      { cache: 'no-store' },
-    );
+    const res = await fetch(`${apiUrl}/api/product/${encodeURIComponent(id)}`, {
+      cache: 'no-store',
+    });
     if (!res.ok) {
       return NextResponse.json(
         { error: `Product ${id} not found` },

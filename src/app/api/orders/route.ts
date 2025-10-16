@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 import { NextResponse } from 'next/server';
 
 /**
@@ -9,8 +10,9 @@ export async function POST(request: Request) {
     // Read JSON body from the incoming request
     const orderPayload = await request.json();
 
+    const apiUrl = getApiUrl();
     // Forward to backend
-    const res = await fetch(`${process.env.API_BASE_URL}/api/orders`, {
+    const res = await fetch(`${apiUrl}/api/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

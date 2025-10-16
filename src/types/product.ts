@@ -6,6 +6,7 @@ export interface Product {
   description: string;
   price: number;
   image: string | StaticImageData;
+  groupId?: string;
   category: string;
   stock: number;
   quantity: number;

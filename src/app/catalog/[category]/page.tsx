@@ -7,12 +7,12 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import Container from '@/shared/components/container/Container';
 import styles from './CategoryPage.module.scss';
 import { Loading, Alert, BackToTopButton } from '@/shared/components';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { CatalogInfo } from '@/constants/catalogs';
+import { CatalogId, CatalogInfo } from '@/constants/catalogs';
 import CategoryPageHeader from './components/CategoryPageHeader/CategoryPageHeader';
 import CategoryPageFilters from './components/CategoryPageFilters/CategoryPageFilters';
 import { useFilterStore } from '@/store/useFilterStore';
@@ -22,9 +22,15 @@ import {
 } from '@/shared/components/productCard';
 import { useCategoryProducts } from './hooks/useCategoryProducts';
 import { CategoryPageSkeleton } from './components/CategoryPageSkeleton/CategoryPageSkeleton';
+import { useSEO } from '@/shared/hooks/useSEO';
+import StructuredData, {
+  StructuredDataGenerator,
+} from '@/shared/components/seo/StructuredData';
+import SEOHead from '@/shared/components/seo/SEOHead';
+import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
 
 type QuizParams = {
-  category: string[];
+  category: string;
 };
 
 const useMediaQuery = (query: string) => {
@@ -45,7 +51,13 @@ const CategoryPage = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [isFiltersOpen, setFiltersOpen] = useState(false);
   const { category: rawCategory } = useParams<QuizParams>();
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
   const listRef = useRef<HTMLDivElement>(null);
+
+  const { categoryPageSEO } = useSEO();
+
+  const category = CatalogId[rawCategory];
 
   useEffect(() => {
     if (!isMobile) return;
@@ -57,21 +69,14 @@ const CategoryPage = () => {
     };
   }, [isFiltersOpen, isMobile]);
 
-  // приводим к строке
-  const categorySlug =
-    typeof rawCategory === 'string'
-      ? rawCategory
-      : Array.isArray(rawCategory)
-        ? rawCategory[0]
-        : ''; // или бросать ошибку, если slug обязателен
-
-  if (!categorySlug) {
+  if (!category) {
     <div key="no-categorits" className={styles.wrapper}>
       <Container>
         <Alert message="Категории не найдены" type="error" />
       </Container>
     </div>;
   }
+
   const debouncedFilters = useFilterStore(s => s.debounced);
   const selectedCategories = useFilterStore(s => s.selectedCategories);
   const priceRangeState = useFilterStore(s => s.priceRange);
@@ -81,6 +86,8 @@ const CategoryPage = () => {
   const setPriceRange = useFilterStore(s => s.setPriceRange);
   const setSort = useFilterStore(s => s.setSort);
   const setInStock = useFilterStore(s => s.setInStock);
+
+  console.log('debouncedFilters', debouncedFilters);
 
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
 
@@ -94,6 +101,13 @@ const CategoryPage = () => {
     });
   }, [selectedCategories]);
 
+  useEffect(() => {
+    if (categoryFromUrl) {
+      // Устанавливаем фильтр при загрузке страницы
+      setSelectedCategories([categoryFromUrl]);
+    }
+  }, [categoryFromUrl, setSelectedCategories]);
+
   const {
     data: categoryProducts,
     error,
@@ -102,7 +116,7 @@ const CategoryPage = () => {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useCategoryProducts(categorySlug, {
+  } = useCategoryProducts(category, {
     selectedCategories: debouncedFilters.selectedCategories,
     priceRange: {
       min: debouncedFilters.priceRange.min,
@@ -125,6 +139,24 @@ const CategoryPage = () => {
     () => categoryProducts?.pages.flatMap(page => page.products) ?? [],
     [categoryProducts],
   );
+
+  const seoData = categoryPageSEO(category, allProducts.length);
+
+  const catalogSchema = StructuredDataGenerator.generateCatalogPageSchema(
+    rawCategory,
+    allProducts,
+    `/catalog/${rawCategory}`,
+  );
+
+  const breadcrumbItems = [
+    { name: 'Главная', href: '/' },
+    { name: 'Каталог', href: '/catalog' },
+    {
+      name: getCatalogName(category),
+      href: `/catalog/${category}`,
+      current: true,
+    },
+  ];
 
   const getProductBlock = () => {
     if (isLoading) {
@@ -190,6 +222,21 @@ const CategoryPage = () => {
 
   return (
     <Container>
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        image={seoData.image}
+        canonicalUrl={`/catalog/${rawCategory}`}
+        structuredData={catalogSchema}
+        type="website"
+      />
+
+      {/* Структурированные данные */}
+      <StructuredData data={catalogSchema} />
+
+      <Breadcrumbs items={breadcrumbItems} />
+
       <div className={styles.page}>
         {/* 1. Фильтры */}
         <aside className={styles.filters}>
@@ -207,7 +254,7 @@ const CategoryPage = () => {
         <div className={styles.main}>
           {/* 2.1 Заголовок + контролы */}
           <CategoryPageHeader
-            title={getCatalogName(categorySlug)}
+            title={getCatalogName(category)}
             total={categoryProducts?.pages[0].total ?? 0}
             viewType={viewType}
             onViewChange={setViewType}

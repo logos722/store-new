@@ -1,0 +1,459 @@
+@import '../../../styles/variables.scss';
+
+.infoPage {
+  min-height: calc(100vh - 200px);
+  padding: 40px 0;
+  background-color: #f9f9f9;
+}
+
+.backButtonWrapper {
+  margin-bottom: 20px;
+}
+
+.header {
+  margin-bottom: 40px;
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid $primary-color;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: $primary-color;
+  margin: 0;
+  font-weight: 700;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+.section {
+  margin-bottom: 40px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionHeading {
+  font-size: 1.75rem;
+  color: $primary-color;
+  margin: 0 0 20px;
+  font-weight: 600;
+  border-left: 4px solid $accent-color;
+  padding-left: 15px;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.sectionContent {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+  margin: 0 0 15px;
+}
+
+.list,
+.benefitsList,
+.servicesList,
+.pricingList,
+.conditionsList,
+.directionsList,
+.brandsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem,
+.benefitItem,
+.serviceItem,
+.pricingItem,
+.conditionItem,
+.directionItem,
+.brandItem {
+  padding: 12px 15px 12px 40px;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  position: relative;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &::before {
+    content: '✓';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $accent-color;
+    font-weight: bold;
+  }
+
+  &:hover {
+    transform: translateX(5px);
+    background-color: #ebebeb;
+  }
+}
+
+.stepsList {
+  counter-reset: step-counter;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.stepItem {
+  counter-increment: step-counter;
+  padding: 15px 15px 15px 60px;
+  margin-bottom: 15px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  position: relative;
+  font-size: 1.05rem;
+
+  &::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: $accent-color;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.faqItem {
+  background-color: #f9f9f9;
+  border-left: 4px solid $accent-color;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.question {
+  font-size: 1.2rem;
+  color: $primary-color;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.answer {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #555;
+  margin: 0;
+}
+
+.departmentList,
+.positionList,
+.optionsList {
+  display: grid;
+  gap: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.department,
+.position,
+.option {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.departmentName,
+.positionTitle,
+.optionName {
+  font-size: 1.25rem;
+  color: $primary-color;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.departmentDesc,
+.optionDesc {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.requirements {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+
+  li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    color: #555;
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 5px;
+      color: $accent-color;
+      font-weight: bold;
+    }
+  }
+}
+
+.contactsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contactItem {
+  font-size: 1.05rem;
+  padding: 12px 15px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 25px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  strong {
+    color: $primary-color;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.phoneLink,
+.emailLink {
+  color: $accent-color;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: block;
+  margin-bottom: 5px;
+
+  &:hover {
+    color: darken($accent-color, 10%);
+    text-decoration: underline;
+  }
+}
+
+.addressText,
+.addressBlock,
+.mapAddress {
+  font-style: normal;
+  color: #555;
+  line-height: 1.6;
+}
+
+.schedule {
+  font-family: inherit;
+  white-space: pre-line;
+  color: #555;
+  margin: 0;
+}
+
+.details {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+
+  p {
+    margin: 0 0 10px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.note {
+  color: #666;
+  font-style: italic;
+}
+
+.mapInfo {
+  padding: 15px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  border-left: 4px solid $accent-color;
+}
+
+.landmarks {
+  padding: 15px;
+  background-color: #fff9e6;
+  border-radius: 8px;
+  margin: 0;
+  color: #555;
+}
+
+.mapSection {
+  margin-top: 40px;
+}
+
+.mapPlaceholder {
+  background-color: #e8f4f8;
+  border: 2px dashed $accent-color;
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+  color: #666;
+
+  p {
+    margin: 5px 0;
+    font-size: 1.1rem;
+  }
+}
+
+.mapNote {
+  font-size: 0.9rem !important;
+  font-style: italic;
+  color: #999 !important;
+}
+
+.formSection {
+  margin-top: 40px;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 600;
+  color: $primary-color;
+  font-size: 0.95rem;
+}
+
+.input,
+.textarea {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $accent-color;
+    box-shadow: 0 0 0 3px rgba($accent-color, 0.1);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submitButton {
+  padding: 15px 30px;
+  background-color: $accent-color;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: darken($accent-color, 10%);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.ctaSection {
+  margin-top: 40px;
+  text-align: center;
+  padding-top: 30px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 15px 40px;
+  background-color: $accent-color;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: darken($accent-color, 10%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+

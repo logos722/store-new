@@ -27,7 +27,7 @@ const CategoryPageHeaderComponent: React.FC<CategoryPageHeaderProps> = ({
     <div className={styles.header}>
       <div className={styles.titleBlock}>
         <h2 className={styles.title}>
-          Found <span className={styles.count}>{total}</span> results for{' '}
+          Найдено <span className={styles.count}>{total}</span> товаров для{' '}
           <span className={styles.category}>{title}</span>
         </h2>
       </div>

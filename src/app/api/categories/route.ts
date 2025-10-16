@@ -1,8 +1,11 @@
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
+  const apiUrl = getApiUrl();
+
   try {
-    const res = await fetch(`${process.env.API_BASE_URL}/api/categories`);
+    const res = await fetch(`${apiUrl}/api/categories`);
     if (!res.ok) {
       return NextResponse.json(
         { error: `Categories not found` },

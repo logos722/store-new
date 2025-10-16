@@ -1,7 +1,38 @@
+@import '@/styles/variables.scss';
+
+// Skip link для доступности
+.skipLink {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: $primary-color;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 10000;
+  font-size: 14px;
+  font-weight: 500;
+  
+  &:focus {
+    top: 0;
+  }
+}
+
+.body {
+  // Оптимизация рендеринга
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  // Улучшение производительности прокрутки
+  scroll-behavior: smooth;
+}
+
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* чтобы “растянуться” на весь экран */
+  min-height: 100vh; /* чтобы "растянуться" на весь экран */
 }
 
 .main {
