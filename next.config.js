@@ -32,12 +32,14 @@ const nextConfig = {
         pathname: '/images/**',
       },
     ],
-    formats: ['image/webp', 'image/avif'], // Современные форматы для лучшей производительности
-    minimumCacheTTL: 60 * 60 * 24 * 365, // Кэширование на год
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Адаптивные размеры
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Размеры для иконок
+    loader: 'custom',
+    loaderFile: './src/utils/imageLoader.ts',
+    // formats: ['image/webp', 'image/avif'], // Современные форматы для лучшей производительности
+    // minimumCacheTTL: 60 * 60 * 24 * 365, // Кэширование на год
+    // dangerouslyAllowSVG: true,
+    // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Адаптивные размеры
+    // imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Размеры для иконок
   },
 
   // Переменные окружения
