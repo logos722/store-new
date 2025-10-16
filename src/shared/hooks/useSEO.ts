@@ -15,7 +15,7 @@ interface SEOData {
 }
 
 export const useSEO = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
   const siteName = 'Гелион - Интернет-магазин сантехники';
 
   /**
@@ -84,6 +84,8 @@ export const useSEO = () => {
    */
   const productPageSEO = useCallback(
     (product: Product & { rating?: number; ratingCount?: number }): SEOData => {
+      console.log('product', product);
+
       const imageUrl =
         typeof product.image === 'string'
           ? product.image.startsWith('http')

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { CatalogResponse } from '../../types';
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 
 export async function GET(
   request: Request,
@@ -9,12 +10,13 @@ export async function GET(
   const url = new URL(request.url);
   const queryString = url.searchParams.toString();
 
+  const apiUrl = getApiUrl();
+
+  const apiUrlWithParams = `${apiUrl}/api/catalog/${encodeURIComponent(category)}?${queryString}`;
+
   try {
     // Проксируем запрос, передавая page и limit в query
-    const res = await fetch(
-      `${process.env.API_BASE_URL}/api/catalog/${encodeURIComponent(category)}?${queryString}`,
-      { cache: 'no-store' },
-    );
+    const res = await fetch(apiUrlWithParams, { cache: 'no-store' });
 
     if (!res.ok) {
       return NextResponse.json(

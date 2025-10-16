@@ -1,0 +1,138 @@
+@import '@/styles/variables.scss';
+
+.tooltipWrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: inherit;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  border-radius: 4px;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 300px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  animation: fadeIn 0.2s ease-in-out;
+
+  // Позиционирование: сверху
+  &.top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+
+    .tooltipArrow {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: rgba(0, 0, 0, 0.9);
+      border-bottom: none;
+    }
+  }
+
+  // Позиционирование: снизу
+  &.bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+
+    .tooltipArrow {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+      border-top: none;
+    }
+  }
+
+  // Позиционирование: слева
+  &.left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 8px;
+
+    .tooltipArrow {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: rgba(0, 0, 0, 0.9);
+      border-right: none;
+    }
+  }
+
+  // Позиционирование: справа
+  &.right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 8px;
+
+    .tooltipArrow {
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: rgba(0, 0, 0, 0.9);
+      border-left: none;
+    }
+  }
+}
+
+.tooltipContent {
+  position: relative;
+  z-index: 1;
+}
+
+// Стрелка тултипа
+.tooltipArrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+}
+
+// Анимация появления
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Адаптация для мобильных устройств
+@media (max-width: 768px) {
+  .tooltip {
+    max-width: calc(100vw - 32px);
+    font-size: 0.8125rem;
+    padding: 0.4rem 0.6rem;
+    
+    // На мобильных показываем по центру экрана если не помещается
+    &.top,
+    &.bottom {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+// Для очень маленьких экранов
+@media (max-width: 480px) {
+  .tooltip {
+    max-width: calc(100vw - 24px);
+    font-size: 0.75rem;
+  }
+}
+

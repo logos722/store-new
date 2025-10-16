@@ -44,7 +44,7 @@ const SEOHead: React.FC<SEOProps> = ({
   structuredData,
 }) => {
   // Генерируем полный URL для текущей страницы
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 
   // Используем переданный URL или создаем базовый URL
   const fullUrl = url || baseUrl;

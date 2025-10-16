@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { SearchResponse } from '../types';
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query') || '';
+  const apiUrl = getApiUrl();
 
   if (!query.trim()) {
     return NextResponse.json(
@@ -14,7 +16,7 @@ export async function GET(request: Request) {
 
   try {
     const res = await fetch(
-      `${process.env.API_BASE_URL}/api/search?query=${encodeURIComponent(query)}`,
+      `${apiUrl}/api/search?query=${encodeURIComponent(query)}`,
       { cache: 'no-store' },
     );
     if (!res.ok) {

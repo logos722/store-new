@@ -3,17 +3,16 @@ import { SliderMain } from '../components';
 import cat1 from '../../public/cat1.jpeg';
 import cat2 from '../../public/cat2.jpeg';
 import cat3 from '../../public/cat3.jpeg';
-import { CatalogPage } from '@/shared/components';
+import { CatalogShowcaseList } from '@/shared/components';
 import Container from '@/shared/components/container/Container';
 import ServerStructuredData from '@/shared/components/seo/ServerStructuredData';
 import { ServerStructuredDataGenerator } from '@/shared/utils/structuredData';
 import { generateHomeMetadata } from '@/shared/utils/seo';
+import { fetchHomePageShowcases } from '@/shared/api/fetchCatalogShowcases';
 import styles from './page.module.scss';
 
 // Генерируем метаданные для главной страницы
 export const metadata: Metadata = generateHomeMetadata();
-
-const categoryId = '936a16d1-79a7-11e6-ab15-d017c2d57ada';
 
 const images = [
   { src: cat1, alt: 'Image 1', url: '/test' },
@@ -27,6 +26,9 @@ export default async function Home() {
     ServerStructuredDataGenerator.generateOrganizationSchema();
   const websiteSchema = ServerStructuredDataGenerator.generateWebsiteSchema();
 
+  // Загружаем витрины каталогов (серверный рендеринг)
+  const showcases = await fetchHomePageShowcases(4); // 4 товара в каждой витрине
+
   return (
     <>
       {/* Структурированные данные для поисковиков */}
@@ -38,8 +40,11 @@ export default async function Home() {
             {/* Главный слайдер с оптимизированными изображениями */}
             <SliderMain images={images} />
 
-            {/* Каталог товаров на главной странице */}
-            <CatalogPage categoryId={categoryId} pageSize={8} />
+            {/* Витрины каталогов на главной странице */}
+            <section className={styles.showcasesSection}>
+              <h2 className={styles.sectionTitle}>Наши каталоги</h2>
+              <CatalogShowcaseList showcases={showcases} />
+            </section>
           </div>
         </div>
       </Container>

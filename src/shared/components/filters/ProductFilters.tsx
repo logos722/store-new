@@ -89,7 +89,10 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           <input
             type="checkbox"
             checked={inStock}
-            onChange={e => onStockChange(e.target.checked)}
+            onChange={e => {
+              console.log('onStockChange(e.target.checked)', e.target.checked);
+              onStockChange(e.target.checked);
+            }}
           />
           Только в наличии
         </label>

@@ -5,7 +5,7 @@ import { Product } from '@/types/product';
  * Утилиты для генерации SEO метаданных с использованием нового Metadata API Next.js 13+
  */
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 const siteName = 'Гелион - Интернет-магазин сантехники';
 const defaultDescription =
   'Гелион - ведущий интернет-магазин сантехники и строительных материалов. Широкий ассортимент, низкие цены, быстрая доставка по всей России.';

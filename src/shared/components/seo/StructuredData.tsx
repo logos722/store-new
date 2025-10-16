@@ -75,7 +75,7 @@ export interface BreadcrumbSchema {
  */
 export class StructuredDataGenerator {
   private static baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com';
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 
   /**
    * Генерирует схему организации
@@ -224,6 +224,10 @@ export class StructuredDataGenerator {
             '@type': 'Offer',
             price: product.price.toString(),
             priceCurrency: 'RUB',
+            availability:
+              product.stock > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock', // ← добавьте availability
           },
         })),
       },

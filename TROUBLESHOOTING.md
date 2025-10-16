@@ -249,8 +249,8 @@ Error: Invalid URL: process.env.NEXT_PUBLIC_BASE_URL
 
 ```env
 # .env.local
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-NEXT_PUBLIC_IMAGE_HOST=http://localhost:5000
+NEXT_PUBLIC_BASE_URL=https://localhost:3000
+NEXT_PUBLIC_IMAGE_HOST=https://localhost:5000
 ```
 
 **2. Для продакшена используйте HTTPS:**
@@ -263,13 +263,13 @@ NEXT_PUBLIC_BASE_URL=https://your-domain.com
 **3. Добавьте fallback в коде:**
 
 ```tsx
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://localhost:3000';
 ```
 
 **4. Проверьте формат URL:**
 
 - ✅ `https://example.com`
-- ✅ `http://localhost:3000`
+- ✅ `https://localhost:3000`
 - ❌ `example.com` (без протокола)
 - ❌ `undefined`
 

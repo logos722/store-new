@@ -26,6 +26,11 @@ const nextConfig = {
         hostname: 'backend',
         pathname: '/images/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'gelionaqua.ru', // Ваш домен
+        pathname: '/images/**',
+      },
     ],
     formats: ['image/webp', 'image/avif'], // Современные форматы для лучшей производительности
     minimumCacheTTL: 60 * 60 * 24 * 365, // Кэширование на год
@@ -105,7 +110,7 @@ const nextConfig = {
 
   // Перенаправления изображений и специальные маршруты
   async rewrites() {
-    const host = process.env.NEXT_PUBLIC_IMAGE_HOST ?? 'http://localhost:5000';
+    const host = process.env.NEXT_PUBLIC_IMAGE_HOST ?? 'https://backend:5000';
     return [
       {
         source: '/images/:path*',
@@ -123,10 +128,10 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: 'www.store-new.com',
+            value: 'www.gelionaqua.ru',
           },
         ],
-        destination: 'https://store-new.com/:path*',
+        destination: 'https://gelionaqua.ru/:path*',
         permanent: true,
       },
       // Блокируем Chrome DevTools запросы (возвращает 404)

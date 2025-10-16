@@ -78,7 +78,7 @@ export interface BreadcrumbSchema {
  */
 export class ServerStructuredDataGenerator {
   private static baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com';
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 
   /**
    * Генерирует схему организации
@@ -90,11 +90,11 @@ export class ServerStructuredDataGenerator {
       name: 'Гелион',
       url: this.baseUrl,
       logo: `${this.baseUrl}/logo.png`,
-      sameAs: [
-        'https://vk.com/store-new',
-        'https://t.me/store-new',
-        'https://instagram.com/store-new',
-      ],
+      // sameAs: [
+      //   'https://vk.com/store-new',
+      //   'https://t.me/store-new',
+      //   'https://instagram.com/store-new',
+      // ],
       contactPoint: {
         '@type': 'ContactPoint',
         telephone: '+7-800-123-45-67',

@@ -17,7 +17,7 @@ const montserrat = Montserrat({
 // SEO-оптимизированные метаданные для корневого layout
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || 'https://store-new.com',
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru',
   ),
   title: {
     default: 'Гелион - Интернет-магазин сантехники',

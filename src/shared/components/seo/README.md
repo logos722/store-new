@@ -178,7 +178,7 @@ export default function ProductPage({ product }) {
         description={seoData.description}
         keywords={seoData.keywords}
         image={seoData.image}
-        canonicalUrl={`/product/${product.id}`}
+        canonicalUrl={`/product/${product.slug}`}
         structuredData={productSchema}
       />
 

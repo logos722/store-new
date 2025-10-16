@@ -14,3 +14,43 @@
     width: 100%;
   }
 }
+
+// Секция витрин каталогов
+.showcasesSection {
+  margin-top: 3rem;
+  width: 100%;
+
+  .sectionTitle {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 2rem 0;
+    text-align: center;
+
+    // Декоративная линия под заголовком
+    &::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      margin: 1rem auto 0;
+      border-radius: 2px;
+    }
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 15px;
+  }
+
+  .showcasesSection {
+    margin-top: 2rem;
+
+    .sectionTitle {
+      margin-bottom: 1.5rem;
+    }
+  }
+}

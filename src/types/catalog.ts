@@ -14,3 +14,23 @@ export interface CatalogFilters {
 }
 
 export type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+
+/**
+ * Представляет витрину каталога для отображения на главной странице
+ */
+export interface CatalogShowcase {
+  /** Уникальный идентификатор категории */
+  categoryId: string;
+  /** Название категории */
+  title: string;
+  /** Описание категории */
+  description?: string;
+  /** Slug для URL (например, 'pvc', 'fittings') */
+  slug: string;
+  /** URL изображения категории */
+  imageUrl?: string;
+  /** Список товаров для витрины (обычно 4 штуки) */
+  products: Product[];
+  /** Общее количество товаров в категории */
+  totalProducts?: number;
+}
