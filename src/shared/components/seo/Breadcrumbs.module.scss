@@ -3,7 +3,7 @@
 .breadcrumbs {
   margin: 16px 0;
   font-size: 0.875rem;
-  
+
   @media (max-width: 768px) {
     margin: 12px 0;
     font-size: 0.8rem;
@@ -23,7 +23,7 @@
 .item {
   display: flex;
   align-items: center;
-  
+
   &:not(:last-child) {
     margin-right: 4px;
   }
@@ -37,13 +37,13 @@
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  
+
   &:hover {
     color: $primary-color;
     background-color: rgba($primary-color, 0.1);
     text-decoration: underline;
   }
-  
+
   &:focus {
     outline: 2px solid $primary-color;
     outline-offset: 2px;
@@ -54,14 +54,14 @@
   display: flex;
   align-items: center;
   font-size: 1rem;
-  
+
   svg {
     margin-right: 4px;
   }
-  
+
   @media (max-width: 480px) {
     font-size: 0.9rem;
-    
+
     svg {
       margin-right: 2px;
     }
@@ -72,7 +72,7 @@
   color: $text-color;
   font-weight: 500;
   padding: 4px 6px;
-  
+
   &.current {
     color: $primary-color;
   }
@@ -84,16 +84,16 @@
   font-size: 0.75rem;
   display: flex;
   align-items: center;
-  
+
   svg {
     width: 10px;
     height: 10px;
   }
-  
+
   @media (max-width: 480px) {
     margin: 0 2px;
     font-size: 0.7rem;
-    
+
     svg {
       width: 8px;
       height: 8px;
@@ -120,17 +120,17 @@
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    
+
     &::-webkit-scrollbar {
       display: none;
     }
   }
-  
+
   .list {
     flex-wrap: nowrap;
     min-width: max-content;
   }
-  
+
   .item {
     flex-shrink: 0;
   }
@@ -140,17 +140,17 @@
 @media (prefers-color-scheme: dark) {
   .link {
     color: #ccc;
-    
+
     &:hover {
       color: lighten($primary-color, 20%);
       background-color: rgba($primary-color, 0.2);
     }
   }
-  
+
   .currentPage {
     color: #fff;
   }
-  
+
   .separator {
     color: #666;
   }

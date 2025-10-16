@@ -15,6 +15,7 @@ interface CatalogApiResponse {
     category: string;
     stock: number;
     quantity: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   }>;
   page?: number;
@@ -115,4 +116,3 @@ export async function fetchHomePageShowcases(
 
   return fetchAllCatalogShowcases(categoryIds, itemsPerShowcase);
 }
-

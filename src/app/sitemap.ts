@@ -138,6 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Добавляем страницы категорий
     const categoryPages: MetadataRoute.Sitemap = categories.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (category: any) => ({
         url: `${baseUrl}/catalog/${encodeURIComponent(category.id)}`,
         lastModified: new Date(),
@@ -157,6 +158,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Добавляем страницы товаров
     const productPages: MetadataRoute.Sitemap = products.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (product: any) => ({
         url: `${baseUrl}/product/${product.id}`,
         lastModified: new Date(

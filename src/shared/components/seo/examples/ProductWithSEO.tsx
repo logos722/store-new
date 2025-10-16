@@ -6,7 +6,7 @@ import Breadcrumbs from '../Breadcrumbs';
 import StructuredData, { StructuredDataGenerator } from '../StructuredData';
 import useSEO from '@/shared/hooks/useSEO';
 import { Product } from '@/types/product';
-
+import OptimizedImage from '../../ui/OptimizedImage';
 /**
  * Пример использования SEOHead в компоненте страницы товара
  * Демонстрирует полную SEO оптимизацию для страницы товара
@@ -59,7 +59,7 @@ const ProductWithSEO: React.FC<ProductWithSEOProps> = ({ product }) => {
         <h1>{product.name}</h1>
 
         <div>
-          <img
+          <OptimizedImage
             src={
               typeof product.image === 'string'
                 ? product.image
