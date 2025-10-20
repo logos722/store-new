@@ -7,12 +7,7 @@ import styles from './HeaderSearchField.module.scss';
 import { useDebounce } from '../../hooks/useDebounce';
 import { Product } from '@/types/product';
 
-const categories: SearchCategory[] = [
-  { id: 'electronics', name: 'Электроника', slug: 'electronics' },
-  { id: 'clothing', name: 'Одежда', slug: 'clothing' },
-  { id: 'books', name: 'Книги', slug: 'books' },
-  { id: 'home', name: 'Товары для дома', slug: 'home' },
-];
+const categories: SearchCategory[] = [{ id: 'pvc', name: 'ПВХ', slug: 'PVC' }];
 
 type SearchItem = Product | SearchCategory;
 

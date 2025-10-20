@@ -87,8 +87,6 @@ const CategoryPage = () => {
   const setSort = useFilterStore(s => s.setSort);
   const setInStock = useFilterStore(s => s.setInStock);
 
-  console.log('debouncedFilters', debouncedFilters);
-
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {

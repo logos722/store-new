@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Container } from '@/shared/components';
 import styles from './InfoPageLayout.module.scss';
 import BackButton from '../backButton/BackButton';
+import YandexMap from '../yandexMap/YandexMap';
 /**
  * Интерфейс для секции страницы
  */
@@ -23,7 +24,7 @@ export interface PageSection {
   steps?: readonly string[];
   contactInfo?: {
     phones: readonly string[];
-    email: string;
+    email: readonly string[];
     address: string;
     schedule: string;
   };
@@ -52,6 +53,14 @@ export interface InfoPageLayoutProps {
   includeContactForm?: boolean;
   includeFeedbackForm?: boolean;
   includeMap?: boolean;
+  /** Координаты для карты [широта, долгота] */
+  mapCenter?: [number, number];
+  /** Адрес для отображения на карте */
+  mapAddress?: string;
+  /** Название организации для метки на карте */
+  mapOrganizationName?: string;
+  /** Уровень зума карты */
+  mapZoom?: number;
   formFields?: readonly string[];
   children?: ReactNode;
 }
@@ -74,6 +83,10 @@ const InfoPageLayout: React.FC<InfoPageLayoutProps> = ({
   includeContactForm = false,
   includeFeedbackForm = false,
   includeMap = false,
+  mapCenter,
+  mapAddress,
+  mapOrganizationName,
+  mapZoom,
   formFields = [],
   children,
 }) => {
@@ -249,12 +262,15 @@ const InfoPageLayout: React.FC<InfoPageLayoutProps> = ({
             </div>
             <div className={styles.infoBlock}>
               <strong>Email:</strong>{' '}
-              <a
-                href={`mailto:${section.contactInfo.email}`}
-                className={styles.emailLink}
-              >
-                {section.contactInfo.email}
-              </a>
+              <div>
+                {section.contactInfo.email.map(email => (
+                  <div key={email}>
+                    <a href={`mailto:${email}`} className={styles.emailLink}>
+                      {email}
+                    </a>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className={styles.infoBlock}>
               <strong>Адрес:</strong>{' '}
@@ -345,12 +361,12 @@ const InfoPageLayout: React.FC<InfoPageLayoutProps> = ({
           {/* Карта (если нужна) */}
           {includeMap && (
             <div className={styles.mapSection}>
-              <div className={styles.mapPlaceholder}>
-                <p>🗺️ Здесь будет Яндекс.Карта с местоположением</p>
-                <p className={styles.mapNote}>
-                  Интеграция с картами добавляется отдельно
-                </p>
-              </div>
+              <YandexMap
+                center={mapCenter}
+                address={mapAddress}
+                organizationName={mapOrganizationName}
+                zoom={mapZoom}
+              />
             </div>
           )}
 

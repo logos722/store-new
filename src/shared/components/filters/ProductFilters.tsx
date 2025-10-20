@@ -87,6 +87,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         <h4>Наличие</h4>
         <label className={styles.checkboxLabel}>
           <input
+            id="inStock"
             type="checkbox"
             checked={inStock}
             onChange={e => {

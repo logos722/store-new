@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { OrderFormData } from '@/types/order';
 import styles from './OrderModal.module.scss';
 import { useCartStore } from '@/store/useCartStore';
+import Link from 'next/link';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -25,29 +26,79 @@ const OrderModal: React.FC<OrderModalProps> = ({
     phone: '',
     city: '',
     comment: '',
+    privacyConsent: false, // По умолчанию не согласен - безопасный подход
   });
 
+  // Состояние для отображения ошибки валидации чекбокса
+  const [consentError, setConsentError] = useState(false);
+
+  /**
+   * Обработчик отправки формы с валидацией согласия
+   * Проверяет, что пользователь согласился с политикой обработки данных
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Валидация: проверяем согласие на обработку персональных данных
+    if (!formData.privacyConsent) {
+      setConsentError(true);
+      return;
+    }
+
+    // Сбрасываем ошибку при успешной отправке
+    setConsentError(false);
     onSubmit(formData);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  /**
+   * Обработчик изменений текстовых полей
+   * Мемоизирован для оптимизации производительности
+   */
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [],
+  );
+
+  /**
+   * Обработчик изменения чекбокса согласия
+   * При установке чекбокса сбрасывает ошибку валидации
+   */
+  const handleConsentChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+      setFormData(prev => ({
+        ...prev,
+        privacyConsent: checked,
+      }));
+
+      // Сбрасываем ошибку, если пользователь согласился
+      if (checked) {
+        setConsentError(false);
+      }
+    },
+    [],
+  );
 
   if (!isOpen) return null;
+
+  // Определяем, должны ли поля быть заблокированы
+  // Блокируем поля, если пользователь не согласился с политикой
+  const isFieldsDisabled = !formData.privacyConsent;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-        <button className={styles.closeButton} onClick={onClose}>
+        <button
+          className={styles.closeButton}
+          onClick={onClose}
+          aria-label="Закрыть модальное окно"
+        >
           ×
         </button>
 
@@ -72,6 +123,50 @@ const OrderModal: React.FC<OrderModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className={styles.orderForm}>
+          {/* Чекбокс согласия - всегда активен и находится в начале формы */}
+          <div
+            className={`${styles.consentGroup} ${consentError ? styles.consentError : ''}`}
+          >
+            <label htmlFor="privacyConsent" className={styles.consentLabel}>
+              <input
+                type="checkbox"
+                id="privacyConsent"
+                name="privacyConsent"
+                checked={formData.privacyConsent}
+                onChange={handleConsentChange}
+                className={styles.consentCheckbox}
+                aria-required="true"
+                aria-invalid={consentError}
+                aria-describedby={consentError ? 'consent-error' : undefined}
+              />
+              <span className={styles.consentText}>
+                Я согласен с{' '}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.privacyLink}
+                  onClick={e => e.stopPropagation()}
+                >
+                  политикой обработки персональных данных
+                </Link>{' '}
+                *
+              </span>
+            </label>
+            {consentError && (
+              <span
+                id="consent-error"
+                className={styles.errorMessage}
+                role="alert"
+              >
+                Необходимо согласие на обработку персональных данных
+              </span>
+            )}
+          </div>
+
+          {/* Разделитель для визуального отделения */}
+          <div className={styles.formDivider} />
+
           <div className={styles.formGroup}>
             <label htmlFor="email">Email *</label>
             <input
@@ -80,7 +175,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
               name="email"
               value={formData.email}
               onChange={handleChange}
+              disabled={isFieldsDisabled}
               required
+              aria-required="true"
+              className={isFieldsDisabled ? styles.disabledField : ''}
             />
           </div>
 
@@ -92,7 +190,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
               name="name"
               value={formData.name}
               onChange={handleChange}
+              disabled={isFieldsDisabled}
               required
+              aria-required="true"
+              className={isFieldsDisabled ? styles.disabledField : ''}
             />
           </div>
 
@@ -104,7 +205,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              disabled={isFieldsDisabled}
               required
+              aria-required="true"
+              className={isFieldsDisabled ? styles.disabledField : ''}
             />
           </div>
 
@@ -116,7 +220,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
               name="city"
               value={formData.city}
               onChange={handleChange}
+              disabled={isFieldsDisabled}
               required
+              aria-required="true"
+              className={isFieldsDisabled ? styles.disabledField : ''}
             />
           </div>
 
@@ -127,11 +234,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
               name="comment"
               value={formData.comment}
               onChange={handleChange}
+              disabled={isFieldsDisabled}
               rows={4}
+              className={isFieldsDisabled ? styles.disabledField : ''}
             />
           </div>
 
-          <button type="submit" className={styles.submitButton}>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isFieldsDisabled}
+            aria-disabled={isFieldsDisabled}
+          >
             Подтвердить заказ
           </button>
         </form>

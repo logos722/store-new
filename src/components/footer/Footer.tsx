@@ -122,12 +122,13 @@ const Footer: React.FC = () => {
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactLabel}>Email:</span>
-              <a
-                href={`mailto:${COMPANY_INFO.contact.email}`}
-                className={styles.email}
-              >
-                {COMPANY_INFO.contact.email}
-              </a>
+              {COMPANY_INFO.contact.email.map(email => (
+                <div key={email}>
+                  <a href={`mailto:${email}`} className={styles.email}>
+                    {email}
+                  </a>
+                </div>
+              ))}
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactLabel}>Адрес:</span>

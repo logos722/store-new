@@ -84,8 +84,6 @@ export const useSEO = () => {
    */
   const productPageSEO = useCallback(
     (product: Product & { rating?: number; ratingCount?: number }): SEOData => {
-      console.log('product', product);
-
       const imageUrl =
         typeof product.image === 'string'
           ? product.image.startsWith('http')

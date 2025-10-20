@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import React from 'react';
 import InfoPageLayout from '@/shared/components/infoPage/InfoPageLayout';
-import { FOOTER_PAGES, SEO_META } from '@/constants/footerPages';
+import { COMPANY_INFO, FOOTER_PAGES, SEO_META } from '@/constants/footerPages';
 
 /**
  * Метаданные для страницы "Где нас найти"
@@ -30,6 +30,11 @@ const LocationPage: React.FC = () => {
       title={pageData.title}
       sections={pageData.sections}
       includeMap={pageData.includeMap}
+      // Координаты: г. Краснодар, ул. Уральская, 83, 1а
+      mapCenter={[45.035719, 39.061731]}
+      mapAddress={COMPANY_INFO.contact.address}
+      mapOrganizationName={COMPANY_INFO.name}
+      mapZoom={16}
     />
   );
 };
