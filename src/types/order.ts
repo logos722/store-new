@@ -6,6 +6,8 @@ export interface OrderFormData {
   phone: string;
   city: string;
   comment?: string;
+  // Согласие на обработку персональных данных (обязательное поле)
+  privacyConsent: boolean;
 }
 
 export interface OrderItem {

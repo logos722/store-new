@@ -80,3 +80,9 @@
 .categoryList {
   list-style: none;
 }
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -9,6 +9,7 @@ import { FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import CategoriesDropdown from './components/categoriesDropdown/CategoriesDropdown';
+import { IS_AUTH_ENABLED } from '@/constants/featureFlags';
 
 const MENU = [
   { href: '/', label: 'Главная' },
@@ -71,9 +72,11 @@ const Header = () => {
             <span className={styles.badge}>{favoritesCount}</span>
           </Link>
           <Cart />
-          <button className={styles.signIn} onClick={() => handleAuthOpen()}>
-            <FaUser /> Войти
-          </button>
+          {IS_AUTH_ENABLED && (
+            <button className={styles.signIn} onClick={() => handleAuthOpen()}>
+              <FaUser /> Войти
+            </button>
+          )}
         </div>
       </div>
 
