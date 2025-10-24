@@ -1,0 +1,278 @@
+/**
+ * Mobile Bottom Navigation Styles
+ * 
+ * Адаптивные стили для мобильной нижней навигации.
+ * Использует современные CSS практики с поддержкой темной темы.
+ */
+
+// Переменные для консистентности
+$nav-height: 60px;
+$nav-padding: 8px 12px;
+$border-radius: 12px;
+$transition-duration: 0.2s;
+$shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+
+// Цвета (можно интегрировать с существующей системой цветов)
+$primary-color: #007bff;
+$text-color: #333;
+$text-color-light: #666;
+$background-color: #ffffff;
+$border-color: #e0e0e0;
+$active-color: #007bff;
+$badge-color: #ff4444;
+$badge-text: #ffffff;
+
+// Темная тема
+$dark-bg: #1a1a1a;
+$dark-text: #ffffff;
+$dark-text-light: #cccccc;
+$dark-border: #333333;
+
+.mobileBottomNav {
+  // Основные стили
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: $nav-height;
+  background-color: $background-color;
+  border-top: 1px solid $border-color;
+  box-shadow: $shadow;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 1000;
+
+  // Скрываем на десктопе
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  // Поддержка темной темы
+  @media (prefers-color-scheme: dark) {
+    background-color: $dark-bg;
+    border-top-color: $dark-border;
+  }
+
+  // Анимация появления
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.navItem {
+  // Сброс стилей кнопки/ссылки
+  background: none;
+  border: none;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  // Flexbox для центрирования содержимого
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+
+  // Размеры и отступы
+  min-width: 44px; // Минимальный размер для touch-целей
+  padding: $nav-padding;
+  border-radius: $border-radius;
+
+  // Переходы для плавной анимации
+  transition: all $transition-duration ease;
+
+  // Состояние при наведении
+  &:hover {
+    background-color: rgba($primary-color, 0.1);
+    transform: translateY(-1px);
+  }
+
+  // Состояние при нажатии
+  &:active {
+    transform: translateY(0);
+    background-color: rgba($primary-color, 0.2);
+  }
+
+  // Активное состояние
+  &.active {
+    color: $active-color;
+
+    .icon {
+      color: $active-color;
+    }
+
+    .label {
+      color: $active-color;
+      font-weight: 600;
+    }
+  }
+
+  // Фокус для доступности
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  // Поддержка темной темы
+  @media (prefers-color-scheme: dark) {
+    color: $dark-text;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.2);
+    }
+
+    &:active {
+      background-color: rgba($primary-color, 0.3);
+    }
+
+    &.active {
+      color: $active-color;
+    }
+  }
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 18px;
+  color: $text-color-light;
+  transition: color $transition-duration ease;
+
+  // Поддержка темной темы
+  @media (prefers-color-scheme: dark) {
+    color: $dark-text-light;
+  }
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 500;
+  color: $text-color-light;
+  text-align: center;
+  line-height: 1.2;
+  transition: all $transition-duration ease;
+
+  // Ограничиваем ширину для длинных текстов
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  // Поддержка темной темы
+  @media (prefers-color-scheme: dark) {
+    color: $dark-text-light;
+  }
+}
+
+.badge {
+  // Позиционирование бейджа
+  position: absolute;
+  top: -6px;
+  right: -8px;
+
+  // Стили бейджа
+  background-color: $badge-color;
+  color: $badge-text;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+
+  // Размеры и форма
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  padding: 2px 4px;
+
+  // Центрирование текста
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Анимация появления
+  animation: badgePulse 0.3s ease-out;
+
+  // Ограничение максимального размера
+  max-width: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes badgePulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Адаптивность для очень маленьких экранов
+@media (max-width: 320px) {
+  .mobileBottomNav {
+    padding: 0 4px;
+  }
+
+  .navItem {
+    min-width: 36px;
+    padding: 6px 8px;
+  }
+
+  .icon {
+    font-size: 16px;
+  }
+
+  .label {
+    font-size: 9px;
+  }
+}
+
+// Поддержка landscape режима на мобильных устройствах
+@media (max-height: 500px) and (orientation: landscape) {
+  .mobileBottomNav {
+    height: 50px;
+  }
+
+  .navItem {
+    padding: 4px 8px;
+  }
+
+  .label {
+    font-size: 9px;
+  }
+}
+
+// Улучшения для устройств с большой плотностью пикселей
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobileBottomNav {
+    border-top-width: 0.5px;
+  }
+}
+
+// Поддержка safe-area для устройств с вырезами
+@supports (padding: max(0px)) {
+  .mobileBottomNav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}

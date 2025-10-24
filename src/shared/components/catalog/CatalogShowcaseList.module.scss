@@ -6,6 +6,9 @@
   gap: 4rem;
   width: 100%;
 
+  // ⚡ ОПТИМИЗАЦИЯ CLS: изоляция layout
+  contain: layout style;
+
   // Добавляем разделитель между витринами
   > *:not(:last-child) {
     border-bottom: 1px solid #e5e5e5;

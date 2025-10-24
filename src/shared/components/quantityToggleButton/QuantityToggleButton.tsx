@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 import styles from './QuantityToggleButton.module.scss';
 import { useCartStore } from '@/store/useCartStore';
@@ -16,6 +16,30 @@ const QuantityToggleButton: React.FC<QuantityToggleButtonProps> = ({
   const addToCart = useCartStore(s => s.addItem);
   const qty = useCartStore(s => s.getQuantity(product.id));
 
+  // Решение hydration error: показываем состояние только после монтирования на клиенте
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // На сервере всегда показываем кнопку "Добавить"
+  if (!isClient) {
+    return (
+      <div className={styles.wrapper}>
+        <button
+          className={styles.addBtn}
+          onClick={e => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+        >
+          {'Добавить в корзину'}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <button
@@ -28,29 +52,25 @@ const QuantityToggleButton: React.FC<QuantityToggleButtonProps> = ({
         {'Добавить в корзину'}
       </button>
       <div className={`${styles.counter} ${qty === 0 ? styles.hidden : ''}`}>
-        {' '}
-        <div className={styles.counter}>
-          {' '}
-          <button
-            className={styles.minus}
-            onClick={e => {
-              e.stopPropagation();
-              updateQuantity(product.id, qty - 1);
-            }}
-          >
-            −
-          </button>
-          <span className={styles.quantity}>{qty}</span>
-          <button
-            className={styles.plus}
-            onClick={e => {
-              e.stopPropagation();
-              addToCart(product);
-            }}
-          >
-            +
-          </button>
-        </div>
+        <button
+          className={styles.minus}
+          onClick={e => {
+            e.stopPropagation();
+            updateQuantity(product.id, qty - 1);
+          }}
+        >
+          −
+        </button>
+        <span className={styles.quantity}>{qty}</span>
+        <button
+          className={styles.plus}
+          onClick={e => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+        >
+          +
+        </button>
       </div>
     </div>
   );

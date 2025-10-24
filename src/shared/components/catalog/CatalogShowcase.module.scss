@@ -4,8 +4,12 @@
   width: 100%;
   margin-bottom: 3rem;
 
-  // Анимация появления
-  animation: fadeIn 0.6s ease-in-out;
+  // ⚡ ОПТИМИЗАЦИЯ CLS: резервируем минимальное пространство
+  // Предотвращает layout shift при загрузке контента
+  min-height: 450px;
+
+  // ⚠️ УДАЛЕНО: Анимация fadeIn вызывала CLS
+  // animation: fadeIn 0.6s ease-in-out;
 }
 
 // Заголовок секции

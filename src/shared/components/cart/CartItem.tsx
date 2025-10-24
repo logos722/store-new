@@ -10,7 +10,7 @@ interface CartItemProps {
   onRemove: (id: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({
+const CartItemComponent: React.FC<CartItemProps> = ({
   item,
   onUpdateQuantity,
   onRemove,
@@ -58,4 +58,4 @@ const CartItem: React.FC<CartItemProps> = ({
   );
 };
 
-export default CartItem;
+export default React.memo(CartItemComponent);

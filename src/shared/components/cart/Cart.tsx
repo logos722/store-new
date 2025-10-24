@@ -34,7 +34,11 @@ const Cart: React.FC = () => {
 
   return (
     <div className={styles.cartContainer} ref={cartRef}>
-      <button className={styles.cartLink} onClick={() => setIsOpen(!isOpen)}>
+      <button
+        aria-label="Открыть корзину"
+        className={styles.cartLink}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <FaShoppingCart className={styles.icon} />
         {isMounted && totalItems > 0 && (
           <span className={styles.badge}>

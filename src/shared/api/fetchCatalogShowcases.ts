@@ -39,9 +39,9 @@ export async function fetchCatalogShowcase(
     const response = await fetch(
       `${apiUrl}/api/catalog/${encodeURIComponent(categoryId)}?page=1&limit=${limit}`,
       {
-        cache: 'no-store', // Для всегда актуальных данных
-        // или можно использовать:
-        // next: { revalidate: 3600 } // Кеширование на 1 час
+        // Используем ISR (Incremental Static Regeneration)
+        // Кешируем на 1 час (3600 секунд) для оптимизации билда
+        next: { revalidate: 3600 },
       },
     );
 

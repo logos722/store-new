@@ -17,3 +17,4 @@ export { default as ViewButton } from './viewButton/viewButton';
 export { default as Tooltip } from './ui/Tooltip/Tooltip';
 export { default as Container } from './container/Container';
 export { default as InfoPageLayout } from './infoPage/InfoPageLayout';
+export { default as MobileBottomNavigation } from './mobileBottomNavigation/MobileBottomNavigation';

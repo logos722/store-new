@@ -9,9 +9,13 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "perf": "npm run build && npm run start",
+    "lighthouse": "lighthouse http://localhost:3000 --view --preset=desktop",
+    "lighthouse:mobile": "lighthouse http://localhost:3000 --view"
   },
   "dependencies": {
+    "@next/bundle-analyzer": "^16.0.0",
     "@tanstack/react-query": "^5.72.1",
     "next": "14.2.30",
     "react": "^18",

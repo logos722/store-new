@@ -1,0 +1,66 @@
+/**
+ * Badge Component Styles
+ * 
+ * Стили для бейджа с анимацией и доступностью
+ */
+
+.badge {
+  // Позиционирование бейджа
+  position: absolute;
+  top: -6px;
+  right: -8px;
+
+  // Стили бейджа
+  background-color: #ff4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+
+  // Размеры и форма
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  padding: 2px 4px;
+
+  // Центрирование текста
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Анимация появления
+  animation: badgePulse 0.3s ease-out;
+
+  // Ограничение максимального размера
+  max-width: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  // Поддержка темной темы
+  @media (prefers-color-scheme: dark) {
+    background-color: #ff6b6b;
+  }
+}
+
+@keyframes badgePulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Улучшения для устройств с большой плотностью пикселей
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .badge {
+    font-size: 9px;
+    min-width: 14px;
+    height: 14px;
+  }
+}

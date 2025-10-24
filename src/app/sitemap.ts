@@ -132,11 +132,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const categoriesResponse = await fetch(
       `${process.env.API_BASE_URL || baseUrl}/api/categories`,
     );
-    const categories = categoriesResponse.ok
-      ? await categoriesResponse.json()
-      : [];
 
-    // Добавляем страницы категорий
+    let categories = [];
+    if (categoriesResponse.ok) {
+      try {
+        const categoriesData = await categoriesResponse.json();
+        // Проверяем, что данные - это массив
+        categories = Array.isArray(categoriesData) ? categoriesData : [];
+      } catch (error) {
+        console.error('Error parsing categories response:', error);
+        categories = [];
+      }
+    }
+
+    // Добавляем страницы категорий только если есть массив
     const categoryPages: MetadataRoute.Sitemap = categories.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (category: any) => ({
@@ -151,12 +160,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productsResponse = await fetch(
       `${process.env.API_BASE_URL || baseUrl}/api/products?limit=1000`,
     );
-    const productsData = productsResponse.ok
-      ? await productsResponse.json()
-      : { products: [] };
-    const products = productsData.products || [];
 
-    // Добавляем страницы товаров
+    let products = [];
+    if (productsResponse.ok) {
+      try {
+        const productsData = await productsResponse.json();
+        // Проверяем структуру данных
+        products = Array.isArray(productsData?.products)
+          ? productsData.products
+          : [];
+      } catch (error) {
+        console.error('Error parsing products response:', error);
+        products = [];
+      }
+    }
+
+    // Добавляем страницы товаров только если есть массив
     const productPages: MetadataRoute.Sitemap = products.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (product: any) => ({

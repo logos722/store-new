@@ -24,11 +24,13 @@ export interface Category {
 interface CategoriesDropdownProps {
   categories: Category[]; // list of categories comes from props
   defaultInteractionType?: 'hover' | 'click' | 'both'; // глобальный тип взаимодействия по умолчанию
+  iconOnly?: boolean; // показывать только иконку без текста (для мобильной версии)
 }
 
 const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
   categories,
   defaultInteractionType = 'hover', // по умолчанию используем hover
+  iconOnly = false, // по умолчанию показываем текст
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -150,12 +152,21 @@ const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
     <div className={styles.dropdownWrapper} ref={dropdownRef}>
       <button
         ref={btnRef}
-        className={styles.btnCategories}
+        className={`${styles.btnCategories} ${iconOnly ? styles.iconOnlyBtn : ''}`}
         onClick={() => setIsOpen(prev => !prev)}
         aria-expanded={isOpen}
         aria-controls="categories-menu"
+        aria-label={iconOnly ? 'Открыть меню категорий' : 'Меню категорий'}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(prev => !prev);
+          }
+        }}
       >
-        <FaBars /> Категории
+        <FaBars aria-hidden="true" /> {!iconOnly && 'Категории'}
       </button>
 
       {isOpen && (
