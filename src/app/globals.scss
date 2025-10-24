@@ -35,24 +35,26 @@ html {
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden; // Включено для предотвращения горизонтального скролла
+  // overflow-x: hidden; // Закомментировано для корректной работы position: fixed
+  // Если нужно предотвратить горизонтальный скролл, используйте на конкретных элементах
 }
 
 body {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   // Все остальные стили body перенесены в layout.module.scss
+  // display: flex удален - flexbox структура управляется через .layout в layout.module.scss
 }
 
 main {
-  flex: 1;
   width: 100%;
 }
 
 footer {
-  flex-shrink: 0;
   width: 100%;
+  background-color: $primary-color;
+  color: white;
+  padding: 20px;
+  text-align: center;
 }
 
 /* ========================================
@@ -69,13 +71,6 @@ footer {
   padding-top: 70px;
   padding-bottom: 50px;
   background-color: #f9f9f9;
-}
-
-footer {
-  background-color: $primary-color;
-  color: white;
-  padding: 20px;
-  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {

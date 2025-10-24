@@ -204,10 +204,10 @@ export default function RootLayout({
             </main>
 
             <Footer />
-
-            {/* Мобильная нижняя навигация - отображается только на мобильных устройствах */}
-            <MobileBottomNavigation />
           </div>
+
+          {/* Мобильная нижняя навигация вынесена за пределы .layout для корректного position: fixed */}
+          <MobileBottomNavigation />
         </ClientProviders>
 
         {/* Структурированные данные добавляются на каждой странице индивидуально */}

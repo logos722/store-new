@@ -69,8 +69,11 @@
   flex-direction: column;
   min-height: 100vh;
 
-  // Изоляция layout для оптимизации перерисовок
-  contain: layout;
+  // ВАЖНО: contain: layout удален, так как он нарушает position: fixed
+  // для MobileBottomNavigation (фиксированный элемент начинает позиционироваться
+  // относительно .layout, а не viewport)
+  // 
+  // Если нужна оптимизация, можно использовать contain: style вместо contain: layout
 }
 
 .main {
@@ -78,10 +81,10 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
+  overflow-x: hidden;
 
-  // Изоляция layout и paint для оптимизации производительности
-  // Предотвращает reflow/repaint родительских элементов
-  contain: layout paint;
+  // ВАЖНО: contain убран, так как может влиять на position: fixed элементов
+  // Если необходима оптимизация, рассмотрите contain: style для отдельных компонентов
 
   /* ========================================
      АДАПТИВНЫЕ ОТСТУПЫ
