@@ -35,6 +35,7 @@ import SEOHead from '@/shared/components/seo/SEOHead';
 - ✅ Динамическое обновление при изменении пропсов
 
 **⚠️ Важно:**
+
 - Компонент обновляет мета-теги через `useEffect` на клиенте
 - Для SSR/SSG используйте Metadata API (`generateMetadata`)
 - Компонент не рендерит визуальных элементов (возвращает `null`)

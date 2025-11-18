@@ -35,19 +35,20 @@ export async function fetchCatalogShowcase(
 ): Promise<CatalogShowcase | null> {
   const apiUrl = getApiUrl();
 
+  const fullUrl = `${apiUrl}/api/catalog/${encodeURIComponent(categoryId)}?page=1&limit=${limit}`;
+
   try {
-    const response = await fetch(
-      `${apiUrl}/api/catalog/${encodeURIComponent(categoryId)}?page=1&limit=${limit}`,
-      {
-        // Используем ISR (Incremental Static Regeneration)
-        // Кешируем на 1 час (3600 секунд) для оптимизации билда
-        next: { revalidate: 3600 },
-      },
-    );
+    console.log(`[fetchCatalogShowcase] Fetching: ${fullUrl}`);
+
+    const response = await fetch(fullUrl, {
+      // Используем ISR (Incremental Static Regeneration)
+      // Кешируем на 1 час (3600 секунд) для оптимизации билда
+      next: { revalidate: 3600 },
+    });
 
     if (!response.ok) {
       console.error(
-        `Failed to fetch catalog ${categoryId}: ${response.status}`,
+        `[fetchCatalogShowcase] Failed to fetch catalog ${categoryId}: ${response.status} ${response.statusText}`,
       );
       return null;
     }
@@ -68,9 +69,19 @@ export async function fetchCatalogShowcase(
       totalProducts: data.total,
     };
 
+    console.log(
+      `[fetchCatalogShowcase] Success for ${categoryId}: ${showcase.products.length} products`,
+    );
     return showcase;
   } catch (error) {
-    console.error(`Error fetching catalog showcase for ${categoryId}:`, error);
+    console.error(
+      `[fetchCatalogShowcase] Error fetching catalog showcase for ${categoryId}:`,
+      error,
+    );
+    console.error(`[fetchCatalogShowcase] API URL was: ${fullUrl}`);
+    console.error(
+      `[fetchCatalogShowcase] Environment: API_BASE_URL=${process.env.API_BASE_URL}, NEXT_PUBLIC_API_BASE_URL=${process.env.NEXT_PUBLIC_API_BASE_URL}`,
+    );
     return null;
   }
 }

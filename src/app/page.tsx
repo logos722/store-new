@@ -11,6 +11,11 @@ import styles from './page.module.scss';
 // Генерируем метаданные для главной страницы
 export const metadata: Metadata = generateHomeMetadata();
 
+// Используем динамический рендеринг вместо статического
+// Это решает проблему с недоступным API во время билда
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate каждый час
+
 const images = [
   { src: '/Placeholred_One.webp', alt: 'Image 1', url: '/test' },
   { src: '/Placeholred_Two.webp', alt: 'Image 2', url: '/test' },
