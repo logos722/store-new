@@ -3,6 +3,7 @@
 ## Проблема
 
 `SEOHead.tsx` использовал `next/head`, который **НЕ работает** в Next.js 13+ App Router. Это приводило к тому, что:
+
 - ❌ Title страницы не обновлялся
 - ❌ Мета-теги не обновлялись
 - ❌ Open Graph и Twitter Cards не работали
@@ -10,6 +11,7 @@
 ## Причина
 
 В Next.js App Router (13+):
+
 - `next/head` — устаревший компонент из Pages Router
 - Для клиентских компонентов нужно использовать прямые манипуляции DOM
 - Для серверных компонентов — Metadata API (`generateMetadata`)
@@ -26,7 +28,7 @@ const SEOHead: React.FC<SEOProps> = ({ title, description, ... }) => {
   useEffect(() => {
     // Обновляем title
     document.title = fullTitle;
-    
+
     // Обновляем мета-теги
     updateMetaTag('meta[name="description"]', 'content', description);
     // ... и так далее
@@ -39,6 +41,7 @@ const SEOHead: React.FC<SEOProps> = ({ title, description, ... }) => {
 ## Что было изменено
 
 ### До (не работало):
+
 ```typescript
 return (
   <Head>
@@ -49,6 +52,7 @@ return (
 ```
 
 ### После (работает):
+
 ```typescript
 useEffect(() => {
   document.title = fullTitle;
@@ -64,7 +68,7 @@ return null;
 ✅ **Работает в App Router** — совместим с Next.js 13+  
 ✅ **Динамическое обновление** — мета-теги обновляются при изменении данных  
 ✅ **Полная поддержка SEO** — Open Graph, Twitter Cards, структурированные данные  
-✅ **Клиентский рендеринг** — работает с React Query и динамическими данными  
+✅ **Клиентский рендеринг** — работает с React Query и динамическими данными
 
 ## Использование
 
@@ -91,11 +95,13 @@ return null;
 ## Рекомендации для оптимизации
 
 ### Вариант 1: Текущий подход (клиентский)
+
 ✅ Подходит для страниц с динамическими данными (React Query)  
 ✅ Простой в использовании  
 ⚠️ Мета-теги обновляются после загрузки
 
 ### Вариант 2: Серверные компоненты + generateMetadata (рекомендуется для SEO)
+
 ✅ Мета-теги в HTML при первой загрузке  
 ✅ Лучше для SEO  
 ✅ Работает с SSR/SSG  
@@ -111,7 +117,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const product = await fetchProduct(params.id);
-  
+
   return {
     title: `${product.name} | Гелион`,
     description: `${product.description}. Цена: ${product.price} ₽`,
@@ -145,5 +151,3 @@ export default async function ProductPage({ params }) {
 
 **Дата исправления:** 17 ноября 2025  
 **Файлы изменены:** `src/shared/components/seo/SEOHead.tsx`
-
-

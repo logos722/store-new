@@ -11,7 +11,9 @@ http://localhost:3000/product/[любой-id]
 ### 2. Откройте DevTools (F12)
 
 ### 3. Проверьте Console
+
 Вы должны увидеть:
+
 ```
 SEO обновлен: {
   title: "Название товара | Гелион - Интернет-магазин сантехники",
@@ -26,26 +28,26 @@ SEO обновлен: {
 
 ```html
 <title>Название товара | Гелион - Интернет-магазин сантехники</title>
-<meta name="description" content="...">
-<meta name="keywords" content="...">
-<meta property="og:title" content="Название товара">
-<meta property="og:description" content="...">
-<meta property="og:image" content="...">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="/product/...">
+<meta name="description" content="..." />
+<meta name="keywords" content="..." />
+<meta property="og:title" content="Название товара" />
+<meta property="og:description" content="..." />
+<meta property="og:image" content="..." />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="/product/..." />
 ```
 
 ### 5. Проверьте в консоли браузера
 
 ```javascript
 // В консоли браузера
-document.title
+document.title;
 // Должно вернуть: "Название товара | Гелион - Интернет-магазин сантехники"
 
-document.querySelector('meta[name="description"]').content
+document.querySelector('meta[name="description"]').content;
 // Должно вернуть описание товара
 
-document.querySelector('meta[property="og:image"]').content
+document.querySelector('meta[property="og:image"]').content;
 // Должно вернуть URL изображения товара
 ```
 
@@ -59,6 +61,7 @@ document.querySelector('meta[property="og:image"]').content
 ## Проверка Open Graph
 
 Используйте инструменты:
+
 - [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
 - [Twitter Card Validator](https://cards-dev.twitter.com/validator)
 - [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)
@@ -79,6 +82,7 @@ document.querySelector('meta[property="og:image"]').content
 **Причина:** SEOHead не монтируется или useEffect не срабатывает
 
 **Решение:**
+
 1. Проверьте, что `<SEOHead />` рендерится в компоненте
 2. Проверьте консоль на ошибки JavaScript
 3. Убедитесь, что пропсы передаются корректно
@@ -88,6 +92,7 @@ document.querySelector('meta[property="og:image"]').content
 **Причина:** Конфликт с другими библиотеками или компонентами
 
 **Решение:**
+
 1. Проверьте, что нет других компонентов, которые тоже управляют мета-тегами
 2. Убедитесь, что `next/head` нигде не используется в проекте
 3. Проверьте порядок рендеринга компонентов
@@ -105,7 +110,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const product = await fetchProduct(params.id);
-  
+
   return {
     title: `${product.name} | Гелион`,
     description: product.description,
@@ -133,5 +138,3 @@ SEOHead практически не влияет на производитель
 3. ⏭ Рассмотрите миграцию на `generateMetadata` для лучшего SEO
 4. ⏭ Настройте sitemap.xml и robots.txt
 5. ⏭ Добавьте Google Analytics и Search Console
-
-

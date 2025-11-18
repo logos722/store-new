@@ -72,7 +72,7 @@
   // ВАЖНО: contain: layout удален, так как он нарушает position: fixed
   // для MobileBottomNavigation (фиксированный элемент начинает позиционироваться
   // относительно .layout, а не viewport)
-  // 
+  //
   // Если нужна оптимизация, можно использовать contain: style вместо contain: layout
 }
 
