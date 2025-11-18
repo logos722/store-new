@@ -4,7 +4,7 @@ import { StaticImageData } from 'next/image';
 import { SliderBase } from '../../shared/components';
 
 interface IProps {
-  images: { src: StaticImageData; alt: string; url: string }[];
+  images: { src: string | StaticImageData; alt: string; url: string }[];
 }
 
 const SliderMain: React.FC<IProps> = ({ images }) => {

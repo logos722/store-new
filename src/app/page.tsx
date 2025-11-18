@@ -1,8 +1,5 @@
 import { Metadata } from 'next';
 import { SliderMain } from '../components';
-import cat1 from '../../public/cat1.jpeg';
-import cat2 from '../../public/cat2.jpeg';
-import cat3 from '../../public/cat3.jpeg';
 import { CatalogShowcaseList } from '@/shared/components';
 import Container from '@/shared/components/container/Container';
 import ServerStructuredData from '@/shared/components/seo/ServerStructuredData';
@@ -15,9 +12,9 @@ import styles from './page.module.scss';
 export const metadata: Metadata = generateHomeMetadata();
 
 const images = [
-  { src: cat1, alt: 'Image 1', url: '/test' },
-  { src: cat2, alt: 'Image 2', url: '/test' },
-  { src: cat3, alt: 'Image 3', url: '/test' },
+  { src: '/Placeholred_One.webp', alt: 'Image 1', url: '/test' },
+  { src: '/Placeholred_Two.webp', alt: 'Image 2', url: '/test' },
+  { src: '/Placeholred_Three.webp', alt: 'Image 3', url: '/test' },
 ];
 
 /**
@@ -39,6 +36,8 @@ export default async function Home() {
   const organizationSchema =
     ServerStructuredDataGenerator.generateOrganizationSchema();
   const websiteSchema = ServerStructuredDataGenerator.generateWebsiteSchema();
+  const articlesPageSchema =
+    ServerStructuredDataGenerator.generateArticlesPageSchema();
 
   // Загружаем витрины каталогов (серверный рендеринг)
   // ISR с кешированием на 1 час (revalidate: 3600 в fetchCatalogShowcase)
@@ -47,7 +46,9 @@ export default async function Home() {
   return (
     <>
       {/* Структурированные данные для поисковиков */}
-      <ServerStructuredData data={[organizationSchema, websiteSchema]} />
+      <ServerStructuredData
+        data={[organizationSchema, websiteSchema, articlesPageSchema]}
+      />
 
       <Container>
         <div className={styles.mainLayout}>

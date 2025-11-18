@@ -1,7 +1,7 @@
 {
   "name": "Гелион - Интернет-магазин сантехники",
   "short_name": "Гелион",
-  "description": "Ведущий интернет-магазин сантехники и строительных материалов. Широкий ассортимент, низкие цены, быстрая доставка по всей России.",
+  "description": "Ведущий интернет-магазин сантехники, полива и дренажа. Широкий ассортимент, низкие цены, быстрая доставка по всей России.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -12,19 +12,19 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/apple-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
@@ -37,21 +37,12 @@
       "src": "/favicon-16x16.png",
       "sizes": "16x16",
       "type": "image/png"
-    }
-  ],
-  "categories": ["shopping", "business", "productivity"],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
     },
     {
-      "src": "/screenshots/mobile-home.png",
-      "sizes": "360x640",
-      "type": "image/png",
-      "form_factor": "narrow"
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
     }
-  ]
+  ],
+  "categories": ["shopping", "business", "productivity"]
 }

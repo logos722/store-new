@@ -25,7 +25,7 @@ import ReactSlider from 'react-slick';
  */
 
 interface IProps {
-  images: { src: StaticImageData; alt: string; url: string }[];
+  images: { src: string | StaticImageData; alt: string; url: string }[];
 }
 
 const Slider: React.FC<IProps> = ({ images }) => {
@@ -57,7 +57,11 @@ const Slider: React.FC<IProps> = ({ images }) => {
                 quality={75} // ← Сжатие
                 priority={index === 0} // ← Первый слайд приоритетный!
                 loading={index === 0 ? 'eager' : 'lazy'} // ← Остальные lazy
-                placeholder="blur" // ← LQIP эффект
+                {...(typeof image.src === 'object' &&
+                  'blurDataURL' in image.src && {
+                    placeholder: 'blur' as const,
+                    blurDataURL: image.src.blurDataURL,
+                  })} // ← LQIP эффект только для StaticImageData с blurDataURL
                 sizes="100vw" // ← Адаптивность
                 style={{
                   // ← Предотвращение layout shift
