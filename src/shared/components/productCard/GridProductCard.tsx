@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { FaHeart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { Product } from '@/types/product';
 import styles from './GridProductCard.module.scss';
-import placeholder from '../../../../public/cat1.jpeg';
 import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -66,7 +65,7 @@ const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div key={product.id} className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageWrap}>
         <Image
-          src={product.image ?? placeholder}
+          src={product.image ?? '/Placeholred_One.webp'}
           alt={product.name}
           fill
           className={styles.image}

@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 import { Product } from '@/types/product';
 import styles from './ListProductCard.module.scss';
-import placeholder from '../../../../public/cat1.jpeg';
 import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -31,7 +30,7 @@ const ListProductCard: React.FC<Props> = ({ product }) => {
     >
       <div className={styles.imageWrapList}>
         <Image
-          src={product.image ?? placeholder}
+          src={product.image ?? '/Placeholred_One.webp'}
           alt={product.name}
           fill
           className={styles.image}

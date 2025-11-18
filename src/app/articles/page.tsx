@@ -1,42 +1,48 @@
 import React from 'react';
 import ArticleList from '@/shared/components/articles/ArticleList';
 import Container from '@/shared/components/container/Container';
-import cat1 from '../../../public/cat1.jpeg';
-import cat2 from '../../../public/cat2.jpeg';
-import cat3 from '../../../public/cat3.jpeg';
 import styles from './page.module.scss';
 import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
+import { Metadata } from 'next';
+import { ServerStructuredDataGenerator } from '@/shared/utils/structuredData';
+import ServerStructuredData from '@/shared/components/seo/ServerStructuredData';
+import { generateArticlesMetadata } from '@/shared/utils/seo';
 
 const sampleArticles = [
   {
     id: '1',
     title: 'Как выбрать идеальный продукт',
-    previewImage: cat1.src,
+    previewImage: '/Placeholred_One.webp',
     slug: 'how-to-choose-perfect-product',
   },
   {
     id: '2',
     title: 'Топ-10 трендов этого сезона',
-    previewImage: cat2.src,
+    previewImage: '/Placeholred_Two.webp',
     slug: 'top-10-trends-this-season',
   },
   {
     id: '3',
     title: 'Советы по уходу за продуктами',
-    previewImage: cat3.src,
+    previewImage: '/Placeholred_Three.webp',
     slug: 'product-care-tips',
   },
   {
     id: '4',
     title: 'Советы по уходу за продуктами',
-    previewImage: cat3.src,
+    previewImage: '/Placeholred_Three.webp',
     slug: 'product-care-tips',
   },
 ];
+export const metadata: Metadata = generateArticlesMetadata();
 
 const ArticlesPage = () => {
+  const articlesPageSchema =
+    ServerStructuredDataGenerator.generateArticlesPageSchema();
+
   return (
     <Container>
+      <ServerStructuredData data={[articlesPageSchema]} />
       <Breadcrumbs />
 
       <div className={styles.articleDiv}>

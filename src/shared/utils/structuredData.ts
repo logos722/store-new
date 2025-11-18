@@ -23,6 +23,22 @@ export interface OrganizationSchema {
   };
 }
 
+export interface ArticlesPageSchema {
+  '@context': string;
+  '@type': 'Article';
+  headline: string;
+  datePublished: string;
+  dateModified: string;
+  author: {
+    '@type': 'Person';
+    name: string;
+  };
+  publisher: {
+    '@type': 'Organization';
+    name: string;
+  };
+}
+
 export interface WebsiteSchema {
   '@context': string;
   '@type': 'WebSite';
@@ -100,6 +116,24 @@ export class ServerStructuredDataGenerator {
         telephone: '+7-800-123-45-67',
         contactType: 'customer service',
         availableLanguage: 'Russian',
+      },
+    };
+  }
+
+  static generateArticlesPageSchema(): ArticlesPageSchema {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Статьи',
+      datePublished: new Date().toISOString(),
+      dateModified: new Date().toISOString(),
+      author: {
+        '@type': 'Person',
+        name: 'Гелион',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Гелион',
       },
     };
   }

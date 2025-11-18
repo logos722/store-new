@@ -9,7 +9,13 @@ export default function imageLoader({ src, width, quality }) {
     return `${src}?w=${width}&q=${quality || 75}`;
   }
 
-  // Относительный путь - добавляем домен
+  // Для файлов из public/ (начинаются с /) возвращаем как есть
+  // Next.js автоматически обработает их через стандартный оптимизатор
+  if (src.startsWith('/')) {
+    return src;
+  }
+
+  // Относительный путь (без /) - добавляем домен
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gelionaqua.ru';
   return `${baseUrl}${src}?w=${width}&q=${quality || 75}`;
 }

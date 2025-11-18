@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './CartItem.module.scss';
-import cat1 from '../../../../public/cat1.jpeg';
 import { CartItem as CartItemType } from '@/store/useCartStore';
 
 interface CartItemProps {
@@ -21,7 +20,7 @@ const CartItemComponent: React.FC<CartItemProps> = ({
     <div className={styles.cartItem}>
       <div className={styles.imageWrapper}>
         <Image
-          src={image ?? cat1}
+          src={image ?? '/Placeholred_One.webp'}
           alt={name}
           width={80}
           height={80}
