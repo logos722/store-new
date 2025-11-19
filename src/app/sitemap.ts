@@ -12,8 +12,30 @@ import { LIMIT_PRODUCTS_FOR_SEO } from '@/constants/seo';
  * - Поддерживает многоязычность
  * - Использует fallback на константы, если API недоступен
  * - Использует ISR для обновления данных каждый час
+ *
+ * Build-time поведение:
+ * - По умолчанию пропускает fetch запросы во время сборки билда
+ * - Это предотвращает ошибки ECONNREFUSED когда внешний API недоступен
+ * - Товары будут добавлены через ISR в runtime после деплоя
+ *
+ * Переменные окружения:
+ * - SITEMAP_FETCH_PRODUCTS=true - явно включает загрузку товаров во время билда
+ * - NEXT_PHASE - Next.js автоматически устанавливает фазу сборки
  */
 export const revalidate = 3600; // Обновлять sitemap каждый час
+
+/**
+ * Определяет, находимся ли мы в процессе сборки билда
+ * Во время билда API может быть недоступен, поэтому мы пропускаем fetch запросы
+ */
+function isBuildTime(): boolean {
+  // NEXT_PHASE === 'phase-production-build' во время next build
+  return (
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    // Проверяем, запущены ли мы в CI/CD окружении без доступного API
+    (process.env.CI === 'true' && !process.env.SITEMAP_FETCH_PRODUCTS)
+  );
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
@@ -133,10 +155,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Проверяем, нужно ли загружать товары во время билда
-  // По умолчанию отключаем загрузку товаров во время билда для избежания ошибок ECONNREFUSED
-  // Товары будут добавлены через ISR в runtime
-  const shouldFetchProducts = process.env.SITEMAP_FETCH_PRODUCTS === 'true';
+  /**
+   * Определяем, нужно ли загружать товары из API
+   *
+   * Загрузка происходит только если:
+   * 1. Это НЕ build-time (или явно разрешено через SITEMAP_FETCH_PRODUCTS)
+   * 2. Мы в production runtime (после деплоя с работающим API)
+   *
+   * Причины:
+   * - Во время билда API обычно недоступен (ECONNREFUSED)
+   * - ISR обновит sitemap с реальными товарами после первого запроса в runtime
+   * - Это позволяет успешно завершить сборку без ошибок
+   */
+  const shouldFetchProducts =
+    process.env.SITEMAP_FETCH_PRODUCTS === 'true' || !isBuildTime();
 
   try {
     // Используем только реальные категории из констант CatalogInfo
@@ -176,64 +208,110 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       createdAt?: string;
     }> = [];
 
-    // Пропускаем загрузку товаров во время билда, чтобы избежать ошибок ECONNREFUSED
-    // Sitemap будет обновляться через ISR в runtime с реальными данными
+    /**
+     * Пропускаем загрузку товаров если это неуместно (обычно во время билда)
+     *
+     * Почему это важно:
+     * - Во время GitHub Actions билда внешний API недоступен
+     * - Попытка fetch приведет к ECONNREFUSED и падению билда
+     * - Sitemap будет автоматически обновлен через ISR при первом запросе в runtime
+     * - Пользователи все равно получат полный sitemap с товарами после деплоя
+     */
     if (!shouldFetchProducts) {
+      const reason = isBuildTime()
+        ? 'build time detected'
+        : 'SITEMAP_FETCH_PRODUCTS not set';
       console.log(
-        'Skipping product fetch during build time. Products will be added via ISR in runtime.',
+        `[Sitemap] Skipping product fetch (${reason}). Products will be added via ISR in runtime.`,
       );
       return [...staticPages, ...categoryPages];
     }
 
-    // Пытаемся получить товары через каждую категорию
-    // Используем Promise.all для параллельной загрузки товаров из всех категорий
+    console.log('[Sitemap] Fetching products from API...');
+
+    /**
+     * Пытаемся получить товары через каждую категорию
+     * Используем Promise.all для параллельной загрузки товаров из всех категорий
+     *
+     * Важные моменты:
+     * - Добавлен timeout для предотвращения зависания
+     * - Каждая категория обрабатывается независимо (ошибка в одной не влияет на другие)
+     * - Используем AbortController для корректной отмены запросов
+     */
     const productPromises = categories.map(async category => {
       try {
         // API endpoint: /api/catalog/{categoryId}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0
         const apiUrl = `${baseUrl}/api/catalog/${category.id}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0`;
 
-        const categoryProductsResponse = await fetch(apiUrl, {
-          // Кэшируем данные и ревалидируем каждый час для статической генерации
-          next: { revalidate: 3600 },
-          // Добавляем заголовки для корректной обработки запроса
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        console.log(`[Sitemap] Fetching products from API: ${apiUrl}`);
+        // Создаем AbortController для таймаута
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд таймаут
 
-        if (!categoryProductsResponse.ok) {
+        try {
+          const categoryProductsResponse = await fetch(apiUrl, {
+            // Кэшируем данные и ревалидируем каждый час для статической генерации
+            next: { revalidate: 3600 },
+            // Добавляем заголовки для корректной обработки запроса
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // Передаем signal для возможности отмены запроса
+            signal: controller.signal,
+          });
+
+          // Очищаем таймер после успешного ответа
+          clearTimeout(timeoutId);
+
+          // Проверяем статус ответа
+          if (!categoryProductsResponse.ok) {
+            console.warn(
+              `[Sitemap] Failed to fetch products for category ${category.slug} (${category.id}): ${categoryProductsResponse.status} ${categoryProductsResponse.statusText}`,
+            );
+            return [];
+          }
+
+          // Проверяем тип контента перед парсингом JSON
+          const contentType =
+            categoryProductsResponse.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.warn(
+              `[Sitemap] Invalid content type for category ${category.slug}: ${contentType}. Expected application/json`,
+            );
+            return [];
+          }
+
+          const categoryData = await categoryProductsResponse.json();
+
+          // Проверяем наличие массива products
+          if (categoryData?.products && Array.isArray(categoryData.products)) {
+            // Фильтруем товары, у которых есть slug (необходим для генерации URL)
+            const validProducts = categoryData.products.filter(
+              (product: { slug?: string }) => product.slug,
+            );
+            console.log(
+              `[Sitemap] Loaded ${validProducts.length} products from category ${category.slug}`,
+            );
+            return validProducts;
+          }
+
           console.warn(
-            `Failed to fetch products for category ${category.slug} (${category.id}): ${categoryProductsResponse.status} ${categoryProductsResponse.statusText}`,
+            `[Sitemap] No products array in response for category ${category.slug}`,
           );
           return [];
+        } catch (fetchError) {
+          // Очищаем таймер в случае ошибки
+          clearTimeout(timeoutId);
+          throw fetchError; // Пробрасываем ошибку дальше для обработки внешним catch
         }
-
-        // Проверяем тип контента перед парсингом JSON
-        const contentType =
-          categoryProductsResponse.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.warn(
-            `Invalid content type for category ${category.slug}: ${contentType}. Expected application/json`,
-          );
-          return [];
-        }
-
-        const categoryData = await categoryProductsResponse.json();
-
-        // Проверяем наличие массива products
-        if (categoryData?.products && Array.isArray(categoryData.products)) {
-          // Фильтруем товары, у которых есть slug (необходим для генерации URL)
-          return categoryData.products.filter(
-            (product: { slug?: string }) => product.slug,
-          );
-        }
-
-        return [];
       } catch (error) {
         // Продолжаем обработку других категорий при ошибке
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        const isTimeout = errorMessage.includes('aborted');
+
         console.warn(
-          `Error fetching products for category ${category.slug}:`,
-          error,
+          `[Sitemap] Error fetching products for category ${category.slug}: ${errorMessage}${isTimeout ? ' (timeout)' : ''}`,
         );
         return [];
       }
@@ -253,6 +331,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Преобразуем MapIterator в массив и добавляем в allProducts
     allProducts.push(...Array.from(productsMap.values()));
 
+    console.log(
+      `[Sitemap] Successfully loaded ${allProducts.length} unique products`,
+    );
+
     // Добавляем страницы товаров
     // Slug уже в правильном формате (например, "amerikanka-pvh-kleevaya-110-mm"),
     // не нужно кодировать, так как обращаемся к товару именно по slug
@@ -267,10 +349,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
+    console.log(
+      `[Sitemap] Generated sitemap with ${staticPages.length} static pages, ${categoryPages.length} categories, and ${productPages.length} products`,
+    );
+
     return [...staticPages, ...categoryPages, ...productPages];
   } catch (error) {
-    console.error('Error generating sitemap:', error);
-    // Возвращаем только статические страницы в случае ошибки
-    return staticPages;
+    // Логируем детальную информацию об ошибке
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+
+    console.error('[Sitemap] Error generating sitemap:', {
+      message: errorMessage,
+      stack: errorStack,
+      isBuildTime: isBuildTime(),
+      shouldFetchProducts,
+    });
+
+    // Возвращаем только статические страницы и категории в случае критической ошибки
+    // Это гарантирует, что sitemap все равно будет сгенерирован с базовой структурой
+    try {
+      const fallbackCategories = Object.values(CatalogInfo).map(info => ({
+        url: `${baseUrl}/catalog/${info.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+      }));
+
+      console.log(
+        `[Sitemap] Returning fallback sitemap with ${staticPages.length} static pages and ${fallbackCategories.length} categories`,
+      );
+
+      return [...staticPages, ...fallbackCategories];
+    } catch (fallbackError) {
+      // Если даже fallback не работает, возвращаем только статические страницы
+      console.error(
+        '[Sitemap] Fallback also failed, returning only static pages:',
+        fallbackError,
+      );
+      return staticPages;
+    }
   }
 }
