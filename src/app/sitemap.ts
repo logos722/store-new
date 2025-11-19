@@ -179,8 +179,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
    * - ISR обновит sitemap с реальными товарами после первого запроса в runtime
    * - Это позволяет успешно завершить сборку без ошибок
    */
-  const shouldFetchProducts =
-    process.env.SITEMAP_FETCH_PRODUCTS === 'true' || !isBuildTime();
+  // const shouldFetchProducts =
+  //   process.env.SITEMAP_FETCH_PRODUCTS === 'true' || !isBuildTime();
 
   try {
     // Используем только реальные категории из констант CatalogInfo
@@ -229,15 +229,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
      * - Sitemap будет автоматически обновлен через ISR при первом запросе в runtime
      * - Пользователи все равно получат полный sitemap с товарами после деплоя
      */
-    if (!shouldFetchProducts) {
-      const reason = isBuildTime()
-        ? 'build time detected'
-        : 'SITEMAP_FETCH_PRODUCTS not set';
-      console.log(
-        `[Sitemap] Skipping product fetch (${reason}). Products will be added via ISR in runtime.`,
-      );
-      return [...staticPages, ...categoryPages];
-    }
+    // if (!shouldFetchProducts) {
+    //   const reason = isBuildTime()
+    //     ? 'build time detected'
+    //     : 'SITEMAP_FETCH_PRODUCTS not set';
+    //   console.log(
+    //     `[Sitemap] Skipping product fetch (${reason}). Products will be added via ISR in runtime.`,
+    //   );
+    //   return [...staticPages, ...categoryPages];
+    // }
 
     console.log('[Sitemap] Fetching products from API...');
 
@@ -376,7 +376,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       message: errorMessage,
       stack: errorStack,
       isBuildTime: isBuildTime(),
-      shouldFetchProducts,
+      // shouldFetchProducts,
     });
 
     // Возвращаем только статические страницы и категории в случае критической ошибки
