@@ -11,18 +11,21 @@ import { LIMIT_PRODUCTS_FOR_SEO } from '@/constants/seo';
  * - Устанавливает приоритеты и частоту обновления
  * - Поддерживает многоязычность
  * - Использует fallback на константы, если API недоступен
- * - Использует ISR для обновления данных каждый час
+ * - Использует ISR (Incremental Static Regeneration) для оптимальной производительности
  *
- * Build-time поведение:
- * - По умолчанию пропускает fetch запросы во время сборки билда
- * - Это предотвращает ошибки ECONNREFUSED когда внешний API недоступен
- * - Товары будут добавлены через ISR в runtime после деплоя
+ * Runtime поведение:
+ * - Генерируется при первом запросе после деплоя
+ * - Кешируется и обновляется каждый час (ISR)
+ * - Во время билда пропускает fetch для избежания ECONNREFUSED
+ * - Поисковые системы получают быстрый кешированный ответ
  *
  * Переменные окружения:
  * - SITEMAP_FETCH_PRODUCTS=true - явно включает загрузку товаров во время билда
- * - NEXT_PHASE - Next.js автоматически устанавливает фазу сборки
  */
-export const revalidate = 3600; // Обновлять sitemap каждый час
+
+// Используем ISR: генерируется динамически, но кешируется на указанное время
+// Это оптимальный баланс между актуальностью данных и производительностью
+export const revalidate = 3600; // Обновлять sitemap каждый час (1 час = 3600 секунд)
 
 /**
  * Определяет, находимся ли мы в процессе сборки билда
@@ -39,6 +42,15 @@ function isBuildTime(): boolean {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
+
+  // Логируем окружение для диагностики
+  console.log('[Sitemap] Starting generation:', {
+    baseUrl,
+    isBuildTime: isBuildTime(),
+    NEXT_PHASE: process.env.NEXT_PHASE,
+    CI: process.env.CI,
+    SITEMAP_FETCH_PRODUCTS: process.env.SITEMAP_FETCH_PRODUCTS,
+  });
 
   // Статические страницы с высоким приоритетом
   const staticPages: MetadataRoute.Sitemap = [

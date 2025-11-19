@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import type { CatalogResponse } from '../../types';
 import { getApiUrl } from '@/shared/utils/getApiUrl';
 
+/**
+ * API route для получения товаров по категории с пагинацией
+ *
+ * Кеширование:
+ * - Использует cache: 'no-store' для актуальности данных каталога
+ * - Это правильно, так как каталог меняется часто (наличие, цены)
+ */
+
 export async function GET(
   request: Request,
   { params }: { params: { category: string } },
