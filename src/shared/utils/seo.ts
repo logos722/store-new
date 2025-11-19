@@ -10,6 +10,44 @@ const siteName = 'Гелион - Интернет-магазин сантехн�
 const defaultDescription =
   'Гелион - ведущий интернет-магазин сантехники и строительных материалов. Широкий ассортимент, низкие цены, быстрая доставка по всей России.';
 
+/**
+ * Преобразует URL изображения для использования в метаданных (og:image, twitter:image)
+ *
+ * Логика преобразования:
+ * 1. Заменяет внутренний URL backend:5000 на публичный домен
+ * 2. Для относительных путей добавляет baseUrl
+ * 3. Для абсолютных URL (http/https) использует как есть
+ *
+ * @param imageUrl - URL изображения из API или относительный путь
+ * @returns Абсолютный URL изображения для использования в meta тегах
+ */
+function normalizeImageUrl(imageUrl: string | null | undefined): string {
+  // Если URL не указан, используем изображение по умолчанию
+  if (!imageUrl) {
+    // TODO: Создать /public/images/default-og-image.jpg (1200x630px)
+    return `${baseUrl}/web-app-manifest-512x512.png`;
+  }
+
+  // Заменяем внутренний URL backend на публичный домен
+  // Это необходимо, так как backend:5000 недоступен извне
+  if (imageUrl.includes('backend:5000')) {
+    return imageUrl.replace('http://backend:5000', baseUrl);
+  }
+
+  // Если URL уже абсолютный (начинается с http/https), используем как есть
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+
+  // Для относительных путей добавляем baseUrl
+  if (imageUrl.startsWith('/')) {
+    return `${baseUrl}${imageUrl}`;
+  }
+
+  // Для путей без слэша в начале
+  return `${baseUrl}/${imageUrl}`;
+}
+
 export interface SEOConfig {
   title: string;
   description?: string;
@@ -27,13 +65,15 @@ export function generateMetadata(config: SEOConfig): Metadata {
     title,
     description = defaultDescription,
     keywords = [],
-    image = '/images/default-og-image.jpg',
+    // TODO: Создать /public/images/default-og-image.jpg (1200x630px)
+    image = '/web-app-manifest-512x512.png',
     noIndex = false,
     canonicalUrl,
   } = config;
 
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
-  const imageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
+  // Используем normalizeImageUrl для корректной обработки всех типов URL
+  const imageUrl = normalizeImageUrl(image);
   const canonical = canonicalUrl || undefined;
 
   return {
@@ -106,7 +146,9 @@ export function generateHomeMetadata(): Metadata {
       'Гелион - Интернет-магазин сантехники и строительных материалов',
       'Гелион - Интернет-магазин сантехники и строительных материалов. Трубы ПВХ, фитинги, сантехника, инструменты. Низкие цены, быстрая доставка.',
     ],
-    image: '/images/home-og-image.jpg',
+    // Временное решение: используем изображение из манифеста
+    // TODO: Создать специальное OG-изображение 1200x630px в /public/images/og-image.jpg
+    image: '/web-app-manifest-512x512.png',
   });
 }
 
@@ -116,12 +158,10 @@ export function generateHomeMetadata(): Metadata {
 export function generateProductMetadata(
   product: Product & { rating?: number; ratingCount?: number },
 ): Metadata {
-  const imageUrl =
-    typeof product.image === 'string'
-      ? product.image.startsWith('http')
-        ? product.image
-        : `${baseUrl}${product.image}`
-      : `${baseUrl}/images/default-product.jpg`;
+  // Используем normalizeImageUrl для корректного преобразования URL изображения
+  // Это особенно важно для og:image, так как он должен быть доступен извне
+  // и не может содержать внутренние URL типа http://backend:5000
+  const imageUrl = normalizeImageUrl(product.image as string);
 
   const keywords = [
     product.name,
@@ -134,6 +174,10 @@ export function generateProductMetadata(
 
   const description = `${product.name} - ${product.description}. Цена: ${product.price} ₽. ${product.stock > 0 ? 'В наличии' : 'Под заказ'}. Быстрая доставка по России.`;
 
+  // Используем product.slug для URL вместо product.id
+  // Это обеспечивает консистентность с реальными маршрутами
+  const productUrl = `${baseUrl}/product/${product.slug || product.id}`;
+
   return {
     title: product.name,
     description,
@@ -141,7 +185,7 @@ export function generateProductMetadata(
     openGraph: {
       title: product.name,
       description,
-      url: `${baseUrl}/product/${product.id}`,
+      url: productUrl,
       siteName,
       images: [
         {
@@ -152,6 +196,7 @@ export function generateProductMetadata(
         },
       ],
       type: 'website',
+      locale: 'ru_RU', // Добавляем locale для og:locale
     },
     twitter: {
       card: 'summary_large_image',
@@ -191,7 +236,9 @@ export function generateCategoryMetadata(
     description,
     keywords,
     canonicalUrl: `${baseUrl}/catalog/${categoryId}`,
-    image: `/images/categories/${categoryId}-og.jpg`,
+    // TODO: Создать изображения для категорий /public/images/categories/${categoryId}-og.jpg (1200x630px)
+    // Пока используем общее изображение манифеста
+    image: `/web-app-manifest-512x512.png`,
   });
 }
 

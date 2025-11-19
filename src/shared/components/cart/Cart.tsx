@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FaShoppingCart } from 'react-icons/fa';
 import CartItem from './CartItem';
 import styles from './Cart.module.scss';
-import { useCartStore } from '@/store/useCartStore';
+import { useCartStore } from '@/stores/useCartStore';
 
 const Cart: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

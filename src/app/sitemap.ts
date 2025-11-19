@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
-import { CatalogId, CatalogInfo } from '@/constants/catalogs';
+import { CatalogInfo } from '@/constants/catalogs';
+import { LIMIT_PRODUCTS_FOR_SEO } from '@/constants/seo';
 
 /**
  * Генерирует динамический sitemap для улучшения индексации поисковиками
@@ -10,7 +11,10 @@ import { CatalogId, CatalogInfo } from '@/constants/catalogs';
  * - Устанавливает приоритеты и частоту обновления
  * - Поддерживает многоязычность
  * - Использует fallback на константы, если API недоступен
+ * - Использует ISR для обновления данных каждый час
  */
+export const revalidate = 3600; // Обновлять sitemap каждый час
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 
@@ -129,62 +133,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  try {
-    const apiUrl = process.env.API_BASE_URL || 'http://localhost:5000';
+  // Проверяем, нужно ли загружать товары во время билда
+  // По умолчанию отключаем загрузку товаров во время билда для избежания ошибок ECONNREFUSED
+  // Товары будут добавлены через ISR в runtime
+  const shouldFetchProducts = process.env.SITEMAP_FETCH_PRODUCTS === 'true';
 
-    // Получаем категории товаров
-    // API возвращает { categories: string[] }, но также используем константы как fallback
+  try {
+    // Используем только реальные категории из констант CatalogInfo
+    // API возвращает названия категорий (например, "Американки", "Шаровые краны"),
+    // которые используются только для фильтрации внутри каталога,
+    // но не являются отдельными маршрутами.
+    // Реальные маршруты каталогов определены в CatalogInfo (например, /catalog/PVC)
     let categories: Array<{ id: string; slug: string }> = [];
 
     try {
-      const categoriesResponse = await fetch(`${apiUrl}/api/categories`, {
-        // Кэшируем данные и ревалидируем каждый час для статической генерации
-        next: { revalidate: 3600 },
-      });
-
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        // API возвращает { categories: string[] }, где каждый элемент - это ID категории
-        if (
-          categoriesData?.categories &&
-          Array.isArray(categoriesData.categories)
-        ) {
-          // Преобразуем ID в объекты с id и slug
-          categories = categoriesData.categories.map((id: string) => {
-            // Пытаемся найти slug в константах
-            const catalogInfo = Object.values(CatalogInfo).find(
-              (info: { slug: string }) =>
-                info.slug === id || id.includes(info.slug),
-            );
-            return {
-              id,
-              slug: catalogInfo?.slug || id,
-            };
-          });
-        }
-      }
+      categories = Object.entries(CatalogInfo).map(([id, info]) => ({
+        id,
+        slug: info.slug,
+      }));
     } catch (error) {
-      console.warn(
-        'Error fetching categories from API, using constants:',
-        error,
-      );
-    }
-
-    // Fallback: используем категории из констант, если API недоступен
-    if (categories.length === 0) {
-      try {
-        categories = Object.values(CatalogId).map((id: string) => ({
-          id,
-          slug: CatalogInfo[id as keyof typeof CatalogInfo]?.slug || id,
-        }));
-      } catch (error) {
-        console.warn('Error loading categories from constants:', error);
-      }
+      console.warn('Error loading categories from constants:', error);
+      // Возвращаем пустой массив в случае ошибки
+      categories = [];
     }
 
     // Добавляем страницы категорий
+    // Slug уже в правильном формате (например, "PVC"), не нужно кодировать
     const categoryPages: MetadataRoute.Sitemap = categories.map(category => ({
-      url: `${baseUrl}/catalog/${encodeURIComponent(category.slug)}`,
+      url: `${baseUrl}/catalog/${category.slug}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.8,
@@ -200,41 +176,88 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       createdAt?: string;
     }> = [];
 
-    // Пытаемся получить товары через каждую категорию
-    for (const category of categories.slice(0, 10)) {
-      // Ограничиваем до 10 категорий для производительности
-      try {
-        const categoryProductsResponse = await fetch(
-          `${apiUrl}/api/catalog/${encodeURIComponent(category.slug)}?limit=100`,
-          {
-            // Кэшируем данные и ревалидируем каждый час для статической генерации
-            next: { revalidate: 3600 },
-          },
-        );
+    // Пропускаем загрузку товаров во время билда, чтобы избежать ошибок ECONNREFUSED
+    // Sitemap будет обновляться через ISR в runtime с реальными данными
+    if (!shouldFetchProducts) {
+      console.log(
+        'Skipping product fetch during build time. Products will be added via ISR in runtime.',
+      );
+      return [...staticPages, ...categoryPages];
+    }
 
-        if (categoryProductsResponse.ok) {
-          const categoryData = await categoryProductsResponse.json();
-          if (categoryData?.products && Array.isArray(categoryData.products)) {
-            // Добавляем товары, избегая дубликатов
-            const newProducts = categoryData.products.filter(
-              (product: { id: string }) =>
-                !allProducts.some(p => p.id === product.id),
-            );
-            allProducts.push(...newProducts);
-          }
+    // Пытаемся получить товары через каждую категорию
+    // Используем Promise.all для параллельной загрузки товаров из всех категорий
+    const productPromises = categories.map(async category => {
+      try {
+        // API endpoint: /api/catalog/{categoryId}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0
+        const apiUrl = `${baseUrl}/api/catalog/${category.id}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0`;
+
+        const categoryProductsResponse = await fetch(apiUrl, {
+          // Кэшируем данные и ревалидируем каждый час для статической генерации
+          next: { revalidate: 3600 },
+          // Добавляем заголовки для корректной обработки запроса
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!categoryProductsResponse.ok) {
+          console.warn(
+            `Failed to fetch products for category ${category.slug} (${category.id}): ${categoryProductsResponse.status} ${categoryProductsResponse.statusText}`,
+          );
+          return [];
         }
+
+        // Проверяем тип контента перед парсингом JSON
+        const contentType =
+          categoryProductsResponse.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.warn(
+            `Invalid content type for category ${category.slug}: ${contentType}. Expected application/json`,
+          );
+          return [];
+        }
+
+        const categoryData = await categoryProductsResponse.json();
+
+        // Проверяем наличие массива products
+        if (categoryData?.products && Array.isArray(categoryData.products)) {
+          // Фильтруем товары, у которых есть slug (необходим для генерации URL)
+          return categoryData.products.filter(
+            (product: { slug?: string }) => product.slug,
+          );
+        }
+
+        return [];
       } catch (error) {
         // Продолжаем обработку других категорий при ошибке
         console.warn(
           `Error fetching products for category ${category.slug}:`,
           error,
         );
+        return [];
       }
-    }
+    });
+
+    // Ждем завершения всех запросов и объединяем результаты
+    const productsArrays = await Promise.all(productPromises);
+
+    // Объединяем все массивы товаров и удаляем дубликаты по id
+    const productsMap = new Map<string, (typeof allProducts)[0]>();
+    productsArrays.flat().forEach(product => {
+      if (product.id && product.slug && !productsMap.has(product.id)) {
+        productsMap.set(product.id, product);
+      }
+    });
+
+    // Преобразуем MapIterator в массив и добавляем в allProducts
+    allProducts.push(...Array.from(productsMap.values()));
 
     // Добавляем страницы товаров
+    // Slug уже в правильном формате (например, "amerikanka-pvh-kleevaya-110-mm"),
+    // не нужно кодировать, так как обращаемся к товару именно по slug
     const productPages: MetadataRoute.Sitemap = allProducts.map(product => ({
-      url: `${baseUrl}/product/${encodeURIComponent(product.slug)}`,
+      url: `${baseUrl}/product/${product.slug}`,
       lastModified: product.updatedAt
         ? new Date(product.updatedAt)
         : product.createdAt

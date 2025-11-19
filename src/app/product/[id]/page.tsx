@@ -4,6 +4,7 @@ import { generateProductMetadata } from '@/shared/utils/seo';
 import { generateProductSchema } from '@/shared/utils/structuredDataUtils';
 import ServerStructuredData from '@/shared/components/seo/ServerStructuredData';
 import ProductPageClient from './ProductPageClient';
+import { notFound } from 'next/navigation';
 
 /**
  * Серверный компонент страницы продукта
@@ -20,8 +21,9 @@ type PageProps = {
  * Используется для генерации метаданных
  */
 async function getProduct(id: string): Promise<Product | null> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const res = await fetch(
       `${baseUrl}/api/product/${encodeURIComponent(id)}`,
       {
@@ -31,19 +33,22 @@ async function getProduct(id: string): Promise<Product | null> {
     );
 
     if (!res.ok) {
-      return null;
+      notFound();
     }
 
     return await res.json();
   } catch (error) {
     console.error('Error fetching product for metadata:', error);
-    return null;
+    notFound();
   }
 }
 
 /**
  * Генерирует метаданные для страницы продукта на сервере
  * Это обеспечивает правильную индексацию поисковыми системами
+ *
+ * Примечание: если продукт не найден, getProduct вызовет notFound(),
+ * который прервет выполнение и отобразит страницу not-found.tsx
  */
 export async function generateMetadata({
   params,
@@ -51,19 +56,6 @@ export async function generateMetadata({
   const { id } = params;
   const product = await getProduct(id);
 
-  // Если продукт не найден, возвращаем базовые метаданные
-  if (!product) {
-    return {
-      title: 'Продукт не найден',
-      description: 'Запрошенный продукт не существует или был удален',
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  }
-
-  // Генерируем метаданные используя утилиту
   return generateProductMetadata(product);
 }
 
@@ -86,7 +78,7 @@ export default async function ProductPage({ params }: PageProps) {
       )}
 
       {/* Клиентский компонент с интерактивностью */}
-      <ProductPageClient />
+      <ProductPageClient product={product as Product} />
     </>
   );
 }

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuthModal } from '@/context/authModalProvider/AuthModalContext';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
-import { useCartStore } from '@/store/useCartStore';
+import { useCartStore } from '@/stores/useCartStore';
 import { IS_AUTH_ENABLED } from '@/constants/featureFlags';
 
 /**
