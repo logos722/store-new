@@ -1,10 +1,15 @@
 import { Product } from './product';
 
-export interface CartItem {
-  product: Product;
+/**
+ * Элемент корзины - продукт с добавленным полем quantity
+ */
+export interface CartItem extends Product {
   quantity: number;
 }
 
+/**
+ * Состояние корзины
+ */
 export interface CartState {
   items: CartItem[];
   total: number;

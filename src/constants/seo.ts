@@ -1,0 +1,1 @@
+export const LIMIT_PRODUCTS_FOR_SEO = 5000;

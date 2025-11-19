@@ -5,6 +5,8 @@ import { Footer, Header } from '../components';
 import styles from './layout.module.scss';
 import ClientProviders from '@/components/сlientProviders/ClientProviders';
 import MobileBottomNavigation from '@/shared/components/mobileBottomNavigation/MobileBottomNavigation';
+import { AnalyticsProvider } from '@/context/analytics/AnalyticsProvider';
+import { ANALYTICS_CONFIG } from '@/constants/analytics';
 
 /**
  * ОПТИМИЗАЦИЯ ШРИФТОВ
@@ -113,6 +115,7 @@ export const metadata: Metadata = {
     'application-name': 'Гелион',
     'msapplication-TileColor': '#1976d2',
     'theme-color': '#1976d2',
+    'og:logo': '/apple-icon.png',
   },
 };
 
@@ -189,26 +192,29 @@ export default function RootLayout({
           </div>
         </noscript>
 
-        <ClientProviders>
-          <div className={styles.layout}>
-            {/* Skip to main content для доступности */}
-            <a href="#main-content" className={styles.skipLink}>
-              Перейти к основному содержанию
-            </a>
+        {/* Аналитика: Яндекс.Метрика + Google Analytics 4 */}
+        <AnalyticsProvider config={ANALYTICS_CONFIG}>
+          <ClientProviders>
+            <div className={styles.layout}>
+              {/* Skip to main content для доступности */}
+              <a href="#main-content" className={styles.skipLink}>
+                Перейти к основному содержанию
+              </a>
 
-            <Header />
+              <Header />
 
-            {/* Основной контент с семантической разметкой */}
-            <main id="main-content" className={styles.main} role="main">
-              {children}
-            </main>
+              {/* Основной контент с семантической разметкой */}
+              <main id="main-content" className={styles.main} role="main">
+                {children}
+              </main>
 
-            <Footer />
-          </div>
+              <Footer />
+            </div>
 
-          {/* Мобильная нижняя навигация вынесена за пределы .layout для корректного position: fixed */}
-          <MobileBottomNavigation />
-        </ClientProviders>
+            {/* Мобильная нижняя навигация вынесена за пределы .layout для корректного position: fixed */}
+            <MobileBottomNavigation />
+          </ClientProviders>
+        </AnalyticsProvider>
 
         {/* Структурированные данные добавляются на каждой странице индивидуально */}
       </body>

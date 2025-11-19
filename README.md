@@ -164,6 +164,7 @@ FROM node:18-alpine AS runner
 ### Healthcheck
 
 Контейнер включает healthcheck:
+
 ```bash
 docker ps  # Проверить статус "healthy"
 ```
@@ -234,12 +235,12 @@ docker ps  # Проверить статус "healthy"
 
 ### Частые проблемы
 
-| Проблема | Решение |
-|----------|---------|
-| "Каталоги не найдены" на проде | [ISR Build Fix](./docs/ISR_BUILD_FIX.md) |
-| Ошибки сборки | [Build Errors Fix](./docs/BUILD_ERRORS_FIX.md) |
-| Проблемы с Docker | [Environment Setup](./docs/ENVIRONMENT_SETUP.md) |
-| SEO проблемы | [SEO Guide](./docs/SEO_OPTIMIZATION_GUIDE.md) |
+| Проблема                       | Решение                                          |
+| ------------------------------ | ------------------------------------------------ |
+| "Каталоги не найдены" на проде | [ISR Build Fix](./docs/ISR_BUILD_FIX.md)         |
+| Ошибки сборки                  | [Build Errors Fix](./docs/BUILD_ERRORS_FIX.md)   |
+| Проблемы с Docker              | [Environment Setup](./docs/ENVIRONMENT_SETUP.md) |
+| SEO проблемы                   | [SEO Guide](./docs/SEO_OPTIMIZATION_GUIDE.md)    |
 
 ### Получить помощь
 

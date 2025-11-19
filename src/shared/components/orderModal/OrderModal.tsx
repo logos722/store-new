@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { OrderFormData } from '@/types/order';
 import styles from './OrderModal.module.scss';
-import { useCartStore } from '@/store/useCartStore';
+import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import {
   applyPhoneMask,
@@ -21,12 +21,14 @@ interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: OrderFormData) => void;
+  isSubmitting?: boolean;
 }
 
 const OrderModal: React.FC<OrderModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
 }) => {
   const cartItem = useCartStore(s => s.getCart());
   const totalPrice = useCartStore(s => s.totalPrice());
@@ -359,15 +361,19 @@ const OrderModal: React.FC<OrderModalProps> = ({
   if (!isOpen) return null;
 
   // Определяем, должны ли поля быть заблокированы
-  // Блокируем поля, если пользователь не согласился с политикой
-  const isFieldsDisabled = !formData.privacyConsent;
+  // Блокируем поля, если пользователь не согласился с политикой или идет отправка
+  const isFieldsDisabled = !formData.privacyConsent || isSubmitting;
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div
+      className={styles.modalOverlay}
+      onClick={!isSubmitting ? onClose : undefined}
+    >
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <button
           className={styles.closeButton}
           onClick={onClose}
+          disabled={isSubmitting}
           aria-label="Закрыть модальное окно"
         >
           ×
@@ -610,7 +616,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             disabled={isFieldsDisabled}
             aria-disabled={isFieldsDisabled}
           >
-            Подтвердить заказ
+            {isSubmitting ? 'Оформление...' : 'Подтвердить заказ'}
           </button>
         </form>
       </div>

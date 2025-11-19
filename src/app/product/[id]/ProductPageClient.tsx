@@ -1,58 +1,31 @@
 'use client';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Container from '@/shared/components/container/Container';
 import { Product } from '@/types/product';
 import styles from './ProductPage.module.scss';
-import { useQuery } from '@tanstack/react-query';
 import { QuantityToggleButton } from '@/shared/components';
 import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
 import { CatalogInfo } from '@/constants/catalogs';
+import { useProductTracking } from '@/hooks/useAnalyticsTracking';
 
-// Функция-загрузчик для продукта.
-const fetchProduct = async ({ queryKey }): Promise<Product> => {
-  const [, id] = queryKey;
-  const res = await fetch(`/api/product/${encodeURIComponent(id)}`);
-  if (!res.ok) {
-    throw new Error(`Ошибка при загрузке продукта: ${res.status}`);
-  }
-  const data: Product = await res.json();
-  return data;
-};
+/**
+ * Клиентский компонент страницы продукта
+ * Получает данные через пропсы от серверного компонента
+ *
+ * Аналитика:
+ * - Отслеживает просмотр товара при загрузке страницы
+ */
+const ProductPageClient = ({ product }: { product: Product }) => {
+  const { trackProductView } = useProductTracking();
 
-const ProductPageClient = () => {
-  const { id } = useParams();
-
-  const {
-    data: product,
-    isLoading,
-    error,
-  } = useQuery<Product, Error>({
-    queryKey: ['product', id as string],
-    queryFn: fetchProduct,
-    enabled: Boolean(id),
-  });
-
-  if (isLoading) {
-    return (
-      <Container>
-        <div className={styles.loading}>Загрузка...</div>
-      </Container>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <Container>
-        <div className={styles.error}>
-          {error instanceof Error ? error.message : 'Продукт не найден'}
-        </div>
-      </Container>
-    );
-  }
-
+  // Отслеживаем просмотр товара при загрузке страницы
+  useEffect(() => {
+    if (product) {
+      trackProductView(product);
+    }
+  }, [product, trackProductView]);
   const getStock = () => {
     if (product.stock >= 5) {
       return <span className={styles.inStock}>В наличии больше 5 шт.</span>;
