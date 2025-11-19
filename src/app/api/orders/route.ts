@@ -4,6 +4,10 @@ import { NextResponse } from 'next/server';
 /**
  * Proxy endpoint for creating orders.
  * Receives the order payload from the frontend and forwards it to the Express backend.
+ *
+ * Кеширование:
+ * - POST запросы не кешируются (это правильно для мутаций)
+ * - Используется cache: 'no-store' для гарантии актуальности
  */
 export async function POST(request: Request) {
   try {
