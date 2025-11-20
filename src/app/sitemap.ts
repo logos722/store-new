@@ -34,9 +34,6 @@ export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gelionaqua.ru';
 
-  // Логируем для диагностики
-  console.log('[Sitemap] Generating dynamic sitemap for:', baseUrl);
-
   // Статические страницы с высоким приоритетом
   const staticPages: MetadataRoute.Sitemap = [
     // Главная страница - наивысший приоритет
@@ -195,8 +192,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       createdAt?: string;
     }> = [];
 
-    console.log('[Sitemap] Fetching products from API...');
-
     /**
      * Пытаемся получить товары через каждую категорию
      * Используем Promise.all для параллельной загрузки товаров из всех категорий
@@ -211,7 +206,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // API endpoint: /api/catalog/{categoryId}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0
         const apiUrl = `${baseUrl}/api/catalog/${category.id}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0`;
 
-        console.log(`[Sitemap] Fetching products from API: ${apiUrl}`);
         // Создаем AbortController для таймаута
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд таймаут
@@ -257,9 +251,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             const validProducts = categoryData.products.filter(
               (product: { slug?: string }) => product.slug,
             );
-            console.log(
-              `[Sitemap] Loaded ${validProducts.length} products from category ${category.slug}`,
-            );
             return validProducts;
           }
 
@@ -299,10 +290,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Преобразуем MapIterator в массив и добавляем в allProducts
     allProducts.push(...Array.from(productsMap.values()));
 
-    console.log(
-      `[Sitemap] Successfully loaded ${allProducts.length} unique products`,
-    );
-
     // Добавляем страницы товаров
     // Slug уже в правильном формате (например, "amerikanka-pvh-kleevaya-110-mm"),
     // не нужно кодировать, так как обращаемся к товару именно по slug
@@ -316,10 +303,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     }));
-
-    console.log(
-      `[Sitemap] Generated sitemap with ${staticPages.length} static pages, ${categoryPages.length} categories, and ${productPages.length} products`,
-    );
 
     return [...staticPages, ...categoryPages, ...productPages];
   } catch (error) {
@@ -343,17 +326,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       }));
 
-      console.log(
-        `[Sitemap] Returning fallback sitemap with ${staticPages.length} static pages and ${fallbackCategories.length} categories`,
-      );
-
       return [...staticPages, ...fallbackCategories];
     } catch (fallbackError) {
       // Если даже fallback не работает, возвращаем только статические страницы
-      console.error(
-        '[Sitemap] Fallback also failed, returning only static pages:',
-        fallbackError,
-      );
       return staticPages;
     }
   }
