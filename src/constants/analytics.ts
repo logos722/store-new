@@ -30,7 +30,7 @@ const isAnalyticsEnabled = () => {
   }
 
   // Дефолтное поведение: включена только в production
-  return envEnabled || process.env.NODE_ENV === 'production';
+  return process.env.NODE_ENV === 'production';
 };
 
 /**
@@ -72,8 +72,8 @@ export const ANALYTICS_CONFIG: AnalyticsConfig = {
 
   // Требовать согласие на куки (Cookie Consent)
   // По умолчанию true для соответствия GDPR
-  // requireConsent: process.env.NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT !== 'false',
-  requireConsent: true,
+  // Можно отключить через NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT=false
+  requireConsent: process.env.NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT !== 'false',
 };
 
 /**
