@@ -37,7 +37,6 @@ export async function GET(
     // Просто отдаём дальше, включая в data поля page, totalPages и т. д.
     return NextResponse.json(data);
   } catch (err) {
-    console.error('Catalog proxy error:', err);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 },

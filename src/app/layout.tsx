@@ -7,6 +7,8 @@ import ClientProviders from '@/components/сlientProviders/ClientProviders';
 import MobileBottomNavigation from '@/shared/components/mobileBottomNavigation/MobileBottomNavigation';
 import { AnalyticsProvider } from '@/context/analytics/AnalyticsProvider';
 import { ANALYTICS_CONFIG } from '@/constants/analytics';
+import { WebVitalsReporter } from '@/components/webVitals/WebVitalsReporter';
+import { WEB_VITALS_CONFIG } from '@/constants/webVitals';
 
 /**
  * ОПТИМИЗАЦИЯ ШРИФТОВ
@@ -194,6 +196,9 @@ export default function RootLayout({
 
         {/* Аналитика: Яндекс.Метрика + Google Analytics 4 */}
         <AnalyticsProvider config={ANALYTICS_CONFIG}>
+          {/* Web Vitals: мониторинг производительности */}
+          <WebVitalsReporter config={WEB_VITALS_CONFIG} />
+
           <ClientProviders>
             <div className={styles.layout}>
               {/* Skip to main content для доступности */}
