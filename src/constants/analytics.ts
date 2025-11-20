@@ -2,41 +2,78 @@
  * Константы для системы аналитики
  *
  * ⚠️ ВАЖНО: Создайте файл .env.local и добавьте настоящие ID:
+ *
+ * # Включение/отключение аналитики (по умолчанию включена в production)
+ * NEXT_PUBLIC_ANALYTICS_ENABLED=true
+ *
+ * # ID счетчиков
  * NEXT_PUBLIC_YANDEX_METRIKA_ID=ваш_id
  * NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+ *
+ * # Требовать согласие на куки (рекомендуется для GDPR)
+ * NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT=true
  */
 
 import { AnalyticsConfig } from '@/types/analytics';
+
+/**
+ * Проверка, включена ли аналитика
+ * Можно отключить через NEXT_PUBLIC_ANALYTICS_ENABLED=false
+ */
+const isAnalyticsEnabled = () => {
+  // В production по умолчанию включена (если не отключена явно)
+  // В development по умолчанию отключена (если не включена явно)
+  const envEnabled = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
+
+  if (envEnabled !== undefined) {
+    return envEnabled === 'true';
+  }
+
+  // Дефолтное поведение: включена только в production
+  return envEnabled || process.env.NODE_ENV === 'production';
+};
 
 /**
  * Конфигурация аналитики для production
  *
  * В development режиме аналитика будет работать с debug флагом,
  * но не будет отправлять данные на реальные счетчики (если ID не указаны)
+ *
+ * ⚡ ПРОИЗВОДИТЕЛЬНОСТЬ:
+ * - Если аналитика отключена, скрипты не загружаются вообще
+ * - Если ID не указаны, скрипты не загружаются
+ * - Cookie Consent управляет загрузкой скриптов
  */
 export const ANALYTICS_CONFIG: AnalyticsConfig = {
   // Яндекс.Метрика (критически важна для СНГ рынка)
-  yandexMetrika: process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
-    ? {
-        id: process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID,
-        clickmap: true, // Карта кликов
-        trackLinks: true, // Отслеживание внешних ссылок
-        accurateTrackBounce: true, // Точный показатель отказов
-        webvisor: false, // Вебвизор (отключен для производительности, включите при необходимости)
-        ecommerce: true, // E-commerce данные
-        triggerEvent: true, // Триггерные события
-      }
-    : undefined,
+  yandexMetrika:
+    isAnalyticsEnabled() && process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
+      ? {
+          id: process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID,
+          clickmap: true, // Карта кликов
+          trackLinks: true, // Отслеживание внешних ссылок
+          accurateTrackBounce: true, // Точный показатель отказов
+          webvisor: false, // Вебвизор (отключен для производительности, включите при необходимости)
+          ecommerce: true, // E-commerce данные
+          triggerEvent: true, // Триггерные события
+        }
+      : undefined,
 
   // Google Analytics 4 (для международной аудитории)
-  googleAnalytics: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-    ? {
-        measurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
-      }
-    : undefined,
+  googleAnalytics:
+    isAnalyticsEnabled() && process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+      ? {
+          measurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+        }
+      : undefined,
 
   // Debug режим в development
   debug: process.env.NODE_ENV === 'development',
+
+  // Требовать согласие на куки (Cookie Consent)
+  // По умолчанию true для соответствия GDPR
+  // requireConsent: process.env.NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT !== 'false',
+  requireConsent: true,
 };
 
 /**

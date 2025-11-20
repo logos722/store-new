@@ -1,17 +1,5 @@
 @import '../styles/variables.scss';
 
-/**
- * ⚡ SLICK CAROUSEL CSS
- * 
- * ВАЖНО: Возвращен глобальный импорт т.к. динамический импорт в useEffect
- * вызывал CLS (Cumulative Layout Shift) 0.21 из-за загрузки стилей после рендера.
- * 
- * Альтернатива: используйте более современную библиотеку (Swiper.js) с лучшей
- * поддержкой code-splitting.
- */
-@import '~slick-carousel/slick/slick.css';
-@import '~slick-carousel/slick/slick-theme.css';
-
 /* ========================================
    КРИТИЧЕСКИЕ СТИЛИ (Above-the-fold)
    Минимальные стили для быстрой отрисовки
