@@ -95,6 +95,8 @@ export function CookieConsent({
   });
 
   // Проверяем сохраненное согласие при монтировании
+  // ИСПРАВЛЕНИЕ: убираем onConsentChange из зависимостей для предотвращения
+  // бесконечных рендеров. Функция вызывается только один раз при монтировании.
   useEffect(() => {
     const stored = getStoredConsent();
 
@@ -106,7 +108,8 @@ export function CookieConsent({
       // Показываем баннер
       setIsVisible(true);
     }
-  }, [onConsentChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Автоматическое принятие через N секунд
   useEffect(() => {

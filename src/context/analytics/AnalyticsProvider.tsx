@@ -49,22 +49,72 @@ interface AnalyticsProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * Константы для работы с Cookie Consent
+ */
+const CONSENT_STORAGE_KEY = 'cookie-consent';
+const CONSENT_VERSION = '1';
+
+/**
+ * Получить сохраненное согласие из localStorage
+ * КРИТИЧНО: Должно выполняться синхронно при инициализации
+ */
+function getInitialConsent(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+    if (!stored) return false;
+
+    const parsed = JSON.parse(stored);
+
+    // Проверяем версию согласия
+    if (parsed.version !== CONSENT_VERSION) {
+      return false;
+    }
+
+    // Возвращаем только analytics consent
+    return parsed.preferences?.analytics || false;
+  } catch (error) {
+    console.error('Error reading initial consent:', error);
+    return false;
+  }
+}
+
 export function AnalyticsProvider({
   config,
   children,
 }: AnalyticsProviderProps) {
   const [isReady, setIsReady] = React.useState(false);
-  const [hasConsent, setHasConsent] = React.useState(false);
 
-  // Проверяем, нужен ли consent (только если включены хотя бы одна аналитика)
-  const needsConsent = !!(config.yandexMetrika || config.googleAnalytics);
-
-  // Если consent не требуется (аналитика отключена), сразу разрешаем
-  useEffect(() => {
-    if (!needsConsent) {
-      setHasConsent(true);
+  // ИСПРАВЛЕНИЕ КРИТИЧЕСКОГО БАГА:
+  // Инициализируем hasConsent из localStorage при первом рендере
+  // Это предотвращает race condition с CookieConsent компонентом
+  const [hasConsent, setHasConsent] = React.useState(() => {
+    // Если requireConsent=false, сразу разрешаем
+    if (!config.requireConsent) {
+      return true;
     }
-  }, [needsConsent]);
+
+    // Проверяем, нужен ли consent (есть ли хотя бы одна аналитика)
+    const needsConsent = !!(config.yandexMetrika || config.googleAnalytics);
+    if (!needsConsent) {
+      return true;
+    }
+
+    // Читаем сохраненное согласие из localStorage
+    const storedConsent = getInitialConsent();
+
+    if (config.debug) {
+      console.log('🔍 Analytics Initial Consent:', {
+        stored: storedConsent,
+        requireConsent: config.requireConsent,
+        needsConsent,
+      });
+    }
+
+    return storedConsent;
+  });
 
   /**
    * Хелпер для безопасного выполнения аналитики с проверкой согласия
@@ -97,12 +147,23 @@ export function AnalyticsProvider({
         ? typeof window.gtag !== 'undefined'
         : true;
 
+      if (config.debug) {
+        console.log('🔍 Checking Analytics Ready:', {
+          ymReady,
+          gaReady,
+          hasConsent,
+          yandexEnabled: !!config.yandexMetrika,
+          gaEnabled: !!config.googleAnalytics,
+        });
+      }
+
       if (ymReady && gaReady) {
         setIsReady(true);
         if (config.debug) {
           console.log('✅ Аналитика инициализирована:', {
             yandexMetrika: ymReady,
             googleAnalytics: gaReady,
+            hasConsent,
           });
         }
       }
@@ -117,7 +178,7 @@ export function AnalyticsProvider({
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [config.yandexMetrika, config.googleAnalytics, config.debug]);
+  }, [config.yandexMetrika, config.googleAnalytics, config.debug, hasConsent]);
 
   /**
    * Отслеживание просмотра страницы
@@ -587,10 +648,25 @@ export function AnalyticsProvider({
     [config, executeWithConsent],
   );
 
+  // Обертка для setConsent с логированием
+  const setConsentWithLogging = useCallback(
+    (consent: boolean) => {
+      if (config.debug) {
+        console.log('🍪 Consent Changed:', {
+          from: hasConsent,
+          to: consent,
+          timestamp: new Date().toISOString(),
+        });
+      }
+      setHasConsent(consent);
+    },
+    [config.debug, hasConsent],
+  );
+
   const contextValue: AnalyticsContextType = {
     isReady,
     hasConsent,
-    setConsent: setHasConsent,
+    setConsent: setConsentWithLogging,
     trackPageView,
     trackEvent,
     trackViewProduct,
