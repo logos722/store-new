@@ -17,9 +17,9 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 3600; // Revalidate каждый час
 
 const images = [
-  { src: '/Placeholred_One.webp', alt: 'Image 1', url: '/test' },
-  { src: '/Placeholred_Two.webp', alt: 'Image 2', url: '/test' },
-  { src: '/Placeholred_Three.webp', alt: 'Image 3', url: '/test' },
+  { src: '/Placeholred_One.webp', alt: 'Image 1', url: '/' },
+  { src: '/Placeholred_Two.webp', alt: 'Image 2', url: '/' },
+  { src: '/Placeholred_Three.webp', alt: 'Image 3', url: '/' },
 ];
 
 /**

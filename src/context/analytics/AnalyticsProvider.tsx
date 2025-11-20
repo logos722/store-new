@@ -35,6 +35,8 @@ import {
 
 interface AnalyticsContextType extends IAnalyticsProvider {
   isReady: boolean;
+  hasConsent: boolean;
+  setConsent: (hasConsent: boolean) => void;
 }
 
 // Создаем контекст с undefined по умолчанию
@@ -52,6 +54,38 @@ export function AnalyticsProvider({
   children,
 }: AnalyticsProviderProps) {
   const [isReady, setIsReady] = React.useState(false);
+  const [hasConsent, setHasConsent] = React.useState(false);
+
+  // Проверяем, нужен ли consent (только если включены хотя бы одна аналитика)
+  const needsConsent = !!(config.yandexMetrika || config.googleAnalytics);
+
+  // Если consent не требуется (аналитика отключена), сразу разрешаем
+  useEffect(() => {
+    if (!needsConsent) {
+      setHasConsent(true);
+    }
+  }, [needsConsent]);
+
+  /**
+   * Хелпер для безопасного выполнения аналитики с проверкой согласия
+   */
+  const executeWithConsent = useCallback(
+    (callback: () => void, eventName: string) => {
+      if (!hasConsent) {
+        if (config.debug) {
+          console.log(`📊 ${eventName} blocked: no consent`);
+        }
+        return;
+      }
+
+      try {
+        callback();
+      } catch (error) {
+        console.error(`Analytics ${eventName} error:`, error);
+      }
+    },
+    [hasConsent, config.debug],
+  );
 
   // Проверяем готовность аналитики после загрузки скриптов
   useEffect(() => {
@@ -90,20 +124,36 @@ export function AnalyticsProvider({
    */
   const trackPageView = useCallback(
     (url: string, title?: string) => {
+      // Не отправляем события, если нет согласия
+      if (!hasConsent) {
+        if (config.debug) {
+          console.log('📊 Page View blocked: no consent');
+        }
+        return;
+      }
+
       try {
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'hit', url, {
-            title: title || document.title,
-          });
+          try {
+            window.ym(config.yandexMetrika.id, 'hit', url, {
+              title: title || document.title,
+            });
+          } catch (error) {
+            console.error('Yandex.Metrika trackPageView error:', error);
+          }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('config', config.googleAnalytics.measurementId, {
-            page_path: url,
-            page_title: title,
-          });
+          try {
+            window.gtag('config', config.googleAnalytics.measurementId, {
+              page_path: url,
+              page_title: title,
+            });
+          } catch (error) {
+            console.error('Google Analytics trackPageView error:', error);
+          }
         }
 
         if (config.debug) {
@@ -113,7 +163,7 @@ export function AnalyticsProvider({
         console.error('Analytics trackPageView error:', error);
       }
     },
-    [config],
+    [config, hasConsent],
   );
 
   /**
@@ -121,25 +171,41 @@ export function AnalyticsProvider({
    */
   const trackEvent = useCallback(
     (event: CustomEvent) => {
+      // Не отправляем события, если нет согласия
+      if (!hasConsent) {
+        if (config.debug) {
+          console.log('📊 Event blocked: no consent', event);
+        }
+        return;
+      }
+
       try {
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', event.action, {
-            category: event.category,
-            label: event.label,
-            value: event.value,
-            ...event.params,
-          });
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', event.action, {
+              category: event.category,
+              label: event.label,
+              value: event.value,
+              ...event.params,
+            });
+          } catch (error) {
+            console.error('Yandex.Metrika trackEvent error:', error);
+          }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', event.action, {
-            event_category: event.category,
-            event_label: event.label,
-            value: event.value,
-            ...event.params,
-          });
+          try {
+            window.gtag('event', event.action, {
+              event_category: event.category,
+              event_label: event.label,
+              value: event.value,
+              ...event.params,
+            });
+          } catch (error) {
+            console.error('Google Analytics trackEvent error:', error);
+          }
         }
 
         if (config.debug) {
@@ -149,7 +215,7 @@ export function AnalyticsProvider({
         console.error('Analytics trackEvent error:', error);
       }
     },
-    [config],
+    [config, hasConsent],
   );
 
   /**
@@ -157,60 +223,66 @@ export function AnalyticsProvider({
    */
   const trackViewProduct = useCallback(
     (event: ViewProductEvent) => {
-      try {
+      executeWithConsent(() => {
         const { product, currency = 'RUB' } = event;
 
         // Яндекс.Метрика (ecommerce)
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', 'view_product');
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', 'view_product');
 
-          // Отправляем данные в dataLayer для ecommerce
-          if (config.yandexMetrika.ecommerce) {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              ecommerce: {
-                currencyCode: currency,
-                detail: {
-                  products: [
-                    {
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      brand: product.brand || 'Гелион',
-                      category: product.category,
-                    },
-                  ],
+            // Отправляем данные в dataLayer для ecommerce
+            if (config.yandexMetrika.ecommerce) {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                ecommerce: {
+                  currencyCode: currency,
+                  detail: {
+                    products: [
+                      {
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        brand: product.brand || 'Гелион',
+                        category: product.category,
+                      },
+                    ],
+                  },
                 },
-              },
-            });
+              });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackViewProduct error:', error);
           }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', 'view_item', {
-            currency,
-            value: product.price,
-            items: [
-              {
-                item_id: product.id,
-                item_name: product.name,
-                item_brand: product.brand || 'Гелион',
-                item_category: product.category,
-                price: product.price,
-              },
-            ],
-          });
+          try {
+            window.gtag('event', 'view_item', {
+              currency,
+              value: product.price,
+              items: [
+                {
+                  item_id: product.id,
+                  item_name: product.name,
+                  item_brand: product.brand || 'Гелион',
+                  item_category: product.category,
+                  price: product.price,
+                },
+              ],
+            });
+          } catch (error) {
+            console.error('Google Analytics trackViewProduct error:', error);
+          }
         }
 
         if (config.debug) {
           console.log('📊 View Product:', event);
         }
-      } catch (error) {
-        console.error('Analytics trackViewProduct error:', error);
-      }
+      }, 'trackViewProduct');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   /**
@@ -218,61 +290,67 @@ export function AnalyticsProvider({
    */
   const trackAddToCart = useCallback(
     (event: AddToCartEvent) => {
-      try {
+      executeWithConsent(() => {
         const { product, quantity, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', 'add_to_cart');
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', 'add_to_cart');
 
-          if (config.yandexMetrika.ecommerce) {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              ecommerce: {
-                currencyCode: currency,
-                add: {
-                  products: [
-                    {
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      brand: product.brand || 'Гелион',
-                      category: product.category,
-                      quantity,
-                    },
-                  ],
+            if (config.yandexMetrika.ecommerce) {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                ecommerce: {
+                  currencyCode: currency,
+                  add: {
+                    products: [
+                      {
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        brand: product.brand || 'Гелион',
+                        category: product.category,
+                        quantity,
+                      },
+                    ],
+                  },
                 },
-              },
-            });
+              });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackAddToCart error:', error);
           }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', 'add_to_cart', {
-            currency,
-            value: product.price * quantity,
-            items: [
-              {
-                item_id: product.id,
-                item_name: product.name,
-                item_brand: product.brand || 'Гелион',
-                item_category: product.category,
-                price: product.price,
-                quantity,
-              },
-            ],
-          });
+          try {
+            window.gtag('event', 'add_to_cart', {
+              currency,
+              value: product.price * quantity,
+              items: [
+                {
+                  item_id: product.id,
+                  item_name: product.name,
+                  item_brand: product.brand || 'Гелион',
+                  item_category: product.category,
+                  price: product.price,
+                  quantity,
+                },
+              ],
+            });
+          } catch (error) {
+            console.error('Google Analytics trackAddToCart error:', error);
+          }
         }
 
         if (config.debug) {
           console.log('📊 Add to Cart:', event);
         }
-      } catch (error) {
-        console.error('Analytics trackAddToCart error:', error);
-      }
+      }, 'trackAddToCart');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   /**
@@ -280,61 +358,67 @@ export function AnalyticsProvider({
    */
   const trackRemoveFromCart = useCallback(
     (event: RemoveFromCartEvent) => {
-      try {
+      executeWithConsent(() => {
         const { product, quantity, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', 'remove_from_cart');
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', 'remove_from_cart');
 
-          if (config.yandexMetrika.ecommerce) {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              ecommerce: {
-                currencyCode: currency,
-                remove: {
-                  products: [
-                    {
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      brand: product.brand || 'Гелион',
-                      category: product.category,
-                      quantity,
-                    },
-                  ],
+            if (config.yandexMetrika.ecommerce) {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                ecommerce: {
+                  currencyCode: currency,
+                  remove: {
+                    products: [
+                      {
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        brand: product.brand || 'Гелион',
+                        category: product.category,
+                        quantity,
+                      },
+                    ],
+                  },
                 },
-              },
-            });
+              });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackRemoveFromCart error:', error);
           }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', 'remove_from_cart', {
-            currency,
-            value: product.price * quantity,
-            items: [
-              {
-                item_id: product.id,
-                item_name: product.name,
-                item_brand: product.brand || 'Гелион',
-                item_category: product.category,
-                price: product.price,
-                quantity,
-              },
-            ],
-          });
+          try {
+            window.gtag('event', 'remove_from_cart', {
+              currency,
+              value: product.price * quantity,
+              items: [
+                {
+                  item_id: product.id,
+                  item_name: product.name,
+                  item_brand: product.brand || 'Гелион',
+                  item_category: product.category,
+                  price: product.price,
+                  quantity,
+                },
+              ],
+            });
+          } catch (error) {
+            console.error('Google Analytics trackRemoveFromCart error:', error);
+          }
         }
 
         if (config.debug) {
           console.log('📊 Remove from Cart:', event);
         }
-      } catch (error) {
-        console.error('Analytics trackRemoveFromCart error:', error);
-      }
+      }, 'trackRemoveFromCart');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   /**
@@ -342,57 +426,63 @@ export function AnalyticsProvider({
    */
   const trackBeginCheckout = useCallback(
     (event: BeginCheckoutEvent) => {
-      try {
+      executeWithConsent(() => {
         const { items, totalValue, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', 'begin_checkout');
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', 'begin_checkout');
 
-          if (config.yandexMetrika.ecommerce) {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              ecommerce: {
-                currencyCode: currency,
-                checkout: {
-                  products: items.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    brand: item.brand || 'Гелион',
-                    category: item.category,
-                    quantity: item.quantity,
-                  })),
+            if (config.yandexMetrika.ecommerce) {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                ecommerce: {
+                  currencyCode: currency,
+                  checkout: {
+                    products: items.map(item => ({
+                      id: item.id,
+                      name: item.name,
+                      price: item.price,
+                      brand: item.brand || 'Гелион',
+                      category: item.category,
+                      quantity: item.quantity,
+                    })),
+                  },
                 },
-              },
-            });
+              });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackBeginCheckout error:', error);
           }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', 'begin_checkout', {
-            currency,
-            value: totalValue,
-            items: items.map(item => ({
-              item_id: item.id,
-              item_name: item.name,
-              item_brand: item.brand || 'Гелион',
-              item_category: item.category,
-              price: item.price,
-              quantity: item.quantity,
-            })),
-          });
+          try {
+            window.gtag('event', 'begin_checkout', {
+              currency,
+              value: totalValue,
+              items: items.map(item => ({
+                item_id: item.id,
+                item_name: item.name,
+                item_brand: item.brand || 'Гелион',
+                item_category: item.category,
+                price: item.price,
+                quantity: item.quantity,
+              })),
+            });
+          } catch (error) {
+            console.error('Google Analytics trackBeginCheckout error:', error);
+          }
         }
 
         if (config.debug) {
           console.log('📊 Begin Checkout:', event);
         }
-      } catch (error) {
-        console.error('Analytics trackBeginCheckout error:', error);
-      }
+      }, 'trackBeginCheckout');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   /**
@@ -400,7 +490,7 @@ export function AnalyticsProvider({
    */
   const trackPurchase = useCallback(
     (event: PurchaseEvent) => {
-      try {
+      executeWithConsent(() => {
         const {
           orderId,
           items,
@@ -412,61 +502,67 @@ export function AnalyticsProvider({
 
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', 'purchase');
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', 'purchase');
 
-          if (config.yandexMetrika.ecommerce) {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              ecommerce: {
-                currencyCode: currency,
-                purchase: {
-                  actionField: {
-                    id: orderId,
-                    revenue: totalValue,
-                    tax: tax || 0,
-                    shipping: shipping || 0,
+            if (config.yandexMetrika.ecommerce) {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                ecommerce: {
+                  currencyCode: currency,
+                  purchase: {
+                    actionField: {
+                      id: orderId,
+                      revenue: totalValue,
+                      tax: tax || 0,
+                      shipping: shipping || 0,
+                    },
+                    products: items.map(item => ({
+                      id: item.id,
+                      name: item.name,
+                      price: item.price,
+                      brand: item.brand || 'Гелион',
+                      category: item.category,
+                      quantity: item.quantity,
+                    })),
                   },
-                  products: items.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    brand: item.brand || 'Гелион',
-                    category: item.category,
-                    quantity: item.quantity,
-                  })),
                 },
-              },
-            });
+              });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackPurchase error:', error);
           }
         }
 
         // Google Analytics 4
         if (config.googleAnalytics && window.gtag) {
-          window.gtag('event', 'purchase', {
-            transaction_id: orderId,
-            currency,
-            value: totalValue,
-            tax: tax || 0,
-            shipping: shipping || 0,
-            items: items.map(item => ({
-              item_id: item.id,
-              item_name: item.name,
-              item_brand: item.brand || 'Гелион',
-              item_category: item.category,
-              price: item.price,
-              quantity: item.quantity,
-            })),
-          });
+          try {
+            window.gtag('event', 'purchase', {
+              transaction_id: orderId,
+              currency,
+              value: totalValue,
+              tax: tax || 0,
+              shipping: shipping || 0,
+              items: items.map(item => ({
+                item_id: item.id,
+                item_name: item.name,
+                item_brand: item.brand || 'Гелион',
+                item_category: item.category,
+                price: item.price,
+                quantity: item.quantity,
+              })),
+            });
+          } catch (error) {
+            console.error('Google Analytics trackPurchase error:', error);
+          }
         }
 
         if (config.debug) {
           console.log('📊 Purchase:', event);
         }
-      } catch (error) {
-        console.error('Analytics trackPurchase error:', error);
-      }
+      }, 'trackPurchase');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   /**
@@ -474,23 +570,27 @@ export function AnalyticsProvider({
    */
   const trackGoal = useCallback(
     (goalId: string, params?: Record<string, AnalyticsEventParams>) => {
-      try {
+      executeWithConsent(() => {
         if (config.yandexMetrika && window.ym) {
-          window.ym(config.yandexMetrika.id, 'reachGoal', goalId, params);
+          try {
+            window.ym(config.yandexMetrika.id, 'reachGoal', goalId, params);
 
-          if (config.debug) {
-            console.log('📊 Goal:', { goalId, params });
+            if (config.debug) {
+              console.log('📊 Goal:', { goalId, params });
+            }
+          } catch (error) {
+            console.error('Yandex.Metrika trackGoal error:', error);
           }
         }
-      } catch (error) {
-        console.error('Analytics trackGoal error:', error);
-      }
+      }, 'trackGoal');
     },
-    [config],
+    [config, executeWithConsent],
   );
 
   const contextValue: AnalyticsContextType = {
     isReady,
+    hasConsent,
+    setConsent: setHasConsent,
     trackPageView,
     trackEvent,
     trackViewProduct,
@@ -503,12 +603,34 @@ export function AnalyticsProvider({
 
   return (
     <>
+      {/* 
+        ⚡ ОПТИМИЗАЦИЯ ЗАГРУЗКИ АНАЛИТИКИ
+        
+        Изменено: strategy="afterInteractive" → strategy="lazyOnload"
+        
+        ПРЕИМУЩЕСТВА:
+        - Скрипты загружаются ПОСЛЕ полной загрузки страницы (после onLoad)
+        - Не блокируют FCP, LCP и другие Core Web Vitals
+        - Не влияют на TBT (Total Blocking Time)
+        
+        НЕДОСТАТКИ:
+        - Небольшая задержка в начале отслеживания (~1-2 сек)
+        - Может пропустить очень быстрые взаимодействия
+        
+        КОМПРОМИСС: Производительность важнее мгновенной аналитики
+        
+        🍪 COOKIE CONSENT:
+        - Скрипты загружаются только после согласия пользователя (hasConsent)
+        - Соответствует GDPR и требованиям по приватности
+        - Если аналитика отключена через env, скрипты не загружаются вообще
+      */}
+
       {/* Яндекс.Метрика */}
-      {config.yandexMetrika && (
+      {config.yandexMetrika && hasConsent && (
         <>
           <Script
             id="yandex-metrika"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                 (function(m,e,t,r,i,k,a){
@@ -546,15 +668,15 @@ export function AnalyticsProvider({
       )}
 
       {/* Google Analytics 4 */}
-      {config.googleAnalytics && (
+      {config.googleAnalytics && hasConsent && (
         <>
           <Script
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             src={`https://www.googletagmanager.com/gtag/js?id=${config.googleAnalytics.measurementId}`}
           />
           <Script
             id="google-analytics"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];

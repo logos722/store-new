@@ -105,6 +105,11 @@ export interface AnalyticsConfig {
   yandexMetrika?: YandexMetrikaConfig;
   googleAnalytics?: GoogleAnalyticsConfig;
   debug?: boolean;
+  /**
+   * Требовать согласие пользователя перед загрузкой аналитики (Cookie Consent)
+   * По умолчанию true для соответствия GDPR
+   */
+  requireConsent?: boolean;
 }
 
 /**

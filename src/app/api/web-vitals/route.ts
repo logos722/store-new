@@ -10,12 +10,8 @@
  * - Rate limiting (защита от спама)
  * - Error handling
  *
- * Варианты хранения метрик (выберите один):
- * 1. База данных (PostgreSQL, MongoDB)
- * 2. Time-series БД (InfluxDB, TimescaleDB)
- * 3. Аналитические платформы (Google Analytics, Amplitude, Mixpanel)
- * 4. Собственное решение (ClickHouse, BigQuery)
- * 5. Готовые сервисы (Vercel Analytics, Sentry Performance)
+ * Варианты хранения метрик:
+ * Аналитические платформы (Google Analytics)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -91,27 +87,6 @@ function validateWebVitalReport(data: unknown): data is WebVitalReport {
   return true;
 }
 
-/**
- * Отправка метрики в систему хранения
- *
- * TODO: Реализуйте интеграцию с вашей системой хранения
- *
- * Примеры:
- * 1. База данных:
- *    await prisma.webVital.create({ data: report });
- *
- * 2. Google Analytics:
- *    gtag('event', 'web_vitals', { ...report });
- *
- * 3. Amplitude/Mixpanel:
- *    amplitude.track('web_vital', report);
- *
- * 4. ClickHouse/BigQuery:
- *    await clickhouse.insert('web_vitals', report);
- *
- * 5. File-based (для тестирования):
- *    fs.appendFileSync('web-vitals.jsonl', JSON.stringify(report) + '\n');
- */
 async function saveWebVitalReport(
   report: WebVitalReport,
 ): Promise<{ success: boolean; error?: string }> {

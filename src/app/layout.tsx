@@ -9,6 +9,7 @@ import { AnalyticsProvider } from '@/context/analytics/AnalyticsProvider';
 import { ANALYTICS_CONFIG } from '@/constants/analytics';
 import { WebVitalsReporter } from '@/components/webVitals/WebVitalsReporter';
 import { WEB_VITALS_CONFIG } from '@/constants/webVitals';
+import { CookieConsentManager } from '@/components/cookieConsent';
 
 /**
  * ОПТИМИЗАЦИЯ ШРИФТОВ
@@ -198,6 +199,9 @@ export default function RootLayout({
         <AnalyticsProvider config={ANALYTICS_CONFIG}>
           {/* Web Vitals: мониторинг производительности */}
           <WebVitalsReporter config={WEB_VITALS_CONFIG} />
+
+          {/* Cookie Consent: управление согласием на куки */}
+          <CookieConsentManager />
 
           <ClientProviders>
             <div className={styles.layout}>
