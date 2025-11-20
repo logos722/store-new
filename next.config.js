@@ -43,9 +43,23 @@ const nextConfig = {
   },
 
   // Переменные окружения
+  // ВАЖНО: Эти переменные будут доступны в runtime (не требуют пересборки образа)
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+
+    // Analytics - runtime переменные для Docker
+    NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+    NEXT_PUBLIC_YANDEX_METRIKA_ID: process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID,
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+    NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT:
+      process.env.NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT,
+
+    // Web Vitals
+    NEXT_PUBLIC_WEB_VITALS_ENABLED: process.env.NEXT_PUBLIC_WEB_VITALS_ENABLED,
+    NEXT_PUBLIC_WEB_VITALS_CORE_ONLY:
+      process.env.NEXT_PUBLIC_WEB_VITALS_CORE_ONLY,
+    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
   },
 
   // Оптимизация производительности
