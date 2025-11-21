@@ -21,7 +21,22 @@ const defaultDescription =
  * @param imageUrl - URL изображения из API или относительный путь
  * @returns Абсолютный URL изображения для использования в meta тегах
  */
-function normalizeImageUrl(imageUrl: string | null | undefined): string {
+/**
+ * Преобразует URL изображения для использования в метаданных (og:image, twitter:image)
+ * и структурированных данных Schema.org (включая Яндекс.Товары)
+ *
+ * Логика преобразования:
+ * 1. Заменяет внутренний URL backend:5000 на публичный домен
+ * 2. Для относительных путей добавляет baseUrl
+ * 3. Для абсолютных URL (http/https) использует как есть
+ *
+ * КРИТИЧНО: Яндекс.Товары требует абсолютные URL изображений,
+ * доступные извне без авторизации
+ *
+ * @param imageUrl - URL изображения из API или относительный путь
+ * @returns Абсолютный URL изображения для использования в meta тегах и Schema.org
+ */
+export function normalizeImageUrl(imageUrl: string | null | undefined): string {
   // Если URL не указан, используем изображение по умолчанию
   if (!imageUrl) {
     // TODO: Создать /public/images/default-og-image.jpg (1200x630px)
@@ -30,6 +45,7 @@ function normalizeImageUrl(imageUrl: string | null | undefined): string {
 
   // Заменяем внутренний URL backend на публичный домен
   // Это необходимо, так как backend:5000 недоступен извне
+  // ВАЖНО для Яндекс.Товары: все изображения должны быть доступны публично
   if (imageUrl.includes('backend:5000')) {
     return imageUrl.replace('http://backend:5000', baseUrl);
   }
