@@ -9,7 +9,6 @@ import { AnalyticsProvider } from '@/context/analytics/AnalyticsProvider';
 import { ANALYTICS_CONFIG } from '@/constants/analytics';
 import { WebVitalsReporter } from '@/components/webVitals/WebVitalsReporter';
 import { WEB_VITALS_CONFIG } from '@/constants/webVitals';
-import { CookieConsentManager } from '@/components/cookieConsent';
 
 /**
  * ОПТИМИЗАЦИЯ ШРИФТОВ
@@ -195,13 +194,13 @@ export default function RootLayout({
           </div>
         </noscript>
 
-        {/* Аналитика: Яндекс.Метрика + Google Analytics 4 */}
+        {/* 
+          Аналитика: Яндекс.Метрика + Google Analytics 4
+          Встроенное Cookie уведомление (информационное, не блокирует аналитику)
+        */}
         <AnalyticsProvider config={ANALYTICS_CONFIG}>
           {/* Web Vitals: мониторинг производительности */}
           <WebVitalsReporter config={WEB_VITALS_CONFIG} />
-
-          {/* Cookie Consent: управление согласием на куки */}
-          <CookieConsentManager />
 
           <ClientProviders>
             <div className={styles.layout}>

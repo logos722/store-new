@@ -100,16 +100,15 @@ export interface GoogleAnalyticsConfig {
 
 /**
  * Объединенная конфигурация аналитики
+ * 
+ * ПРИМЕЧАНИЕ: Поле requireConsent удалено.
+ * Теперь используется информационный баннер о cookies (не блокирует аналитику).
+ * Аналитика загружается сразу при наличии конфигурации.
  */
 export interface AnalyticsConfig {
   yandexMetrika?: YandexMetrikaConfig;
   googleAnalytics?: GoogleAnalyticsConfig;
   debug?: boolean;
-  /**
-   * Требовать согласие пользователя перед загрузкой аналитики (Cookie Consent)
-   * По умолчанию true для соответствия GDPR
-   */
-  requireConsent?: boolean;
 }
 
 /**
