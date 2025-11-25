@@ -10,8 +10,9 @@
  * NEXT_PUBLIC_YANDEX_METRIKA_ID=ваш_id
  * NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
  *
- * # Требовать согласие на куки (рекомендуется для GDPR)
- * NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT=true
+ * ПРИМЕЧАНИЕ: Cookie согласие больше не требуется.
+ * Теперь используется информационный баннер (показывается один раз).
+ * Аналитика загружается сразу при наличии конфигурации.
  */
 
 import { AnalyticsConfig } from '@/types/analytics';
@@ -42,7 +43,8 @@ const isAnalyticsEnabled = () => {
  * ⚡ ПРОИЗВОДИТЕЛЬНОСТЬ:
  * - Если аналитика отключена, скрипты не загружаются вообще
  * - Если ID не указаны, скрипты не загружаются
- * - Cookie Consent управляет загрузкой скриптов
+ * - Аналитика загружается сразу (lazyOnload стратегия для производительности)
+ * - Информационный баннер о cookies не блокирует загрузку
  */
 export const ANALYTICS_CONFIG: AnalyticsConfig = {
   // Яндекс.Метрика (критически важна для СНГ рынка)
@@ -59,7 +61,7 @@ export const ANALYTICS_CONFIG: AnalyticsConfig = {
         }
       : undefined,
 
-  // Google Analytics 4 (для международной аудитории)
+  // Google Analytics 4 (для международной аудитория)
   googleAnalytics:
     isAnalyticsEnabled() && process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
       ? {
@@ -69,11 +71,6 @@ export const ANALYTICS_CONFIG: AnalyticsConfig = {
 
   // Debug режим в development
   debug: process.env.NODE_ENV === 'development',
-
-  // Требовать согласие на куки (Cookie Consent)
-  // По умолчанию true для соответствия GDPR
-  // Можно отключить через NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT=false
-  requireConsent: process.env.NEXT_PUBLIC_ANALYTICS_REQUIRE_CONSENT !== 'false',
 };
 
 /**

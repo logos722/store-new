@@ -1,17 +1,20 @@
 'use client';
 
 /**
- * Провайдер системы аналитики
+ * Провайдер системы аналитики с интегрированным Cookie уведомлением
  *
  * Интегрирует:
  * - Яндекс.Метрика (основной для СНГ)
  * - Google Analytics 4 (резервный + международная аудитория)
+ * - Информационный баннер о cookies (не требует согласия, только уведомляет)
  *
  * Особенности:
  * - Безопасная загрузка скриптов через next/script
  * - Обработка ошибок для каждого провайдера независимо
  * - Поддержка Server Components через клиентский контекст
  * - TypeScript типизация для всех событий
+ * - Аналитика загружается сразу (без ожидания согласия)
+ * - Информационный баннер показывается один раз
  */
 
 import React, {
@@ -19,6 +22,7 @@ import React, {
   useContext,
   useCallback,
   useEffect,
+  useState,
 } from 'react';
 import Script from 'next/script';
 import {
@@ -32,11 +36,10 @@ import {
   BeginCheckoutEvent,
   PurchaseEvent,
 } from '@/types/analytics';
+import styles from '@/components/cookieConsent/CookieConsent.module.scss';
 
 interface AnalyticsContextType extends IAnalyticsProvider {
   isReady: boolean;
-  hasConsent: boolean;
-  setConsent: (hasConsent: boolean) => void;
 }
 
 // Создаем контекст с undefined по умолчанию
@@ -50,91 +53,149 @@ interface AnalyticsProviderProps {
 }
 
 /**
- * Константы для работы с Cookie Consent
+ * Константы для работы с Cookie уведомлением
+ * (Информационный баннер, не запрос согласия)
  */
-const CONSENT_STORAGE_KEY = 'cookie-consent';
-const CONSENT_VERSION = '1';
+const COOKIE_NOTICE_KEY = 'cookie-notice-acknowledged';
+const NOTICE_VERSION = '1';
 
 /**
- * Получить сохраненное согласие из localStorage
- * КРИТИЧНО: Должно выполняться синхронно при инициализации
+ * Проверить, было ли показано уведомление о cookies
  */
-function getInitialConsent(): boolean {
+function wasNoticeShown(): boolean {
   if (typeof window === 'undefined') return false;
 
   try {
-    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+    const stored = localStorage.getItem(COOKIE_NOTICE_KEY);
     if (!stored) return false;
 
     const parsed = JSON.parse(stored);
 
-    // Проверяем версию согласия
-    if (parsed.version !== CONSENT_VERSION) {
+    // Проверяем версию уведомления
+    if (parsed.version !== NOTICE_VERSION) {
       return false;
     }
 
-    // Возвращаем только analytics consent
-    return parsed.preferences?.analytics || false;
+    return parsed.acknowledged === true;
   } catch (error) {
-    console.error('Error reading initial consent:', error);
+    console.error('Error reading cookie notice:', error);
     return false;
   }
+}
+
+/**
+ * Сохранить факт показа уведомления
+ */
+function markNoticeAsShown(): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(
+      COOKIE_NOTICE_KEY,
+      JSON.stringify({
+        version: NOTICE_VERSION,
+        acknowledged: true,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  } catch (error) {
+    console.error('Error saving cookie notice:', error);
+  }
+}
+
+/**
+ * Компонент информационного уведомления о cookies
+ *
+ * УПРОЩЕННАЯ ВЕРСИЯ:
+ * - Показывается один раз при первом посещении
+ * - Не блокирует загрузку аналитики
+ * - Только информирует пользователя (одна кнопка "Понятно")
+ * - Минималистичный дизайн
+ */
+interface CookieNoticeProps {
+  onClose: () => void;
+}
+
+function CookieNotice({ onClose }: CookieNoticeProps) {
+  return (
+    <div className={styles.overlay}>
+      <div className={styles.banner} role="dialog" aria-label="Cookie notice">
+        <div className={styles.content}>
+          <h3 className={styles.title}>🍪 Мы используем cookies</h3>
+
+          <p className={styles.description}>
+            Наш сайт использует cookies для улучшения работы и анализа
+            посещаемости. Продолжая использовать сайт, вы соглашаетесь с
+            использованием cookies. Ваши данные обрабатываются в соответствии с
+            политикой конфиденциальности.
+          </p>
+
+          <div className={styles.actions}>
+            <button
+              className={`${styles.button} ${styles.buttonPrimary}`}
+              onClick={onClose}
+              type="button"
+              aria-label="Закрыть уведомление о cookies"
+            >
+              Понятно
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function AnalyticsProvider({
   config,
   children,
 }: AnalyticsProviderProps) {
-  const [isReady, setIsReady] = React.useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  // ИСПРАВЛЕНИЕ КРИТИЧЕСКОГО БАГА:
-  // Инициализируем hasConsent из localStorage при первом рендере
-  // Это предотвращает race condition с CookieConsent компонентом
-  const [hasConsent, setHasConsent] = React.useState(() => {
-    // Если requireConsent=false, сразу разрешаем
-    if (!config.requireConsent) {
-      return true;
+  // Состояние для показа информационного баннера о cookies
+  const [showNotice, setShowNotice] = useState(false);
+
+  // Проверяем, нужно ли показать уведомление при монтировании
+  useEffect(() => {
+    // Показываем только если есть хотя бы одна аналитика и уведомление не было показано
+    const hasAnalytics = !!(config.yandexMetrika || config.googleAnalytics);
+    const noticeWasShown = wasNoticeShown();
+
+    if (hasAnalytics && !noticeWasShown) {
+      // Небольшая задержка для улучшения UX (не показываем сразу при загрузке)
+      const timer = setTimeout(() => {
+        setShowNotice(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
     }
-
-    // Проверяем, нужен ли consent (есть ли хотя бы одна аналитика)
-    const needsConsent = !!(config.yandexMetrika || config.googleAnalytics);
-    if (!needsConsent) {
-      return true;
-    }
-
-    // Читаем сохраненное согласие из localStorage
-    const storedConsent = getInitialConsent();
-
-    if (config.debug) {
-      console.log('🔍 Analytics Initial Consent:', {
-        stored: storedConsent,
-        requireConsent: config.requireConsent,
-        needsConsent,
-      });
-    }
-
-    return storedConsent;
-  });
+  }, [config.yandexMetrika, config.googleAnalytics]);
 
   /**
-   * Хелпер для безопасного выполнения аналитики с проверкой согласия
+   * Обработчик закрытия уведомления о cookies
    */
-  const executeWithConsent = useCallback(
-    (callback: () => void, eventName: string) => {
-      if (!hasConsent) {
-        if (config.debug) {
-          console.log(`📊 ${eventName} blocked: no consent`);
-        }
-        return;
-      }
+  const handleNoticeAcknowledge = useCallback(() => {
+    markNoticeAsShown();
+    setShowNotice(false);
 
+    if (config.debug) {
+      console.log('🍪 Cookie notice acknowledged');
+    }
+  }, [config.debug]);
+
+  /**
+   * Хелпер для безопасного выполнения аналитики
+   * (без проверки согласия - аналитика всегда работает)
+   */
+  const executeAnalytics = useCallback(
+    (callback: () => void, eventName: string) => {
       try {
         callback();
       } catch (error) {
         console.error(`Analytics ${eventName} error:`, error);
       }
     },
-    [hasConsent, config.debug],
+    [],
   );
 
   // Проверяем готовность аналитики после загрузки скриптов
@@ -151,7 +212,6 @@ export function AnalyticsProvider({
         console.log('🔍 Checking Analytics Ready:', {
           ymReady,
           gaReady,
-          hasConsent,
           yandexEnabled: !!config.yandexMetrika,
           gaEnabled: !!config.googleAnalytics,
         });
@@ -163,7 +223,6 @@ export function AnalyticsProvider({
           console.log('✅ Аналитика инициализирована:', {
             yandexMetrika: ymReady,
             googleAnalytics: gaReady,
-            hasConsent,
           });
         }
       }
@@ -178,21 +237,13 @@ export function AnalyticsProvider({
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [config.yandexMetrika, config.googleAnalytics, config.debug, hasConsent]);
+  }, [config.yandexMetrika, config.googleAnalytics, config.debug]);
 
   /**
    * Отслеживание просмотра страницы
    */
   const trackPageView = useCallback(
     (url: string, title?: string) => {
-      // Не отправляем события, если нет согласия
-      if (!hasConsent) {
-        if (config.debug) {
-          console.log('📊 Page View blocked: no consent');
-        }
-        return;
-      }
-
       try {
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
@@ -224,7 +275,7 @@ export function AnalyticsProvider({
         console.error('Analytics trackPageView error:', error);
       }
     },
-    [config, hasConsent],
+    [config],
   );
 
   /**
@@ -232,14 +283,6 @@ export function AnalyticsProvider({
    */
   const trackEvent = useCallback(
     (event: CustomEvent) => {
-      // Не отправляем события, если нет согласия
-      if (!hasConsent) {
-        if (config.debug) {
-          console.log('📊 Event blocked: no consent', event);
-        }
-        return;
-      }
-
       try {
         // Яндекс.Метрика
         if (config.yandexMetrika && window.ym) {
@@ -276,7 +319,7 @@ export function AnalyticsProvider({
         console.error('Analytics trackEvent error:', error);
       }
     },
-    [config, hasConsent],
+    [config],
   );
 
   /**
@@ -284,7 +327,7 @@ export function AnalyticsProvider({
    */
   const trackViewProduct = useCallback(
     (event: ViewProductEvent) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         const { product, currency = 'RUB' } = event;
 
         // Яндекс.Метрика (ecommerce)
@@ -343,7 +386,7 @@ export function AnalyticsProvider({
         }
       }, 'trackViewProduct');
     },
-    [config, executeWithConsent],
+    [config, executeAnalytics],
   );
 
   /**
@@ -351,7 +394,7 @@ export function AnalyticsProvider({
    */
   const trackAddToCart = useCallback(
     (event: AddToCartEvent) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         const { product, quantity, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
@@ -411,7 +454,7 @@ export function AnalyticsProvider({
         }
       }, 'trackAddToCart');
     },
-    [config, executeWithConsent],
+    [config, executeAnalytics],
   );
 
   /**
@@ -419,7 +462,7 @@ export function AnalyticsProvider({
    */
   const trackRemoveFromCart = useCallback(
     (event: RemoveFromCartEvent) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         const { product, quantity, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
@@ -479,7 +522,7 @@ export function AnalyticsProvider({
         }
       }, 'trackRemoveFromCart');
     },
-    [config, executeWithConsent],
+    [config, executeAnalytics],
   );
 
   /**
@@ -487,7 +530,7 @@ export function AnalyticsProvider({
    */
   const trackBeginCheckout = useCallback(
     (event: BeginCheckoutEvent) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         const { items, totalValue, currency = 'RUB' } = event;
 
         // Яндекс.Метрика
@@ -543,7 +586,7 @@ export function AnalyticsProvider({
         }
       }, 'trackBeginCheckout');
     },
-    [config, executeWithConsent],
+    [config, executeAnalytics],
   );
 
   /**
@@ -551,7 +594,7 @@ export function AnalyticsProvider({
    */
   const trackPurchase = useCallback(
     (event: PurchaseEvent) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         const {
           orderId,
           items,
@@ -623,7 +666,7 @@ export function AnalyticsProvider({
         }
       }, 'trackPurchase');
     },
-    [config, executeWithConsent],
+    [config, executeAnalytics],
   );
 
   /**
@@ -631,7 +674,7 @@ export function AnalyticsProvider({
    */
   const trackGoal = useCallback(
     (goalId: string, params?: Record<string, AnalyticsEventParams>) => {
-      executeWithConsent(() => {
+      executeAnalytics(() => {
         if (config.yandexMetrika && window.ym) {
           try {
             window.ym(config.yandexMetrika.id, 'reachGoal', goalId, params);
@@ -645,28 +688,11 @@ export function AnalyticsProvider({
         }
       }, 'trackGoal');
     },
-    [config, executeWithConsent],
-  );
-
-  // Обертка для setConsent с логированием
-  const setConsentWithLogging = useCallback(
-    (consent: boolean) => {
-      if (config.debug) {
-        console.log('🍪 Consent Changed:', {
-          from: hasConsent,
-          to: consent,
-          timestamp: new Date().toISOString(),
-        });
-      }
-      setHasConsent(consent);
-    },
-    [config.debug, hasConsent],
+    [config, executeAnalytics],
   );
 
   const contextValue: AnalyticsContextType = {
     isReady,
-    hasConsent,
-    setConsent: setConsentWithLogging,
     trackPageView,
     trackEvent,
     trackViewProduct,
@@ -695,14 +721,14 @@ export function AnalyticsProvider({
         
         КОМПРОМИСС: Производительность важнее мгновенной аналитики
         
-        🍪 COOKIE CONSENT:
-        - Скрипты загружаются только после согласия пользователя (hasConsent)
-        - Соответствует GDPR и требованиям по приватности
+        🍪 COOKIE УВЕДОМЛЕНИЕ (НЕ CONSENT):
+        - Скрипты загружаются сразу при наличии конфигурации
+        - Информационный баннер показывается отдельно (не блокирует аналитику)
         - Если аналитика отключена через env, скрипты не загружаются вообще
       */}
 
       {/* Яндекс.Метрика */}
-      {config.yandexMetrika && hasConsent && (
+      {config.yandexMetrika && (
         <>
           <Script
             id="yandex-metrika"
@@ -744,7 +770,7 @@ export function AnalyticsProvider({
       )}
 
       {/* Google Analytics 4 */}
-      {config.googleAnalytics && hasConsent && (
+      {config.googleAnalytics && (
         <>
           <Script
             strategy="lazyOnload"
@@ -770,6 +796,15 @@ export function AnalyticsProvider({
 
       <AnalyticsContext.Provider value={contextValue}>
         {children}
+
+        {/* 
+          🍪 ИНФОРМАЦИОННЫЙ БАННЕР О COOKIES
+          
+          Показывается один раз при первом посещении сайта.
+          НЕ блокирует загрузку аналитики (чисто информационный).
+          Соответствует требованиям законодательства о прозрачности.
+        */}
+        {showNotice && <CookieNotice onClose={handleNoticeAcknowledge} />}
       </AnalyticsContext.Provider>
     </>
   );
