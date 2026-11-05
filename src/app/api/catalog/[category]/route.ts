@@ -12,9 +12,9 @@ import { getApiUrl } from '@/shared/utils/getApiUrl';
 
 export async function GET(
   request: Request,
-  { params }: { params: { category: string } },
+  { params }: { params: Promise<{ category: string }> },
 ) {
-  const { category } = params;
+  const { category } = await params;
   const url = new URL(request.url);
   const queryString = url.searchParams.toString();
 
