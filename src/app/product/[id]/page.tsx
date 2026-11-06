@@ -1,3 +1,5 @@
+import { getApiUrl } from '@/shared/utils/getApiUrl';
+export const dynamic = 'force-dynamic';
 import { Metadata } from 'next';
 import { Product } from '@/types/product';
 import { generateProductMetadata } from '@/shared/utils/seo';
@@ -12,8 +14,8 @@ import { notFound } from 'next/navigation';
  */
 
 type PageProps = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 /**
@@ -21,7 +23,7 @@ type PageProps = {
  * Используется для генерации метаданных
  */
 async function getProduct(id: string): Promise<Product | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const baseUrl = getApiUrl();
 
   try {
     const res = await fetch(
@@ -53,7 +55,7 @@ async function getProduct(id: string): Promise<Product | null> {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { id } = params;
+  const { id } = await params;
   const product = await getProduct(id);
 
   return generateProductMetadata(product);
@@ -64,7 +66,7 @@ export async function generateMetadata({
  * Рендерит структурированные данные и клиентский компонент
  */
 export default async function ProductPage({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   // Пытаемся получить данные продукта для структурированных данных
   // Если не удается, клиентский компонент сам загрузит данные

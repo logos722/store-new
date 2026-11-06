@@ -44,6 +44,7 @@ $dark-border: #333333;
   justify-content: space-around;
   padding: 0 8px;
   z-index: 9999; // Увеличен z-index для гарантии отображения поверх всего
+  animation: slideUp 0.3s ease-out;
 
   // Скрываем на десктопе
   @media (min-width: 768px) {
@@ -57,7 +58,6 @@ $dark-border: #333333;
   }
 
   // Анимация появления
-  animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {

@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/shared/utils/getApiUrl';
 import { MetadataRoute } from 'next';
 import { CatalogInfo } from '@/constants/catalogs';
 import { LIMIT_PRODUCTS_FOR_SEO } from '@/constants/seo';
@@ -204,7 +205,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productPromises = categories.map(async category => {
       try {
         // API endpoint: /api/catalog/{categoryId}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0
-        const apiUrl = `${baseUrl}/api/catalog/${category.id}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0`;
+        const apiUrl = `${getApiUrl()}/api/catalog/${category.id}?page=1&limit=${LIMIT_PRODUCTS_FOR_SEO}&minPrice=0&maxPrice=100000&inStock=0`;
 
         // Создаем AbortController для таймаута
         const controller = new AbortController();
