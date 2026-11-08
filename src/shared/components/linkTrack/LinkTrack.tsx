@@ -5,6 +5,7 @@ import { MouseEvent, PropsWithChildren } from 'react';
 type Props = PropsWithChildren<
   LinkProps & React.AnchorHTMLAttributes<HTMLAnchorElement>
 >;
+import styles from './LinkTrack.module.scss';
 
 export function LinkTrack({ children, onClick, className, ...props }: Props) {
   const { start } = useNavProgress();
@@ -21,7 +22,11 @@ export function LinkTrack({ children, onClick, className, ...props }: Props) {
   };
 
   return (
-    <Link className={className} {...props} onClick={handleClick}>
+    <Link
+      className={[styles.link, className].filter(Boolean).join(' ')}
+      {...props}
+      onClick={handleClick}
+    >
       {children}
     </Link>
   );

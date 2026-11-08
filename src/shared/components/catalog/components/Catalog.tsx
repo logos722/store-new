@@ -34,11 +34,19 @@ const Catalog: React.FC<CatalogProps> = ({ catalog }) => {
         <ViewButton view={view} handleToggle={handleToggle} />
       </div>
       <div className={containerClass}>
-        {catalog.products.map(product =>
+        {catalog.products.map((product, index) =>
           view === 'grid' ? (
-            <GridProductCard key={product.id} product={product} />
+            <GridProductCard
+              priority={index === 0}
+              key={product.id}
+              product={product}
+            />
           ) : (
-            <ListProductCard key={product.id} product={product} />
+            <ListProductCard
+              priority={index === 0}
+              key={product.id}
+              product={product}
+            />
           ),
         )}
       </div>

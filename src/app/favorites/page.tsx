@@ -194,10 +194,11 @@ const FavoritesPage: React.FC = () => {
               viewMode === 'grid' ? styles.gridContainer : styles.listContainer
             }
           >
-            {products.map(product =>
+            {products.map((product, index) =>
               viewMode === 'grid' ? (
                 <GridProductCard
                   key={product.id}
+                  priority={index === 0}
                   product={{
                     ...product,
                     rating: 4.5,
@@ -205,7 +206,11 @@ const FavoritesPage: React.FC = () => {
                   }}
                 />
               ) : (
-                <ListProductCard key={product.id} product={product} />
+                <ListProductCard
+                  priority={index === 0}
+                  key={product.id}
+                  product={product}
+                />
               ),
             )}
           </div>

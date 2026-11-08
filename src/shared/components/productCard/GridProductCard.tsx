@@ -5,23 +5,29 @@ import Image from 'next/image';
 import { FaHeart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { Product } from '@/types/product';
 import styles from './GridProductCard.module.scss';
-import { useRouter } from 'next/navigation';
 import QuantityToggleButton from '../quantityToggleButton/QuantityToggleButton';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import Tooltip from '@/shared/components/ui/Tooltip/Tooltip';
 import { useTruncationDetection } from '@/shared/hooks/useTruncationDetection';
+import { LinkTrack } from '../linkTrack/LinkTrack';
 
 interface ProductCardProps {
   product: Product & {
     rating?: number; // от 0 до 5
     ratingCount?: number; // сколько оценок
   };
+  priority?: boolean;
+  prefetch?: boolean;
 }
 
-const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const router = useRouter();
+const GridProductCard: React.FC<ProductCardProps> = ({
+  product,
+  priority = false,
+  prefetch = false,
+}) => {
   const toggleFavorite = useFavoritesStore(s => s.toggleFavorite);
   const isFavorite = useFavoritesStore(s => s.isFavorite(product.id));
+  const href = `/product/${product.slug || product.id}`;
 
   // Ref для элемента заголовка, используется для определения truncation
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -29,10 +35,6 @@ const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Проверяем, обрезан ли текст заголовка (ellipsis активен)
   // Тултип будет показан только если текст действительно обрезан
   const isTitleTruncated = useTruncationDetection(titleRef, product.name);
-
-  const handleCardClick = () => {
-    router.push(`/product/${product.slug}`);
-  };
 
   const handleFav = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -62,13 +64,15 @@ const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
   })();
 
   return (
-    <div key={product.id} className={styles.card} onClick={handleCardClick}>
+    <div key={product.id} className={styles.card}>
       <div className={styles.imageWrap}>
         <Image
           src={product.image ?? '/Placeholred_One.webp'}
           alt={product.name}
           fill
+          sizes="(max-width: 768px) 50vw, 25vw"
           className={styles.image}
+          priority={priority}
         />
         <button
           className={`${styles.iconButton} ${styles.fav}`}
@@ -94,7 +98,13 @@ const GridProductCard: React.FC<ProductCardProps> = ({ product }) => {
           delay={200}
         >
           <h3 ref={titleRef} className={styles.title}>
-            {product.name}
+            <LinkTrack
+              prefetch={prefetch}
+              href={href}
+              className={styles.productLink}
+            >
+              {product.name}
+            </LinkTrack>
           </h3>
         </Tooltip>
         <div className={styles.meta}>
