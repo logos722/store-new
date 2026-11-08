@@ -80,7 +80,22 @@
   }
 }
 
+.productLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 12px;
+}
+
+.productLink:focus-visible::after {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
 .listActions {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -112,6 +127,7 @@
 // If needed, you can override here:
 .iconButton {
   position: absolute;
+  z-index: 2;
   background: rgba(255, 255, 255, 0.8);
   border: none;
   padding: 0.5rem;

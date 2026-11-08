@@ -48,7 +48,11 @@ const ProductPageClient = ({ product }: { product: Product }) => {
       name: product.category,
       href: `/catalog/${productGroup.slug}?category=${encodeURIComponent(product.category)}`,
     },
-    { name: product.name, href: `/product/${product.id}`, current: true },
+    {
+      name: product.name,
+      href: `/product/${product.slug || product.id}`,
+      current: true,
+    },
   ];
 
   return (
@@ -61,6 +65,8 @@ const ProductPageClient = ({ product }: { product: Product }) => {
             src={product.image ?? '/Placeholred_One.webp'}
             alt={product.name}
             fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
             className={styles.image}
           />
         </div>

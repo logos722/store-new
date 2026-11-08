@@ -54,16 +54,16 @@ async function getCategoryProducts(
       page: '1',
       limit: '20', // Первые 20 товаров для микроразметки Schema.org
       minPrice: '0',
-      maxPrice: '1000000',
+      maxPrice: '100000',
       inStock: '0', // Показываем все товары (в наличии и под заказ)
-      sort: 'default',
+      sort: 'name-asc',
     });
 
     const apiUrl = `${baseUrl}/api/catalog/${categorySlug}?${params}`;
 
     const res = await fetch(apiUrl, {
       // Кэшируем на 1 час для улучшения производительности
-      next: { revalidate: 3600 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {
@@ -173,7 +173,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
       {/* Клиентский компонент с интерактивностью */}
       <Suspense fallback={<div>Загрузка...</div>}>
-        <CategoryPageClient />
+        <CategoryPageClient initialData={categoryData} />
       </Suspense>
     </>
   );

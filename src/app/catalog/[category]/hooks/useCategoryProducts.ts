@@ -5,7 +5,7 @@ import { SortOption } from '@/types/catalog';
 import { Product } from '@/types/product';
 import { InfiniteData } from '@tanstack/react-query';
 
-interface CategoryPageResponse {
+export interface CategoryPageResponse {
   category: string; // slug или id категории (по желанию можно не использовать)
   products: Product[]; // товары на текущей странице
   page: number; // номер текущей страницы
@@ -56,7 +56,14 @@ export function useCategoryProducts(
     inStock: boolean;
     sort: SortOption;
   },
+  initialData?: CategoryPageResponse | null,
 ) {
+  const isInitialQuery =
+    filters.selectedCategories.length === 0 &&
+    filters.priceRange.min === 0 &&
+    filters.priceRange.max === 100_000 &&
+    !filters.inStock &&
+    filters.sort === 'name-asc';
   return useInfiniteQuery<
     CategoryPageResponse,
     Error,
@@ -85,6 +92,10 @@ export function useCategoryProducts(
     queryFn: fetchCategoryPage,
     enabled: Boolean(categorySlug),
     initialPageParam: 1,
+    initialData:
+      initialData && isInitialQuery
+        ? { pages: [initialData], pageParams: [1] }
+        : undefined,
     getNextPageParam: last =>
       last.page < last.totalPages ? last.page + 1 : undefined,
   });

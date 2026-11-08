@@ -6,7 +6,7 @@ import { generateProductMetadata } from '@/shared/utils/seo';
 import { generateProductSchema } from '@/shared/utils/structuredDataUtils';
 import ServerStructuredData from '@/shared/components/seo/ServerStructuredData';
 import ProductPageClient from './ProductPageClient';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 /**
  * Серверный компонент страницы продукта
@@ -22,15 +22,14 @@ type PageProps = {
  * Получает данные продукта с сервера
  * Используется для генерации метаданных
  */
-async function getProduct(id: string): Promise<Product | null> {
+async function getProduct(id: string): Promise<Product> {
   const baseUrl = getApiUrl();
 
   try {
     const res = await fetch(
       `${baseUrl}/api/product/${encodeURIComponent(id)}`,
       {
-        // Кэшируем данные продукта на 1 час
-        next: { revalidate: 3600 },
+        cache: 'no-store',
       },
     );
 
@@ -71,6 +70,10 @@ export default async function ProductPage({ params }: PageProps) {
   // Пытаемся получить данные продукта для структурированных данных
   // Если не удается, клиентский компонент сам загрузит данные
   const product = await getProduct(id);
+
+  if (typeof product.slug === 'string' && product.slug && id !== product.slug) {
+    permanentRedirect(`/product/${encodeURIComponent(product.slug)}`);
+  }
 
   return (
     <>

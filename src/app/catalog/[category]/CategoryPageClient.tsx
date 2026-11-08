@@ -23,6 +23,7 @@ import {
 import { useCategoryProducts } from './hooks/useCategoryProducts';
 import { CategoryPageSkeleton } from './components/CategoryPageSkeleton/CategoryPageSkeleton';
 import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
+import type { CategoryPageResponse } from './hooks/useCategoryProducts';
 
 type QuizParams = {
   category: string;
@@ -42,7 +43,11 @@ const useMediaQuery = (query: string) => {
   return matches;
 };
 
-const CategoryPageClient = () => {
+const CategoryPageClient = ({
+  initialData,
+}: {
+  initialData: CategoryPageResponse | null;
+}) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [isFiltersOpen, setFiltersOpen] = useState(false);
   const { category: rawCategory } = useParams<QuizParams>();
@@ -100,16 +105,20 @@ const CategoryPageClient = () => {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useCategoryProducts(category || '', {
-    selectedCategories: debouncedFilters.selectedCategories,
-    priceRange: {
-      min: debouncedFilters.priceRange.min,
-      max: debouncedFilters.priceRange.max,
-    },
+  } = useCategoryProducts(
+    category || '',
+    {
+      selectedCategories: debouncedFilters.selectedCategories,
+      priceRange: {
+        min: debouncedFilters.priceRange.min,
+        max: debouncedFilters.priceRange.max,
+      },
 
-    inStock: debouncedFilters.inStock,
-    sort: debouncedFilters.sort,
-  });
+      inStock: debouncedFilters.inStock,
+      sort: debouncedFilters.sort,
+    },
+    initialData,
+  );
 
   const loadMore = useCallback(() => fetchNextPage(), [fetchNextPage]);
 
@@ -174,9 +183,13 @@ const CategoryPageClient = () => {
             }
             aria-busy={isFetchingNextPage ? 'true' : 'false'}
           >
-            {allProducts.map(p =>
+            {allProducts.map((p, index) =>
               viewType === 'grid' ? (
-                <GridProductCard key={p.id} product={p} />
+                <GridProductCard
+                  priority={index === 0}
+                  key={p.id}
+                  product={p}
+                />
               ) : (
                 <ListProductCard key={p.id} product={p} />
               ),

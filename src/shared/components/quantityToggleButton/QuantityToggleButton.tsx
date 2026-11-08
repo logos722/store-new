@@ -72,17 +72,18 @@ const QuantityToggleButton: React.FC<QuantityToggleButtonProps> = ({
   return (
     <div className={styles.wrapper}>
       <button
+        type="button"
         className={`${styles.addBtn} ${qty > 0 ? styles.hidden : ''}`}
         onClick={handleAddToCart}
       >
         {'Добавить в корзину'}
       </button>
       <div className={`${styles.counter} ${qty === 0 ? styles.hidden : ''}`}>
-        <button className={styles.minus} onClick={handleDecrease}>
+        <button type="button" className={styles.minus} onClick={handleDecrease}>
           −
         </button>
         <span className={styles.quantity}>{qty}</span>
-        <button className={styles.plus} onClick={handleIncrease}>
+        <button type="button" className={styles.plus} onClick={handleIncrease}>
           +
         </button>
       </div>

@@ -41,6 +41,8 @@ const CatalogPage = () => {
                     alt={category.title}
                     className={styles.image}
                     fill
+                    priority
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     style={{ objectFit: 'cover' }}
                   />
                 </div>

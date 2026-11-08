@@ -54,8 +54,13 @@ const CatalogShowcase: React.FC<CatalogShowcaseProps> = ({
 
       {/* Сетка товаров */}
       <div className={styles.productsGrid}>
-        {products.map(product => (
-          <GridProductCard key={product.id} product={product} />
+        {products.map((product, index) => (
+          <GridProductCard
+            prefetch={true}
+            priority={index === 0}
+            key={product.id}
+            product={product}
+          />
         ))}
       </div>
 
